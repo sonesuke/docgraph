@@ -17,7 +17,7 @@ pub fn check_blocks(all_blocks: &[SpecBlock]) -> Vec<Diagnostic> {
     for block in all_blocks {
         // RULE-1: No ID
         if block.id.is_empty() {
-             diagnostics.push(Diagnostic {
+            diagnostics.push(Diagnostic {
                 severity: Severity::Error,
                 code: "E_NO_ID".to_string(),
                 message: "Missing :id: in {document} block".to_string(),
@@ -37,7 +37,10 @@ pub fn check_blocks(all_blocks: &[SpecBlock]) -> Vec<Diagnostic> {
             diagnostics.push(Diagnostic {
                 severity: Severity::Error,
                 code: "E_DUP_ID".to_string(),
-                message: format!("Duplicate id '{}'. First defined at {:?}:{}", block.id, prev.file_path, prev.line_start),
+                message: format!(
+                    "Duplicate id '{}'. First defined at {:?}:{}",
+                    block.id, prev.file_path, prev.line_start
+                ),
                 path: block.file_path.clone(),
                 range: Range {
                     start_line: block.line_start,
@@ -77,7 +80,7 @@ pub fn check_blocks(all_blocks: &[SpecBlock]) -> Vec<Diagnostic> {
 
         // Check Typed Edges
         for e in &block.edges {
-             if !id_map.contains_key(&e.target_id) {
+            if !id_map.contains_key(&e.target_id) {
                 diagnostics.push(Diagnostic {
                     severity: Severity::Error,
                     code: "E_BAD_REF".to_string(),
@@ -130,13 +133,13 @@ mod tests {
 :kind: req
 ```
 "#;
-        // Parsing might filter it out if we changed parse logic, 
+        // Parsing might filter it out if we changed parse logic,
         // but currently parse logic returns empty ID string if missing.
-        // Let's check parse.rs. It expects :id: or returns None if id.is_none(). 
+        // Let's check parse.rs. It expects :id: or returns None if id.is_none().
         // Wait, parse.rs lines 108: if id.is_none() { return None; }
         // So `extract_blocks` won't return blocks without ID at all?
         // Ah, earlier I said "return None // RULE-1".
-        // If parse returns None, then Lint can't check it. 
+        // If parse returns None, then Lint can't check it.
         // If we want E_NO_ID, Parse MUST return it with empty ID or something.
         // Let's check current parse.rs implementation.
         // Step 150 showed the content.
@@ -146,12 +149,12 @@ mod tests {
         // Then `id` is Some(""). `check_blocks` checks `block.id.is_empty()`.
         // So checking `:id: ` (empty value) works.
         // Checking missing `:id:` line entirely: parse returns None.
-        
+
         let blocks = parse(content);
         // If parse returns 0 blocks, diagnostics will be 0.
         // If we want to strictly catch "missing :id: line", parse needs update.
         // But for this test let's test empty ID value.
-        
+
         let content_empty_val = r#"
 ```{document}
 :id:
@@ -165,7 +168,7 @@ mod tests {
 
     #[test]
     fn test_duplicate_id() {
-         let content = r#"
+        let content = r#"
 ```{document}
 :id: REQ-1
 ```
@@ -181,7 +184,7 @@ mod tests {
 
     #[test]
     fn test_bad_ref_body() {
-         let content = r#"
+        let content = r#"
 ```{document}
 :id: REQ-1
 This refers to {ref}`UNKNOWN`.
@@ -196,7 +199,7 @@ This refers to {ref}`UNKNOWN`.
 
     #[test]
     fn test_bad_ref_edge() {
-         let content = r#"
+        let content = r#"
 ```{document}
 :id: REQ-1
 :verifies: UNKNOWN

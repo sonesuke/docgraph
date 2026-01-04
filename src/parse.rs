@@ -6,14 +6,14 @@ pub fn extract_blocks(content: &str, file_path: &Path) -> Vec<SpecBlock> {
     let mut blocks = Vec::new();
     // Regex for fenced code block with {doc} info string
     // Matches: ```{document} [Title]\n[Content]```
-    
+
     let lines: Vec<&str> = content.lines().collect();
     let mut i = 0;
     while i < lines.len() {
         let line = lines[i];
         if line.trim_start().starts_with("```{document}") {
             let start_line = i + 1;
-            
+
             // Find end of block
             let mut j = i + 1;
             let mut block_content_lines = Vec::new();
@@ -25,11 +25,13 @@ pub fn extract_blocks(content: &str, file_path: &Path) -> Vec<SpecBlock> {
                 j += 1;
             }
             let end_line = j + 1;
-            
+
             if j < lines.len() {
                 // We found a complete block
                 let block_str = block_content_lines.join("\n");
-                if let Some(block) = parse_block_content(&block_str, file_path.to_path_buf(), start_line, end_line) {
+                if let Some(block) =
+                    parse_block_content(&block_str, file_path.to_path_buf(), start_line, end_line)
+                {
                     blocks.push(block);
                 }
                 i = j;
@@ -41,7 +43,12 @@ pub fn extract_blocks(content: &str, file_path: &Path) -> Vec<SpecBlock> {
     blocks
 }
 
-fn parse_block_content(content: &str, file_path: PathBuf, block_start: usize, block_end: usize) -> Option<SpecBlock> {
+fn parse_block_content(
+    content: &str,
+    file_path: PathBuf,
+    block_start: usize,
+    block_end: usize,
+) -> Option<SpecBlock> {
     let mut id = None;
     let mut kind = None;
     let mut edges = Vec::new();
@@ -52,13 +59,13 @@ fn parse_block_content(content: &str, file_path: PathBuf, block_start: usize, bl
 
     // 1. Parse Options Headers
     let option_re = Regex::new(r"^:([a-z_]+):\s*(.*)$").unwrap();
-    
+
     for (idx, line) in lines.iter().enumerate() {
         let trimmed = line.trim();
         if trimmed.is_empty() {
             continue;
         }
-        
+
         // If line doesn't start with :, we assume option block ended (or never started if empty lines skipped)
         if !trimmed.starts_with(":") {
             body_start_idx = idx;
@@ -86,10 +93,10 @@ fn parse_block_content(content: &str, file_path: PathBuf, block_start: usize, bl
                 _ => {} // Ignore unknown or removed options
             }
         } else {
-             // Line starts with : but format doesn't match, treat as body? 
-             // Strictly MyST options must come first. If we hit a non-option, we stop option parsing.
-             body_start_idx = idx;
-             break;
+            // Line starts with : but format doesn't match, treat as body?
+            // Strictly MyST options must come first. If we hit a non-option, we stop option parsing.
+            body_start_idx = idx;
+            break;
         }
         body_start_idx = idx + 1;
     }
@@ -100,10 +107,10 @@ fn parse_block_content(content: &str, file_path: PathBuf, block_start: usize, bl
 
     // 2. Parse Body for {ref}
     let ref_re = Regex::new(r"\{ref\}`([^`]+)`").unwrap();
-    
+
     for (i, line_content) in lines.iter().enumerate().skip(body_start_idx) {
         let current_line_num = block_start + 1 + i; // +1 for fence
-        
+
         for cap in ref_re.captures_iter(line_content) {
             if let Some(m) = cap.get(1) {
                 let target_id = m.as_str();
@@ -152,7 +159,7 @@ Body with {ref}`REQ-002`.
         assert_eq!(b.refs[0].target_id, "REQ-002");
     }
 
-     #[test]
+    #[test]
     fn test_extract_edges() {
         let content = r#"
 ```{document}
@@ -165,8 +172,20 @@ Body with {ref}`REQ-002`.
         let blocks = extract_blocks(content, &path);
         let b = &blocks[0];
         assert_eq!(b.edges.len(), 3);
-        assert!(b.edges.iter().any(|e| e.edge_type == "verifies" && e.target_id == "R-01"));
-        assert!(b.edges.iter().any(|e| e.edge_type == "verifies" && e.target_id == "R-02"));
-        assert!(b.edges.iter().any(|e| e.edge_type == "depends_on" && e.target_id == "D-01"));
+        assert!(
+            b.edges
+                .iter()
+                .any(|e| e.edge_type == "verifies" && e.target_id == "R-01")
+        );
+        assert!(
+            b.edges
+                .iter()
+                .any(|e| e.edge_type == "verifies" && e.target_id == "R-02")
+        );
+        assert!(
+            b.edges
+                .iter()
+                .any(|e| e.edge_type == "depends_on" && e.target_id == "D-01")
+        );
     }
 }

@@ -14,9 +14,10 @@ pub fn find_markdown_files(root: &Path) -> Vec<PathBuf> {
                 let path = entry.path();
                 if path.is_file()
                     && let Some(ext) = path.extension()
-                        && ext == "md" {
-                            files.push(path.to_path_buf());
-                        }
+                    && ext == "md"
+                {
+                    files.push(path.to_path_buf());
+                }
             }
             Err(err) => eprintln!("Error walking directory: {}", err),
         }

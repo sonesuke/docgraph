@@ -7,7 +7,7 @@ use std::path::Path;
 pub fn collect_workspace(root: &Path) -> Vec<SpecBlock> {
     let files = find_markdown_files(root);
     let mut all_blocks = Vec::new();
-    
+
     for file_path in files {
         match fs::read_to_string(&file_path) {
             Ok(content) => {
