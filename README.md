@@ -13,6 +13,20 @@ It uses a subset of MyST (Markedly Structured Text) to ensure traceability betwe
 cargo install --path .
 ```
 
+## VS Code Extension (Preview)
+
+A preview extension is available to render `{document}` blocks transparently in VS Code's Markdown Preview.
+
+### Installation
+
+1. Go to the **GitHub Releases** page of this repository.
+2. Download the `.vsix` file (e.g., `docgraph-preview-x.y.z.vsix`).
+3. In VS Code:
+   - Open the **Extensions** view (`Cmd+Shift+X` or `Ctrl+Shift+X`).
+   - Click the `...` (Views and More Actions) menu at the top right of the pane.
+   - Select **Install from VSIX...**.
+   - Choose the downloaded `.vsix` file.
+
 ## Usage
 
 Check for errors in the current directory:

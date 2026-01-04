@@ -15,7 +15,7 @@ fn main() -> ExitCode {
     match args.command {
         Commands::Lint { path, json } => {
             let diagnostics = lint::check_workspace(&path);
-            
+
             if json {
                 let json_out = serde_json::to_string_pretty(&diagnostics).unwrap();
                 println!("{}", json_out);
@@ -38,20 +38,23 @@ fn main() -> ExitCode {
                 }
             }
 
-            if diagnostics.iter().any(|d| matches!(d.severity, types::Severity::Error)) {
+            if diagnostics
+                .iter()
+                .any(|d| matches!(d.severity, types::Severity::Error))
+            {
                 return ExitCode::FAILURE;
             }
         }
         Commands::Gen { path, json } => {
             let blocks = collect::collect_workspace(&path);
-             if json {
+            if json {
                 let json_out = serde_json::to_string_pretty(&blocks).unwrap();
                 println!("{}", json_out);
             } else {
-                // Currently only JSON is supported/requested. 
+                // Currently only JSON is supported/requested.
                 // Fallback to JSON or print nothing/error?
                 // User asked for `docgraph gen --json`. If no json flag, maybe print count or simple list?
-                // Let's print JSON by default if strictly following "gen --json" request implies flag is needed, 
+                // Let's print JSON by default if strictly following "gen --json" request implies flag is needed,
                 // but usually gen implies output.
                 // However, I'll respect the flag. If no flag, maybe print summary.
                 println!("Found {} documents.", blocks.len());

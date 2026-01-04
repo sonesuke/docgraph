@@ -23,12 +23,12 @@ pub enum Commands {
     },
     /// Generate graph data
     Gen {
-         /// Path to search for markdown files (defaults to current directory)
+        /// Path to search for markdown files (defaults to current directory)
         #[arg(default_value = ".")]
         path: PathBuf,
 
         /// Output graph content in JSON format
         #[arg(long)]
         json: bool,
-    }
+    },
 }
