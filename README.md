@@ -1,0 +1,153 @@
+# docgraph
+
+A lint tool to verify document graphs embedded in Markdown (MyST).
+It uses a subset of MyST (Markedly Structured Text) to ensure traceability between documents.
+
+## Overview
+
+`docgraph` parses `{document}` blocks within Markdown files and checks for duplicate IDs and missing references. It also extracts and verifies relationships (edges) such as `verifies` or `depends_on`, which are often used in requirements specifications or test specifications.
+
+## Installation
+
+```bash
+cargo install --path .
+```
+
+## Usage
+
+Check for errors in the current directory:
+
+```bash
+docgraph lint
+```
+
+Specify a directory to check:
+
+```bash
+docgraph lint ./spec
+```
+
+Output diagnostics in JSON format:
+
+```bash
+docgraph lint --json
+```
+
+Generate a graph JSON:
+
+```bash
+docgraph gen --json
+```
+
+## MyST Support (Subset)
+
+This tool supports only the standard directive syntax of MyST. No custom extensions are used.
+
+### Supported Directives
+
+- `{document}`: Document definition block
+
+````markdown
+```{document} Requirements
+:id: RQ-001
+:kind: requirement
+:verifies: TC-001
+:depends_on: DEC-005
+
+Details of the requirement are described here.
+References to other documents are made in the format {ref}`another-id`.
+```
+````
+
+### Supported Options
+
+| Option           | Required | Description                                         | Multiple |
+| :--------------- | :------- | :-------------------------------------------------- | :------- |
+| `:id:`           | Yes      | Unique identifier for the document                  | No       |
+| `:kind:`         | No       | Type of document (e.g., `requirement`, `test_case`) | No       |
+| `:verifies:`     | No       | ID to verify (Edge)                                 | Yes      |
+| `:depends_on:`   | No       | ID to depend on (Edge)                              | Yes      |
+| `:derived_from:` | No       | ID derived from (Edge)                              | Yes      |
+
+`<multiple>` can be expressed by specifying multiple IDs separated by spaces, or by writing the option line multiple times (planned implementation).
+
+## Graph Structure Example
+
+From Markdown files like the following, it recognizes and verifies the graph structure between documents.
+
+**spec/reqs.md**
+
+````markdown
+```{document} Login Requirement
+:id: RQ-AUTH-01
+:kind: requirement
+
+Users must be able to log in with an email address and password.
+```
+````
+
+**spec/tests.md**
+
+````markdown
+```{document} Login Test
+:id: TC-AUTH-01
+:kind: test
+:verifies: RQ-AUTH-01
+
+1. Open the login page
+2. Enter valid credentials
+3. Verify that the dashboard is displayed ({ref}`RQ-AUTH-01`)
+```
+````
+
+In this example, a `verifies` edge of `TC-AUTH-01` -> `RQ-AUTH-01` is formed.
+`docgraph` reports an error if `RQ-AUTH-01` does not exist or if `TC-AUTH-01` is defined duplicately.
+
+### Linting Example
+
+```bash
+docgraph lint spec
+```
+
+If everything is correct, no output (exit code 0).
+If `RQ-AUTH-01` is missing:
+
+```text
+error[E_BAD_REF] spec/tests.md:4:1: Unknown target 'RQ-AUTH-01' in edge :verifies
+error[E_BAD_REF] spec/tests.md:8:43: Unknown ref target 'RQ-AUTH-01'
+```
+
+### Generation Example
+
+```bash
+docgraph gen spec --json
+```
+
+Output:
+
+```json
+[
+  {
+    "id": "RQ-AUTH-01",
+    "kind": "requirement",
+    "edges": [],
+    "file_path": "spec/reqs.md",
+    "line_start": 1,
+    "line_end": 6
+  },
+  {
+    "id": "TC-AUTH-01",
+    "kind": "test",
+    "edges": [
+      {
+        "edge_type": "verifies",
+        "target_id": "RQ-AUTH-01",
+        "line": 4
+      }
+    ],
+    "file_path": "spec/tests.md",
+    "line_start": 1,
+    "line_end": 9
+  }
+]
+```
