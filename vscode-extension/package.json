@@ -43,7 +43,7 @@
     "devDependencies": {
         "@biomejs/biome": "2.3.11",
         "@types/markdown-it": "^12.2.3",
-        "@types/node": "18.x",
+        "@types/node": "^20.19.27",
         "@types/vscode": "^1.80.0",
         "typescript": "^5.0.0",
         "vitest": "3.2.4"
