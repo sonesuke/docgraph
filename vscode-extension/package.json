@@ -1,0 +1,54 @@
+{
+    "name": "docgraph-preview",
+    "displayName": "Docgraph Preview",
+    "description": "Transparent preview for docgraph {document} blocks",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:markdown"
+    ],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "Docgraph",
+            "properties": {
+                "docgraph.preview.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable transparent rendering of {document} blocks in Markdown preview."
+                }
+            }
+        },
+        "markdown.markdownItPlugins": true
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "package": "vsce package",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "npx @biomejs/biome check ./src",
+        "fix": "npx @biomejs/biome check --write ./src",
+        "format": "npx @biomejs/biome format --write ./src",
+        "test": "vitest run",
+        "build": "npm run compile",
+        "typecheck": "tsc -p ./ --noEmit"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.3.11",
+        "@types/markdown-it": "^12.2.3",
+        "@types/node": "18.x",
+        "@types/vscode": "^1.80.0",
+        "typescript": "^5.0.0",
+        "vitest": "3.2.4"
+    },
+    "dependencies": {
+        "markdown-it": "^13.0.1"
+    }
+}
