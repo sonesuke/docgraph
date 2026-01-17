@@ -4,9 +4,8 @@ use std::path::PathBuf;
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct SpecBlock {
     pub id: String,
-    pub kind: Option<String>,
+    pub name: Option<String>,
     pub edges: Vec<EdgeUse>,
-    pub refs: Vec<RefUse>,
     pub file_path: PathBuf,
     pub line_start: usize, // 1-based
     pub line_end: usize,   // 1-based
@@ -14,14 +13,15 @@ pub struct SpecBlock {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct EdgeUse {
-    pub edge_type: String, // verifies, depends_on, etc.
-    pub target_id: String,
+    pub id: String,
+    pub name: Option<String>,
     pub line: usize,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct RefUse {
     pub target_id: String,
+    pub file_path: PathBuf,
     pub line: usize,
     pub col: usize,
 }

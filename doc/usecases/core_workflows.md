@@ -1,65 +1,62 @@
 
 # Core Use Cases
 
-```{document} Write Specifications
-:id: UC-WRITE
-:kind: usecase
-:depends_on: ACT-USER
+<a id="UC-WRITE"></a>
 
-The {ref}`ACT-USER` writes specifications in Markdown using MyST format.
-```
+## Write Specifications
 
-```{document} Lint Documents
-:id: UC-LINT
-:kind: usecase
-:depends_on: ACT-USER
-:depends_on: UC-WRITE
+The [ACT-USER (User)](../actors/system_users.md#ACT-USER) writes specifications in Markdown using anchor heading format.
 
-The {ref}`ACT-USER` checks for errors in the document graph.
+Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER)
+
+<a id="UC-LINT"></a>
+
+## Lint Documents
+
+The [ACT-USER (User)](../actors/system_users.md#ACT-USER) checks for errors in the document graph.
 
 **Steps:**
+
 1. User navigates to the project directory.
-2. User runs the lint command ({ref}`SPEC-CLI-LINT`).
+2. User runs the lint command ([SPEC-CLI-LINT (Command: `lint`)](../specs/cli_specs.md#SPEC-CLI-LINT)).
 3. User reviews any error messages regarding duplicate IDs or missing references.
-```
 
-```{document} Generate Graph
-:id: UC-GEN
-:kind: usecase
-:depends_on: ACT-USER
-:depends_on: UC-WRITE
+Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE)
 
-The {ref}`ACT-USER` generates a JSON representation of the document graph.
+<a id="UC-GRAPH"></a>
+
+## Generate Graph
+
+The [ACT-USER (User)](../actors/system_users.md#ACT-USER) generates a JSON representation of the document graph.
 
 **Steps:**
+
 1. User navigates to the project directory.
-2. User runs the gen command ({ref}`SPEC-CLI-GEN`).
+2. User runs the graph command ([SPEC-CLI-GRAPH (Command: `graph`)](../specs/cli_specs.md#SPEC-CLI-GRAPH)).
 3. User redirects the JSON output to a file or pipe.
-```
 
-```{document} Automate Checks
-:id: UC-CI-CHECK
-:kind: usecase
-:depends_on: ACT-CI
-:depends_on: UC-WRITE
+Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE)
 
-The {ref}`ACT-CI` automatically verifies the document graph on every push.
-```
+<a id="UC-CI-CHECK"></a>
 
-```{document} Build Knowledge Graph
-:id: UC-BUILD-KNOWLEDGE
-:kind: usecase
-:depends_on: ACT-AGENT
-:depends_on: UC-GEN
+## Automate Checks
 
-The {ref}`ACT-AGENT` builds a GraphRAG knowledge base from the generated JSON graph.
-```
+The [ACT-CI (CI System)](../actors/system_users.md#ACT-CI) automatically verifies the document graph on every push.
 
-```{document} Suggest Usage
-:id: UC-SUGGEST-USAGE
-:kind: usecase
-:depends_on: ACT-AGENT
-:depends_on: UC-BUILD-KNOWLEDGE
+Depends on: [ACT-CI (CI System)](../actors/system_users.md#ACT-CI), [UC-WRITE (Write Specifications)](#UC-WRITE)
 
-The {ref}`ACT-AGENT` suggests how to use the system based on the constructed knowledge.
-```
+<a id="UC-BUILD-KNOWLEDGE"></a>
+
+## Build Knowledge Graph
+
+The [ACT-AGENT (AI Agent)](../actors/system_users.md#ACT-AGENT) builds a GraphRAG knowledge base from the generated JSON graph.
+
+Depends on: [ACT-AGENT (AI Agent)](../actors/system_users.md#ACT-AGENT), [UC-GRAPH (Generate Graph)](#UC-GRAPH)
+
+<a id="UC-SUGGEST-USAGE"></a>
+
+## Suggest Usage
+
+The [ACT-AGENT (AI Agent)](../actors/system_users.md#ACT-AGENT) suggests how to use the system based on the constructed knowledge.
+
+Depends on: [ACT-AGENT (AI Agent)](../actors/system_users.md#ACT-AGENT), [UC-BUILD-KNOWLEDGE (Build Knowledge Graph)](#UC-BUILD-KNOWLEDGE)

@@ -1,214 +1,226 @@
-use crate::collect::collect_workspace;
-use crate::types::{Diagnostic, Range, Severity, SpecBlock};
-use std::collections::HashMap;
+use crate::types::{Diagnostic, Range, Severity};
+use crate::walk::find_markdown_files;
+use rumdl_lib::fix_coordinator::FixCoordinator;
+use rumdl_lib::workspace_index::WorkspaceIndex;
+
+use std::fs;
 use std::path::Path;
 
-pub fn check_workspace(root: &Path) -> Vec<Diagnostic> {
-    let all_blocks = collect_workspace(root);
-    check_blocks(&all_blocks)
+/// Check if a rumdl warning should be skipped.
+/// - MD013 (line length): Always skip
+/// - MD033 (inline HTML): Skip only `<a id="...">` tags (docgraph anchor syntax)
+/// - MD041 (first line heading): Always skip - docgraph allows anchor tags before H1
+fn should_skip_rumdl_warning(rule_name: &str, message: &str) -> bool {
+    match rule_name {
+        "MD013" => true, // Skip line length warnings
+        "MD033" => message.contains("<a id="), // Skip anchor id tags only
+        "MD041" => true, // Skip first-line-heading - we allow <a id="..."> before # heading
+        _ => false,
+    }
 }
 
-pub fn check_blocks(all_blocks: &[SpecBlock]) -> Vec<Diagnostic> {
+pub fn check_workspace(root: &Path, fix: bool, rule_filter: Option<Vec<String>>, use_docgraph_filter: bool) -> Vec<Diagnostic> {
+    // Run rumdl on each markdown file
+    run_rumdl_on_workspace(root, fix, rule_filter, use_docgraph_filter)
+}
+
+/// Run rumdl markdown linter on all markdown files in the workspace
+fn run_rumdl_on_workspace(root: &Path, fix: bool, rule_filter: Option<Vec<String>>, use_docgraph_filter: bool) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
+    let files = find_markdown_files(root);
 
-    // 2. Build Symbol Table & Check Duplicates (RULE-2) & Missing ID (RULE-1)
-    let mut id_map: HashMap<String, &SpecBlock> = HashMap::new();
-
-    for block in all_blocks {
-        // RULE-1: No ID
-        if block.id.is_empty() {
-            diagnostics.push(Diagnostic {
-                severity: Severity::Error,
-                code: "E_NO_ID".to_string(),
-                message: "Missing :id: in {document} block".to_string(),
-                path: block.file_path.clone(),
-                range: Range {
-                    start_line: block.line_start,
-                    start_col: 1,
-                    end_line: block.line_start,
-                    end_col: 1,
-                },
-            });
-            continue; // Can't add to map if empty
-        }
-
-        // RULE-2: Duplicate ID
-        if let Some(prev) = id_map.get(&block.id) {
-            diagnostics.push(Diagnostic {
-                severity: Severity::Error,
-                code: "E_DUP_ID".to_string(),
-                message: format!(
-                    "Duplicate id '{}'. First defined at {:?}:{}",
-                    block.id, prev.file_path, prev.line_start
-                ),
-                path: block.file_path.clone(),
-                range: Range {
-                    start_line: block.line_start,
-                    start_col: 1, // approximate
-                    end_line: block.line_start,
-                    end_col: 1,
-                },
-            });
+    // Create default rumdl config and rules
+    let config = rumdl_lib::config::Config::default();
+    let mut all_rules = rumdl_lib::rules::all_rules(&config);
+    // Add custom docgraph rules
+    all_rules.push(Box::new(crate::rules::dg001::DG001::default()));
+    all_rules.push(Box::new(crate::rules::dg002::DG002::default()));
+    all_rules.push(Box::new(crate::rules::dg003::DG003::default()));
+    all_rules.push(Box::new(crate::rules::dg004::DG004::default()));
+    
+    let rules: Vec<Box<dyn rumdl_lib::rule::Rule>> = if let Some(names) = rule_filter {
+        // Run only specific rules
+        let allowed_names: std::collections::HashSet<_> = names.iter().map(|s| s.as_str()).collect();
+        all_rules.into_iter()
+            .filter(|r| allowed_names.contains(r.name()))
+            .collect()
+    } else {
+        if use_docgraph_filter {
+            // Run all rules except MD013 and MD051 (docgraph default)
+            all_rules.into_iter()
+                .filter(|r| r.name() != "MD013" && r.name() != "MD051")
+                .collect()
         } else {
-            id_map.insert(block.id.clone(), block);
+            // Run all rules (rumdl default)
+            all_rules
+        }
+    };
+
+    let mut workspace_index = WorkspaceIndex::new();
+
+    // Pass 1: Lint individual files and build index
+    for file_path in &files {
+        match fs::read_to_string(file_path) {
+            Ok(content) => {
+                let mut working_content = content.clone();
+                
+                // Fix if requested
+                if fix {
+                    let coordinator = FixCoordinator::new();
+                    if let Ok(result) = coordinator.apply_fixes_iterative(
+                        &rules, 
+                        &[], 
+                        &mut working_content, 
+                        &config, 
+                        10
+                    ) {
+                        if result.rules_fixed > 0 {
+                             if let Err(e) = fs::write(file_path, &working_content) {
+                                 eprintln!("Failed to write fixed file {:?}: {}", file_path, e);
+                             }
+                        }
+                    }
+                }
+
+                // Use lint_and_index to get both warnings and the FileIndex
+                let (result, file_index) = rumdl_lib::lint_and_index(
+                    &working_content,
+                    &rules,
+                    false,
+                    rumdl_lib::config::MarkdownFlavor::Standard,
+                    Some(file_path.clone()),
+                    Some(&config),
+                );
+                
+                // Add to workspace index
+                workspace_index.insert_file(file_path.clone(), file_index);
+
+                if let Ok(warnings) = result {
+                    for warning in warnings {
+                        let rule_name = warning.rule_name.as_deref().unwrap_or("");
+                        
+                        // Skip MD033 warnings for docgraph anchor syntax
+                        if use_docgraph_filter && should_skip_rumdl_warning(rule_name, &warning.message) {
+                            continue;
+                        }
+
+                        diagnostics.push(Diagnostic {
+                            severity: match warning.severity {
+                                rumdl_lib::rule::Severity::Error => Severity::Error,
+                                rumdl_lib::rule::Severity::Warning | rumdl_lib::rule::Severity::Info => Severity::Warning,
+                            },
+                            code: rule_name.to_string(),
+                            message: warning.message,
+                            path: file_path.clone(),
+                            range: Range {
+                                start_line: warning.line,
+                                start_col: warning.column,
+                                end_line: warning.line,
+                                end_col: warning.column,
+                            },
+                        });
+                    }
+                }
+            }
+            Err(e) => {
+                eprintln!("Failed to read file {:?}: {}", file_path, e);
+            }
         }
     }
 
-    // 3. Check References (RULE-3)
-    for block in all_blocks {
-        if block.id.is_empty() {
-            continue;
-        }
+    // Pass 2: Run cross-file checks
+    for (path, file_index) in workspace_index.files() {
+        if let Ok(warnings) = rumdl_lib::run_cross_file_checks(
+            path,
+            file_index,
+            &rules,
+            &workspace_index,
+            Some(&config)
+        ) {
+             let mut triggers_write = false;
+             let mut fixes_to_apply = Vec::new();
+             
+             for warning in warnings {
+                // Apply same filtering if needed
+                let rule_name = warning.rule_name.as_deref().unwrap_or("");
+                if use_docgraph_filter && should_skip_rumdl_warning(rule_name, &warning.message) {
+                    continue;
+                }
+                
+                if fix && warning.fix.is_some() {
+                    if let Some(f) = warning.fix {
+                        fixes_to_apply.push(f);
+                        triggers_write = true;
+                    }
+                    // Treated as fixed, do not report
+                } else {
+                    diagnostics.push(Diagnostic {
+                        severity: match warning.severity {
+                            rumdl_lib::rule::Severity::Error => Severity::Error,
+                            rumdl_lib::rule::Severity::Warning | rumdl_lib::rule::Severity::Info => Severity::Warning,
+                        },
+                        code: rule_name.to_string(),
+                        message: warning.message,
+                        path: path.to_path_buf(),
+                        range: Range {
+                            start_line: warning.line,
+                            start_col: warning.column,
+                            end_line: warning.line,
+                            end_col: warning.column,
+                        },
+                    });
+                }
+             }
 
-        // Check Body Refs
-        for r in &block.refs {
-            if !id_map.contains_key(&r.target_id) {
-                diagnostics.push(Diagnostic {
-                    severity: Severity::Error,
-                    code: "E_BAD_REF".to_string(),
-                    message: format!("Unknown ref target '{}'", r.target_id),
-                    path: block.file_path.clone(),
-                    range: Range {
-                        start_line: r.line,
-                        start_col: r.col,
-                        end_line: r.line,
-                        end_col: r.col + r.target_id.len(),
-                    },
-                });
-            }
-        }
-
-        // Check Typed Edges
-        for e in &block.edges {
-            if !id_map.contains_key(&e.target_id) {
-                diagnostics.push(Diagnostic {
-                    severity: Severity::Error,
-                    code: "E_BAD_REF".to_string(),
-                    message: format!("Unknown target '{}' in edge :{}", e.target_id, e.edge_type),
-                    path: block.file_path.clone(),
-                    range: Range {
-                        start_line: e.line,
-                        start_col: 1, // We don't have col for options yet, assume 1
-                        end_line: e.line,
-                        end_col: 1,
-                    },
-                });
-            }
+             if triggers_write {
+                 if let Ok(mut content) = fs::read_to_string(path) {
+                     fixes_to_apply.sort_by(|a, b| b.range.start.cmp(&a.range.start));
+                     
+                     for f in fixes_to_apply {
+                         content.replace_range(f.range, &f.replacement);
+                     }
+                     
+                     if let Err(e) = fs::write(path, content) {
+                         eprintln!("Failed to write fixed file {:?}: {}", path, e);
+                     }
+                 }
+             }
         }
     }
 
     diagnostics
 }
 
+
+
+    // Legacy tests removed (migrated to DG002/DG003 integration tests)
+    
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parse::extract_blocks;
-    use std::path::PathBuf;
 
-    fn parse(content: &str) -> Vec<SpecBlock> {
-        extract_blocks(content, &PathBuf::from("test.md"))
+    #[test]
+    fn test_should_skip_rumdl_anchor_id() {
+        // <a id="..."> should be skipped (docgraph anchor syntax)
+        assert!(should_skip_rumdl_warning("MD033", "Inline HTML found: <a id=\"TEST\">"));
+        assert!(should_skip_rumdl_warning("MD033", "Inline HTML found: <a id='TEST'>"));
     }
 
     #[test]
-    fn test_valid_graph() {
-        let content = r#"
-```{document}
-:id: REQ-1
-```
-```{document}
-:id: TST-1
-:verifies: REQ-1
-```
-"#;
-        let blocks = parse(content);
-        let diags = check_blocks(&blocks);
-        assert!(diags.is_empty());
+    fn test_should_not_skip_rumdl_other_html() {
+        // Other HTML tags should NOT be skipped
+        assert!(!should_skip_rumdl_warning("MD033", "Inline HTML found: <div>"));
+        assert!(!should_skip_rumdl_warning("MD033", "Inline HTML found: <span>"));
+        assert!(!should_skip_rumdl_warning("MD033", "Inline HTML found: <a href=\"...\">"));
+        assert!(!should_skip_rumdl_warning("MD033", "Inline HTML found: <p>"));
     }
 
     #[test]
-    fn test_missing_id() {
-        let content = r#"
-```{document}
-:kind: req
-```
-"#;
-        // Parsing might filter it out if we changed parse logic,
-        // but currently parse logic returns empty ID string if missing.
-        // Let's check parse.rs. It expects :id: or returns None if id.is_none().
-        // Wait, parse.rs lines 108: if id.is_none() { return None; }
-        // So `extract_blocks` won't return blocks without ID at all?
-        // Ah, earlier I said "return None // RULE-1".
-        // If parse returns None, then Lint can't check it.
-        // If we want E_NO_ID, Parse MUST return it with empty ID or something.
-        // Let's check current parse.rs implementation.
-        // Step 150 showed the content.
-        // `if id.is_none() { return None; }`
-        // This means E_NO_ID logic in Lint is unreachable for missing options!
-        // But if `:id:` is present but empty value? `:id: ` -> value is "" (trimmed).
-        // Then `id` is Some(""). `check_blocks` checks `block.id.is_empty()`.
-        // So checking `:id: ` (empty value) works.
-        // Checking missing `:id:` line entirely: parse returns None.
-
-        let blocks = parse(content);
-        // If parse returns 0 blocks, diagnostics will be 0.
-        // If we want to strictly catch "missing :id: line", parse needs update.
-        // But for this test let's test empty ID value.
-
-        let content_empty_val = r#"
-```{document}
-:id:
-```
-"#;
-        let blocks = parse(content_empty_val);
-        let diags = check_blocks(&blocks);
-        assert_eq!(diags.len(), 1);
-        assert_eq!(diags[0].code, "E_NO_ID");
-    }
-
-    #[test]
-    fn test_duplicate_id() {
-        let content = r#"
-```{document}
-:id: REQ-1
-```
-```{document}
-:id: REQ-1
-```
-"#;
-        let blocks = parse(content);
-        let diags = check_blocks(&blocks);
-        assert_eq!(diags.len(), 1);
-        assert_eq!(diags[0].code, "E_DUP_ID");
-    }
-
-    #[test]
-    fn test_bad_ref_body() {
-        let content = r#"
-```{document}
-:id: REQ-1
-This refers to {ref}`UNKNOWN`.
-```
-"#;
-        let blocks = parse(content);
-        let diags = check_blocks(&blocks);
-        assert_eq!(diags.len(), 1);
-        assert_eq!(diags[0].code, "E_BAD_REF");
-        assert!(diags[0].message.contains("Unknown ref target 'UNKNOWN'"));
-    }
-
-    #[test]
-    fn test_bad_ref_edge() {
-        let content = r#"
-```{document}
-:id: REQ-1
-:verifies: UNKNOWN
-```
-"#;
-        let blocks = parse(content);
-        let diags = check_blocks(&blocks);
-        assert_eq!(diags.len(), 1);
-        assert_eq!(diags[0].code, "E_BAD_REF");
-        assert!(diags[0].message.contains("Unknown target 'UNKNOWN'"));
+    fn test_skip_logic_for_other_rules() {
+        // MD013 (Line length) should be skipped
+        assert!(should_skip_rumdl_warning("MD013", "Line length exceeds 80 characters"));
+        
+        // Other random rules should NOT be skipped
+        assert!(!should_skip_rumdl_warning("MD001", "Inline HTML found: <a id=\"TEST\">"));
     }
 }
