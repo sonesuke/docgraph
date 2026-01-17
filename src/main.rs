@@ -41,21 +41,21 @@ fn main() -> ExitCode {
         Commands::Fmt { path, rule } => {
             let diagnostics = lint::check_workspace(&path, true, rule, false);
             print_diagnostics(&diagnostics);
-            
-            // Fmt normally doesn't fail on lint errors unless critical, 
+
+            // Fmt normally doesn't fail on lint errors unless critical,
             // but for consistency with check --fix, we might want to return failure if errors remain.
             // Let's return success for fmt usually, unless we want strict checking.
             // But if there are unfixable errors (MD051), maybe warning is better?
             // User didn't specify. I'll behave like 'cargo fmt' which usually succeeds.
             // But if check fails, maybe it should fail?
-            // Let's keep it SUCCESS for now, as it's a formatter. 
+            // Let's keep it SUCCESS for now, as it's a formatter.
         }
         Commands::Rule { rule } => {
             let config = rumdl_lib::config::Config::default();
             let mut all_rules = rumdl_lib::rules::all_rules(&config);
-            all_rules.push(Box::new(rules::dg001::DG001::default()));
-            all_rules.push(Box::new(rules::dg002::DG002::default()));
-            all_rules.push(Box::new(rules::dg003::DG003::default()));
+            all_rules.push(Box::new(rules::dg001::DG001));
+            all_rules.push(Box::new(rules::dg002::DG002));
+            all_rules.push(Box::new(rules::dg003::DG003));
 
             if let Some(rule_query) = rule {
                 let rule_query = rule_query.to_ascii_uppercase();

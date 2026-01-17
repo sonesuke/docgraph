@@ -4,8 +4,6 @@ use crate::walk::find_markdown_files;
 use std::fs;
 use std::path::Path;
 
-
-
 /// Collect all SpecBlocks and standalone RefUses from the workspace
 pub fn collect_workspace_all(root: &Path) -> (Vec<SpecBlock>, Vec<RefUse>) {
     let files = find_markdown_files(root);

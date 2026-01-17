@@ -1,10 +1,10 @@
-use rumdl_lib::rule::{Rule, LintResult, LintWarning, Severity, LintError, CrossFileScope};
-use rumdl_lib::lint_context::LintContext;
-use rumdl_lib::workspace_index::{FileIndex, WorkspaceIndex};
-use std::path::Path;
-use regex::Regex;
-use std::collections::HashMap;
 use crate::parse::extract_anchor_headings;
+use regex::Regex;
+use rumdl_lib::lint_context::LintContext;
+use rumdl_lib::rule::{CrossFileScope, LintError, LintResult, LintWarning, Rule, Severity};
+use rumdl_lib::workspace_index::{FileIndex, WorkspaceIndex};
+use std::collections::HashMap;
+use std::path::Path;
 
 #[derive(Debug, Clone, Default)]
 pub struct DG004;
@@ -60,9 +60,11 @@ impl Rule for DG004 {
         let line_starts: Vec<usize> = std::iter::once(0)
             .chain(content.match_indices('\n').map(|(i, _)| i + 1))
             .collect();
-            
+
         let get_pos = |offset: usize| -> (usize, usize) {
-            let line_idx = line_starts.partition_point(|&x| x <= offset).saturating_sub(1);
+            let line_idx = line_starts
+                .partition_point(|&x| x <= offset)
+                .saturating_sub(1);
             let line_start = line_starts[line_idx];
             (line_idx + 1, offset - line_start + 1)
         };
@@ -77,16 +79,20 @@ impl Rule for DG004 {
                     let clean_title = title.replace(target_id, "");
                     // Remove remaining dangling separators and extra whitespace
                     let clean_title = clean_title.trim();
-                    let clean_title = clean_title.trim_start_matches(|c: char| c == ' ' || c == ':' || c == '-' || c == '(' || c == '[');
-                    let clean_title = clean_title.trim_end_matches(|c: char| c == ' ' || c == ':' || c == '-' || c == ')' || c == ']');
+                    let clean_title = clean_title.trim_start_matches(|c: char| {
+                        c == ' ' || c == ':' || c == '-' || c == '(' || c == '['
+                    });
+                    let clean_title = clean_title.trim_end_matches(|c: char| {
+                        c == ' ' || c == ':' || c == '-' || c == ')' || c == ']'
+                    });
                     let clean_title = clean_title.trim().to_string();
-                    
+
                     let expected_text = if clean_title.is_empty() {
                         target_id.to_string()
                     } else {
                         format!("{} ({})", target_id, clean_title)
                     };
-                    
+
                     if current_text != expected_text {
                         let (start_line, start_col) = get_pos(text_cap.start());
                         let (end_line, end_col) = get_pos(text_cap.end());

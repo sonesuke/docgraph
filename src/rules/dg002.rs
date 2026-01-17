@@ -1,8 +1,8 @@
-use rumdl_lib::rule::{Rule, LintResult, LintWarning, Severity, LintError, CrossFileScope};
-use rumdl_lib::lint_context::LintContext;
-use rumdl_lib::workspace_index::{FileIndex, WorkspaceIndex, HeadingIndex};
-use std::path::Path;
 use regex::Regex;
+use rumdl_lib::lint_context::LintContext;
+use rumdl_lib::rule::{CrossFileScope, LintError, LintResult, LintWarning, Rule, Severity};
+use rumdl_lib::workspace_index::{FileIndex, HeadingIndex, WorkspaceIndex};
+use std::path::Path;
 
 #[derive(Debug, Clone, Default)]
 pub struct DG002;
