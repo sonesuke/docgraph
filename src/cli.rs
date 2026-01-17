@@ -11,8 +11,8 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
-    /// Lint the documentation graph
-    Lint {
+    /// Check the documentation graph for errors
+    Check {
         /// Path to search for markdown files (defaults to current directory)
         #[arg(default_value = ".")]
         path: PathBuf,
@@ -20,15 +20,35 @@ pub enum Commands {
         /// Output diagnostics in JSON format
         #[arg(long)]
         json: bool,
+
+        /// Automatically fix fixable issues
+        #[arg(long)]
+        fix: bool,
+
+        /// Run only specific rules (can be specified multiple times)
+        #[arg(long)]
+        rule: Option<Vec<String>>,
     },
-    /// Generate graph data
-    Gen {
+    /// Format the documentation (fix fixable issues)
+    Fmt {
         /// Path to search for markdown files (defaults to current directory)
         #[arg(default_value = ".")]
         path: PathBuf,
 
-        /// Output graph content in JSON format
+        /// Run only specific rules (can be specified multiple times)
         #[arg(long)]
-        json: bool,
+        rule: Option<Vec<String>>,
+    },
+    /// Show information about available rules
+    Rule {
+        /// Rule name to search for (optional)
+        #[arg(index = 1)]
+        rule: Option<String>,
+    },
+    /// Generate graph data
+    Graph {
+        /// Path to search for markdown files (defaults to current directory)
+        #[arg(default_value = ".")]
+        path: PathBuf,
     },
 }

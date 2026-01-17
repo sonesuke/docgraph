@@ -1,191 +1,176 @@
 use crate::types::{EdgeUse, RefUse, SpecBlock};
 use regex::Regex;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
-pub fn extract_blocks(content: &str, file_path: &Path) -> Vec<SpecBlock> {
-    let mut blocks = Vec::new();
-    // Regex for fenced code block with {doc} info string
-    // Matches: ```{document} [Title]\n[Content]```
-
+/// Extract anchor headings: `<a id="XXX"></a>` followed by a Markdown heading
+/// Scope extends from anchor to next anchor (or EOF), extracting refs as edges
+pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock> {
     let lines: Vec<&str> = content.lines().collect();
+
+    // Regex for <a id="XXX"></a> or <a id='XXX'></a>
+    let anchor_re = Regex::new(r#"<a\s+id=["']([^"']+)["']\s*>\s*</a>"#).unwrap();
+    // Regex for Markdown heading
+    let heading_re = Regex::new(r"^(#{1,6})\s+(.+)$").unwrap();
+    // Regex for Markdown links with fragment: [text](#ID) or [text](path#ID)
+    let link_re = Regex::new(r"\[([^\]]*)\]\(([^)]*#([^)]+))\)").unwrap();
+
+    // First pass: find all anchor positions
+    let mut anchor_positions: Vec<(usize, String, Option<String>, usize)> = Vec::new(); // (line_idx, id, name, heading_line_idx)
+
     let mut i = 0;
     while i < lines.len() {
-        let line = lines[i];
-        if line.trim_start().starts_with("```{document}") {
-            let start_line = i + 1;
+        if let Some(caps) = anchor_re.captures(lines[i].trim()) {
+            let id = caps.get(1).unwrap().as_str().to_string();
 
-            // Find end of block
+            // Look for heading in next non-empty lines
             let mut j = i + 1;
-            let mut block_content_lines = Vec::new();
-            while j < lines.len() {
-                if lines[j].trim_start().starts_with("```") {
-                    break;
-                }
-                block_content_lines.push(lines[j]);
+            while j < lines.len() && lines[j].trim().is_empty() {
                 j += 1;
             }
-            let end_line = j + 1;
 
-            if j < lines.len() {
-                // We found a complete block
-                let block_str = block_content_lines.join("\n");
-                if let Some(block) =
-                    parse_block_content(&block_str, file_path.to_path_buf(), start_line, end_line)
-                {
-                    blocks.push(block);
+            let (name, heading_idx) = if j < lines.len() {
+                if let Some(h_caps) = heading_re.captures(lines[j].trim()) {
+                    (Some(h_caps.get(2).unwrap().as_str().to_string()), j)
+                } else {
+                    (None, i)
                 }
-                i = j;
-            }
+            } else {
+                (None, i)
+            };
+
+            anchor_positions.push((i, id, name, heading_idx));
+            i = heading_idx;
         }
         i += 1;
+    }
+
+    // Second pass: build blocks with scoped refs
+    let mut blocks = Vec::new();
+
+    for (idx, (anchor_idx, id, name, heading_idx)) in anchor_positions.iter().enumerate() {
+        let anchor_line = anchor_idx + 1; // 1-based
+
+        // Scope: from heading to next anchor (or EOF)
+        let scope_start = *heading_idx + 1;
+        let scope_end = if idx + 1 < anchor_positions.len() {
+            anchor_positions[idx + 1].0
+        } else {
+            lines.len()
+        };
+
+        // Extract refs within scope
+        let mut edges = Vec::new();
+        for line_idx in scope_start..scope_end {
+            if line_idx < lines.len() {
+                for cap in link_re.captures_iter(lines[line_idx]) {
+                    if let Some(id_match) = cap.get(3) {
+                        let target_id = id_match.as_str().to_string();
+                        let display_name = cap.get(1).map(|m| m.as_str().to_string());
+                        edges.push(EdgeUse {
+                            id: target_id,
+                            name: display_name,
+                            line: line_idx + 1, // 1-based
+                        });
+                    }
+                }
+            }
+        }
+
+        blocks.push(SpecBlock {
+            id: id.clone(),
+            name: name.clone(),
+            edges,
+            file_path: file_path.to_path_buf(),
+            line_start: anchor_line,
+            line_end: scope_end,
+        });
     }
 
     blocks
 }
 
-fn parse_block_content(
-    content: &str,
-    file_path: PathBuf,
-    block_start: usize,
-    block_end: usize,
-) -> Option<SpecBlock> {
-    let mut id = None;
-    let mut kind = None;
-    let mut edges = Vec::new();
-    let mut refs = Vec::new(); // In-body refs
+/// Extract Markdown link references: `[text](#ID)` or `[text](path#ID)`
+pub fn extract_markdown_refs(content: &str, file_path: &Path) -> Vec<RefUse> {
+    let mut refs = Vec::new();
 
-    let lines: Vec<&str> = content.lines().collect();
-    let mut body_start_idx = 0;
+    // Regex for Markdown links with fragment: [text](path#ID) or [text](#ID)
+    let link_re = Regex::new(r"\[([^\]]*)\]\(([^)]*#([^)]+))\)").unwrap();
 
-    // 1. Parse Options Headers
-    let option_re = Regex::new(r"^:([a-z_]+):\s*(.*)$").unwrap();
+    for (line_idx, line) in content.lines().enumerate() {
+        let line_num = line_idx + 1; // 1-based
 
-    for (idx, line) in lines.iter().enumerate() {
-        let trimmed = line.trim();
-        if trimmed.is_empty() {
-            continue;
-        }
+        for cap in link_re.captures_iter(line) {
+            if let Some(id_match) = cap.get(3) {
+                let target_id = id_match.as_str().to_string();
+                let col = id_match.start() + 1; // 1-based
 
-        // If line doesn't start with :, we assume option block ended (or never started if empty lines skipped)
-        if !trimmed.starts_with(":") {
-            body_start_idx = idx;
-            break;
-        }
-
-        if let Some(caps) = option_re.captures(trimmed) {
-            let key = caps.get(1).unwrap().as_str();
-            let value = caps.get(2).unwrap().as_str().trim();
-
-            match key {
-                "id" => id = Some(value.to_string()),
-                "kind" => kind = Some(value.to_string()),
-                // Edges
-                "verifies" | "depends_on" | "derived_from" => {
-                    let targets: Vec<&str> = value.split_whitespace().collect();
-                    for target in targets {
-                        edges.push(EdgeUse {
-                            edge_type: key.to_string(),
-                            target_id: target.to_string(),
-                            line: block_start + idx + 1, // +1 because block_start is the fence line
-                        });
-                    }
-                }
-                _ => {} // Ignore unknown or removed options
-            }
-        } else {
-            // Line starts with : but format doesn't match, treat as body?
-            // Strictly MyST options must come first. If we hit a non-option, we stop option parsing.
-            body_start_idx = idx;
-            break;
-        }
-        body_start_idx = idx + 1;
-    }
-
-    id.as_ref()?;
-
-    let id_val = id.unwrap_or_default();
-
-    // 2. Parse Body for {ref}
-    let ref_re = Regex::new(r"\{ref\}`([^`]+)`").unwrap();
-
-    for (i, line_content) in lines.iter().enumerate().skip(body_start_idx) {
-        let current_line_num = block_start + 1 + i; // +1 for fence
-
-        for cap in ref_re.captures_iter(line_content) {
-            if let Some(m) = cap.get(1) {
-                let target_id = m.as_str();
-                let col = m.start() + 1; // 1-based col
                 refs.push(RefUse {
-                    target_id: target_id.to_string(),
-                    line: current_line_num,
+                    target_id,
+                    file_path: file_path.to_path_buf(),
+                    line: line_num,
                     col,
                 });
             }
         }
     }
 
-    Some(SpecBlock {
-        id: id_val,
-        kind,
-        edges,
-        refs,
-        file_path,
-        line_start: block_start,
-        line_end: block_end,
-    })
+    refs
+}
+
+/// Extract all definitions and references from content
+pub fn extract_all(content: &str, file_path: &Path) -> (Vec<SpecBlock>, Vec<RefUse>) {
+    let blocks = extract_anchor_headings(content, file_path);
+    let standalone_refs = extract_markdown_refs(content, file_path);
+
+    (blocks, standalone_refs)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
+    use std::path::PathBuf;
     #[test]
-    fn test_extract_simple_block() {
+    fn test_extract_anchor_headings_with_scoped_refs() {
         let content = r#"
-```{document} Title
-:id: REQ-001
-:kind: req
+<a id="DAT-SSO-CONFIG"></a>
 
-Body with {ref}`REQ-002`.
-```
+## SSO Configuration
+
+Stores the Identity Provider details for a [Tenant](#DAT-TENANT).
+
+| Field | Type | Description |
+|-------|------|-------------|
+| id | UUID | Unique identifier. |
+| tenant_id | UUID | Foreign Key to [Tenants](#DAT-TENANT). |
+
+<a id="DAT-USER"></a>
+
+## User
+
+A user in the system.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| id | UUID | Unique identifier. |
+| sso_config_id | UUID | Foreign Key to [SSO Config](#DAT-SSO-CONFIG). |
 "#;
         let path = PathBuf::from("test.md");
-        let blocks = extract_blocks(content, &path);
-        assert_eq!(blocks.len(), 1);
-        let b = &blocks[0];
-        assert_eq!(b.id, "REQ-001");
-        assert_eq!(b.kind.as_deref(), Some("req"));
-        assert_eq!(b.refs.len(), 1);
-        assert_eq!(b.refs[0].target_id, "REQ-002");
-    }
+        let blocks = extract_anchor_headings(content, &path);
 
-    #[test]
-    fn test_extract_edges() {
-        let content = r#"
-```{document}
-:id: T-01
-:verifies: R-01 R-02
-:depends_on: D-01
-```
-"#;
-        let path = PathBuf::from("test.md");
-        let blocks = extract_blocks(content, &path);
-        let b = &blocks[0];
-        assert_eq!(b.edges.len(), 3);
-        assert!(
-            b.edges
-                .iter()
-                .any(|e| e.edge_type == "verifies" && e.target_id == "R-01")
-        );
-        assert!(
-            b.edges
-                .iter()
-                .any(|e| e.edge_type == "verifies" && e.target_id == "R-02")
-        );
-        assert!(
-            b.edges
-                .iter()
-                .any(|e| e.edge_type == "depends_on" && e.target_id == "D-01")
-        );
+        assert_eq!(blocks.len(), 2);
+
+        // First block: DAT-SSO-CONFIG
+        let b1 = &blocks[0];
+        assert_eq!(b1.id, "DAT-SSO-CONFIG");
+        assert_eq!(b1.name.as_deref(), Some("SSO Configuration"));
+        assert_eq!(b1.edges.len(), 2); // Two refs to DAT-TENANT
+        assert!(b1.edges.iter().all(|e| e.id == "DAT-TENANT"));
+
+        // Second block: DAT-USER
+        let b2 = &blocks[1];
+        assert_eq!(b2.id, "DAT-USER");
+        assert_eq!(b2.name.as_deref(), Some("User"));
+        assert_eq!(b2.edges.len(), 1);
+        assert_eq!(b2.edges[0].id, "DAT-SSO-CONFIG");
     }
 }
