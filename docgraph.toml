@@ -30,8 +30,8 @@ TERM = { desc = "Terminology/Glossary" }
 FC   = { desc = "Future Consideration" }
 
 # Dependency Model:
-# Specification: UC → FR/UC, FR → NFR/ERR, NFR ← FR/CON, CON → FR/NFR
-# Architecture:  CTX/BB → FR/NFR, RT → BB, CC → NFR/CON/ADR, DEP → BB/ADR
+# Specification Layer (derive): UC → FR → NFR/ERR, CON → FR/NFR
+# Architecture Layer (depends on): CTX/BB → FR/NFR, RT → BB, CC → NFR/CON/ADR, DEP → BB/ADR
 
 # ========== Specification Relations ==========
 
