@@ -1,0 +1,73 @@
+# docgraph.toml - Document Graph Validation Configuration
+# Based on the Dependency Model specification
+
+[graph]
+strict_node_types = true
+strict_relations  = true
+
+[node_types]
+# Core dependency model types
+UC  = { desc = "Use Case" }
+FR  = { desc = "Functional Requirement" }
+NFR = { desc = "Non-Functional Requirement" }
+CON = { desc = "Constraint" }
+ERR = { desc = "Error Definition" }
+
+# Documentation types (can be referenced by all core types)
+ACT  = { desc = "Actor" }
+DAT  = { desc = "Data Entity" }
+IF   = { desc = "Interface Specification" }
+ADR  = { desc = "Architecture Decision Record" }
+TERM = { desc = "Terminology/Glossary" }
+FC   = { desc = "Future Consideration" }
+
+# Dependency Model:
+# UC → FR/UC
+# FR → NFR/CON/ERR
+# CON → FR/NFR
+#
+# Documentation types (ACT, DAT, IF, ADR, TERM, FC) can be referenced by all core types
+
+[relations.UC]
+# UC is not typically referenced by other core types (top-level requirement/constraint)
+from = []
+from_min = 0
+# UC → FR/UC (core dependencies)
+# Also allows references to documentation types
+ref = ["FR", "UC", "ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+ref_min = 0
+
+[relations.FR]
+# Every FR SHALL be traceable to at least one UC
+from = ["UC"]
+from_min = 1
+# FR → NFR/CON/ERR (core dependencies)
+# Also allows references to documentation types
+ref = ["NFR", "CON", "ERR", "ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+ref_min = 0
+
+[relations.NFR]
+# Every NFR SHALL be associated with at least one FR or CON
+from = ["FR", "CON"]
+from_min = 1
+# NFR has no core outgoing dependencies
+# Allows references to documentation types
+ref = ["ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+ref_min = 0
+
+[relations.ERR]
+# Every ERR SHALL be referenced by at least one FR
+from = ["FR"]
+from_min = 1
+# ERR has no core outgoing dependencies
+# Allows references to documentation types
+ref = ["ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+ref_min = 0
+
+[relations.CON]
+# CON is not typically referenced by other core types (top-level requirement/constraint)
+from = []
+from_min = 0
+# CON references FR, NFR, and documentation types
+ref = ["FR", "NFR", "ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+ref_min = 1
