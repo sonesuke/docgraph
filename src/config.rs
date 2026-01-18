@@ -37,7 +37,7 @@ pub struct ReferenceConfig {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct RuleConfig {
-    pub dir: String,      // "from" or "to"
+    pub dir: String, // "from" or "to"
     pub targets: Vec<String>,
     pub min: Option<usize>,
     #[allow(dead_code)]

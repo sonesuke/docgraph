@@ -51,7 +51,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                                 });
                             }
                         }
-                    },
+                    }
                     "to" => {
                         allowed_outgoing_types.extend(rule.targets.iter().cloned());
 
@@ -85,7 +85,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                                 });
                             }
                         }
-                    },
+                    }
                     _ => {}
                 }
             }
