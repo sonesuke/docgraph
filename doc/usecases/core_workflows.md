@@ -21,7 +21,7 @@ The [ACT-USER (User)](../actors/system_users.md#ACT-USER) checks for errors in t
 2. User runs the lint command ([IF-CLI-LINT (Command: `lint`)](../specs/cli_specs.md#IF-CLI-LINT)).
 3. User reviews any error messages regarding duplicate IDs or missing references.
 
-Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE)
+Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE), [FR-UNIQUE (Unique IDs)](../requirements/verification.md#FR-UNIQUE), [FR-VALID-REF (Valid References)](../requirements/verification.md#FR-VALID-REF)
 
 <a id="UC-GRAPH"></a>
 

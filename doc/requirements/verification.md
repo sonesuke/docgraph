@@ -1,7 +1,6 @@
+# Verification Requirements
 
-# Validation Rules
-
-<a id="CON-UNIQUE"></a>
+<a id="FR-UNIQUE"></a>
 
 ## Unique IDs
 
@@ -9,7 +8,7 @@ Every Document Block must have a unique identifier across the entire graph.
 
 Depends on: [DAT-DOC (Document Block)](../model/domain_model.md#DAT-DOC)
 
-<a id="CON-VALID-REF"></a>
+<a id="FR-VALID-REF"></a>
 
 ## Valid References
 
