@@ -66,4 +66,4 @@ from = []
 from_min = 0
 # CON references FR, NFR
 ref = ["FR", "NFR"]
-ref_min = 0
+ref_min = 1
