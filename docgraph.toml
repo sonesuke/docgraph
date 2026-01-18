@@ -68,10 +68,10 @@ to_min = 1
 # ========== Architecture Relations ==========
 
 [references.CTX]
-# Context View references FR/NFR, ACT
+# Context View references ACT
 from = []
 from_min = 0
-to = ["FR", "NFR", "ACT"]
+to = ["ACT"]
 to_min = 0
 
 [references.BB]
