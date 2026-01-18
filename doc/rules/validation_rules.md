@@ -1,18 +1,18 @@
 
 # Validation Rules
 
-<a id="RULE-UNIQUE"></a>
+<a id="CON-UNIQUE"></a>
 
 ## Unique IDs
 
 Every Document Block must have a unique identifier across the entire graph.
 
-Depends on: [DOM-DOC (Document Block)](../model/domain_model.md#DOM-DOC)
+Depends on: [DAT-DOC (Document Block)](../model/domain_model.md#DAT-DOC)
 
-<a id="RULE-VALID-REF"></a>
+<a id="CON-VALID-REF"></a>
 
 ## Valid References
 
 Every ID referenced in an Edge or inline Reference must exist in the Graph.
 
-Depends on: [DOM-EDGE (Edge)](../model/domain_model.md#DOM-EDGE), [DOM-REF (Reference)](../model/domain_model.md#DOM-REF)
+Depends on: [DAT-EDGE (Edge)](../model/domain_model.md#DAT-EDGE), [DAT-REF (Reference)](../model/domain_model.md#DAT-REF)

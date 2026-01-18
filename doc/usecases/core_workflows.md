@@ -18,7 +18,7 @@ The [ACT-USER (User)](../actors/system_users.md#ACT-USER) checks for errors in t
 **Steps:**
 
 1. User navigates to the project directory.
-2. User runs the lint command ([SPEC-CLI-LINT (Command: `lint`)](../specs/cli_specs.md#SPEC-CLI-LINT)).
+2. User runs the lint command ([IF-CLI-LINT (Command: `lint`)](../specs/cli_specs.md#IF-CLI-LINT)).
 3. User reviews any error messages regarding duplicate IDs or missing references.
 
 Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE)
@@ -32,7 +32,7 @@ The [ACT-USER (User)](../actors/system_users.md#ACT-USER) generates a JSON repre
 **Steps:**
 
 1. User navigates to the project directory.
-2. User runs the graph command ([SPEC-CLI-GRAPH (Command: `graph`)](../specs/cli_specs.md#SPEC-CLI-GRAPH)).
+2. User runs the graph command ([IF-CLI-GRAPH (Command: `graph`)](../specs/cli_specs.md#IF-CLI-GRAPH)).
 3. User redirects the JSON output to a file or pipe.
 
 Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE)

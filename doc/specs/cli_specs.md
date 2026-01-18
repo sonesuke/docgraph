@@ -1,7 +1,7 @@
 
 # CLI Specifications
 
-<a id="SPEC-CLI-LINT"></a>
+<a id="IF-CLI-LINT"></a>
 
 ## Command: `lint`
 
@@ -10,7 +10,7 @@ The `lint` command shall parse all Markdown files in the target directory, build
 Verifies: [UC-LINT (Lint Documents)](../usecases/core_workflows.md#UC-LINT)
 Depends on: [RULE-UNIQUE (Unique IDs)](../rules/validation_rules.md#RULE-UNIQUE), [RULE-VALID-REF (Valid References)](../rules/validation_rules.md#RULE-VALID-REF)
 
-<a id="SPEC-CLI-GRAPH"></a>
+<a id="IF-CLI-GRAPH"></a>
 
 ### Command: `graph`
 
