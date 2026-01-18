@@ -46,7 +46,14 @@ pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock
 
             let (name, heading_idx) = if j < lines.len() {
                 if let Some(h_caps) = heading_re.captures(lines[j].trim()) {
-                    (Some(h_caps.get(2).unwrap().as_str().to_string()), j)
+                    let raw_name = h_caps.get(2).unwrap().as_str();
+                    // Strip ID prefix from heading if present
+                    let clean_name = raw_name
+                        .strip_prefix(&id)
+                        .map(|s| s.trim_start())
+                        .unwrap_or(raw_name)
+                        .to_string();
+                    (Some(clean_name), j)
                 } else {
                     (None, i)
                 }
