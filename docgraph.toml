@@ -43,12 +43,14 @@ rules = [
 [references.FR]
 rules = [
   { dir = "from", targets = ["UC"], min = 1 },
+  { dir = "from", targets = ["BB"], min = 1 },
   { dir = "to", targets = ["NFR", "ERR"], min = 0 }
 ]
 
 [references.NFR]
 rules = [
-  { dir = "from", targets = ["FR", "CON"], min = 1 }
+  { dir = "from", targets = ["FR", "CON"], min = 1 },
+  { dir = "from", targets = ["BB"], min = 1 }
 ]
 
 [references.ERR]
@@ -67,6 +69,13 @@ rules = [
   { dir = "from", targets = ["UC"], min = 1 }
 ]
 
+[references.IF]
+# Interface Specification must be referenced by at least one Use Case
+rules = [
+  { dir = "from", targets = ["UC"], min = 1 },
+  { dir = "to", targets = ["UC", "FR", "NFR", "DAT", "ERR"], min = 0 }
+]
+
 # ========== Architecture Relations ==========
 
 [references.CTX]
@@ -82,19 +91,23 @@ rules = [
 ]
 
 [references.RT]
-# Runtime View references BB
+# Runtime View references BB (min 1), ACT (min 1), FR (min 1), and optionally CC, NFR
 rules = [
-  { dir = "to", targets = ["BB"], min = 1 }
+  { dir = "to", targets = ["BB"], min = 1 },
+  { dir = "to", targets = ["ACT"], min = 1 },
+  { dir = "to", targets = ["FR"], min = 1 },
+  { dir = "to", targets = ["CC", "NFR"], min = 0 }
 ]
 
 [references.DEP]
-# Deployment View references BB, ADR
+# Deployment View references BB (min 1), and optionally CC, ADR, NFR
 rules = [
-  { dir = "to", targets = ["BB", "ADR"], min = 1 }
+  { dir = "to", targets = ["BB"], min = 1 },
+  { dir = "to", targets = ["CC", "ADR", "NFR"], min = 0 }
 ]
 
 [references.CC]
-# Cross-cutting Concept references NFR, CON, ADR
+# Cross-cutting Concept references NFR, ADR, FR (CON is excluded)
 rules = [
-  { dir = "to", targets = ["NFR", "CON", "ADR"], min = 1 }
+  { dir = "to", targets = ["NFR", "ADR", "FR"], min = 1 }
 ]
