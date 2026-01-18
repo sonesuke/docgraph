@@ -31,7 +31,7 @@ FC   = { desc = "Future Consideration" }
 
 # Dependency Model:
 # Specification: UC → FR/UC, FR → NFR/ERR, NFR ← FR/CON, CON → FR/NFR
-# Architecture:  CTX/BB/DEP → FR/NFR, RT → FR/NFR/BB/CC, CC → NFR/CON
+# Architecture:  CTX/BB → FR/NFR, RT → BB, CC → NFR/CON/ADR, DEP → BB/ADR
 
 # ========== Specification Relations ==========
 
@@ -82,22 +82,22 @@ ref = ["FR", "NFR"]
 ref_min = 0
 
 [relations.RT]
-# Runtime View references FR/NFR, BB, CC
+# Runtime View references BB
 from = []
 from_min = 0
-ref = ["FR", "NFR", "BB", "CC"]
+ref = ["BB"]
 ref_min = 0
 
 [relations.DEP]
-# Deployment View references FR/NFR, BB
+# Deployment View references BB, ADR
 from = []
 from_min = 0
-ref = ["FR", "NFR", "BB"]
+ref = ["BB", "ADR"]
 ref_min = 0
 
 [relations.CC]
-# Cross-cutting Concept references NFR/CON
+# Cross-cutting Concept references NFR, CON, ADR
 from = []
 from_min = 0
-ref = ["NFR", "CON"]
+ref = ["NFR", "CON", "ADR"]
 ref_min = 0
