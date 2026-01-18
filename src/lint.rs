@@ -129,6 +129,69 @@ pub fn check_workspace(
         }
     }
 
+    // Pass 2: Run cross-file checks for rules that support it (DG002, DG003, DG004)
+    for file_path in &files {
+        let file_index = match workspace_index.get_file(file_path) {
+            Some(idx) => idx,
+            None => continue,
+        };
+
+        // Collect fixes to apply for this file
+        let mut fixes_to_apply: Vec<rumdl_lib::rule::Fix> = Vec::new();
+
+        for rule in &rules {
+            if rule.cross_file_scope() != rumdl_lib::rule::CrossFileScope::None
+                && let Ok(warnings) = rule.cross_file_check(file_path, file_index, &workspace_index)
+            {
+                for warning in &warnings {
+                    let rule_name = warning.rule_name.as_deref().unwrap_or("");
+
+                    diagnostics.push(Diagnostic {
+                        severity: match warning.severity {
+                            rumdl_lib::rule::Severity::Error => crate::types::Severity::Error,
+                            _ => crate::types::Severity::Warning,
+                        },
+                        code: rule_name.to_string(),
+                        message: warning.message.clone(),
+                        path: file_path.to_path_buf(),
+                        range: crate::types::Range {
+                            start_line: warning.line,
+                            start_col: warning.column,
+                            end_line: warning.line,
+                            end_col: warning.column,
+                        },
+                    });
+
+                    // Collect fixes if fix mode is enabled
+                    if fix
+                        && let Some(fix_info) = &warning.fix
+                    {
+                        fixes_to_apply.push(fix_info.clone());
+                    }
+                }
+            }
+        }
+
+        // Apply fixes for this file (if any)
+        if fix && !fixes_to_apply.is_empty()
+            && let Ok(mut content) = fs::read_to_string(file_path)
+        {
+            // Sort fixes by range.start in descending order to avoid offset issues
+            fixes_to_apply.sort_by(|a, b| b.range.start.cmp(&a.range.start));
+            
+            for fix_info in fixes_to_apply {
+                // Replace the byte range with the replacement content
+                if fix_info.range.start <= content.len() && fix_info.range.end <= content.len() {
+                    content.replace_range(fix_info.range.clone(), &fix_info.replacement);
+                }
+            }
+            
+            if let Err(e) = fs::write(file_path, &content) {
+                eprintln!("Failed to write fixed file {:?}: {}", file_path, e);
+            }
+        }
+    }
+
     // Pass 3: Run custom docgraph workspace-level checks (DG005, DG006)
     // Collect docgraph's own SpecBlock data
     let (spec_blocks, _refs) = crate::collect::collect_workspace_all(path);

@@ -77,15 +77,21 @@ impl Rule for DG004 {
                 if let Some(title) = id_to_title.get(target_id) {
                     // Remove all occurrences of target_id from the title string
                     let clean_title = title.replace(target_id, "");
+                    // Remove empty bracket pairs that remain after ID removal
+                    let clean_title = clean_title
+                        .replace("[]", "")
+                        .replace("()", "")
+                        .replace("{}", "");
                     // Remove remaining dangling separators and extra whitespace
                     let clean_title = clean_title.trim();
                     let clean_title = clean_title.trim_start_matches(|c: char| {
-                        c == ' ' || c == ':' || c == '-' || c == '(' || c == '['
+                        c == ' ' || c == ':' || c == '-' || c == '(' || c == '[' || c == ']' || c == ')'
                     });
                     let clean_title = clean_title.trim_end_matches(|c: char| {
-                        c == ' ' || c == ':' || c == '-' || c == ')' || c == ']'
+                        c == ' ' || c == ':' || c == '-' || c == ')' || c == ']' || c == '(' || c == '['
                     });
                     let clean_title = clean_title.trim().to_string();
+
 
                     let expected_text = if clean_title.is_empty() {
                         target_id.to_string()
