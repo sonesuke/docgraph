@@ -4,7 +4,7 @@
 [graph]
 strict_node_types = true
 strict_relations  = true
-doc_types = ["ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+doc_types = ["ACT", "DAT", "IF", "ADR", "TERM", "FC", "CTX", "BB", "RT", "DEP", "CC"]
 
 [node_types]
 # Core dependency model types
@@ -21,6 +21,13 @@ IF   = { desc = "Interface Specification" }
 ADR  = { desc = "Architecture Decision Record" }
 TERM = { desc = "Terminology/Glossary" }
 FC   = { desc = "Future Consideration" }
+
+# Architecture types (reference FR/NFR but do not define requirements)
+CTX  = { desc = "Context View Element" }
+BB   = { desc = "Building Block" }
+RT   = { desc = "Runtime View Scenario" }
+DEP  = { desc = "Deployment Element" }
+CC   = { desc = "Cross-cutting Concept" }
 
 # Dependency Model:
 # UC → FR/UC
