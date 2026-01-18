@@ -23,7 +23,8 @@ FC   = { desc = "Future Consideration" }
 
 # Dependency Model:
 # UC → FR/UC
-# FR → NFR/CON/ERR
+# FR → NFR/ERR
+# NFR ← FR/CON
 # CON → FR/NFR
 #
 # Documentation types (ACT, DAT, IF, ADR, TERM, FC) can be referenced by all core types
@@ -41,9 +42,9 @@ ref_min = 0
 # Every FR SHALL be traceable to at least one UC
 from = ["UC"]
 from_min = 1
-# FR → NFR/CON/ERR (core dependencies)
+# FR → NFR/ERR (core dependencies)
 # Also allows references to documentation types
-ref = ["NFR", "CON", "ERR", "ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+ref = ["NFR", "ERR", "ACT", "DAT", "IF", "ADR", "TERM", "FC"]
 ref_min = 0
 
 [relations.NFR]
