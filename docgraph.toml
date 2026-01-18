@@ -29,85 +29,95 @@ ADR  = { desc = "Architecture Decision Record" }
 TERM = { desc = "Terminology/Glossary" }
 FC   = { desc = "Future Consideration" }
 
-# Dependency Model:
-# Specification Layer (derive): UC → FR → NFR/ERR, CON → FR/NFR
-# Architecture Layer (depends on): CTX/BB → FR/NFR, RT → BB, CC → NFR/CON/ADR, DEP → BB/ADR
+# Dependency Model (Derive Flow):
+# Business: ACT/IF <- UC
+# Spec: UC -> FR -> NFR/ERR, CON -> FR/NFR
+# Arch: FR/NFR -> BB, BB -> RT/DEP, ADR -> DEP, CC -> ADR
 
-# ========== Specification Relations ==========
+# ========== Business Relations ==========
 
 [references.UC]
+# Use Case derives Actor, Interface, and Requirements
 rules = [
-  { dir = "to", targets = ["FR", "UC"], min = 0 }
-]
-
-[references.FR]
-rules = [
-  { dir = "from", targets = ["UC"], min = 1 },
-  { dir = "from", targets = ["BB"], min = 1 },
-  { dir = "to", targets = ["NFR", "ERR"], min = 0 }
-]
-
-[references.NFR]
-rules = [
-  { dir = "from", targets = ["FR", "CON"], min = 1 },
-  { dir = "from", targets = ["BB"], min = 1 }
-]
-
-[references.ERR]
-rules = [
-  { dir = "from", targets = ["FR"], min = 1 }
-]
-
-[references.CON]
-rules = [
-  { dir = "to", targets = ["FR", "NFR"], min = 1 }
+  { dir = "to", targets = ["ACT", "IF", "FR", "UC"], min = 0 }
 ]
 
 [references.ACT]
-# Actor must be referenced by at least one Use Case
+# Actor is derived from Use Case
 rules = [
   { dir = "from", targets = ["UC"], min = 1 }
 ]
 
 [references.IF]
-# Interface Specification must be referenced by at least one Use Case
+# Interface is derived from Use Case
 rules = [
-  { dir = "from", targets = ["UC"], min = 1 },
-  { dir = "to", targets = ["UC", "FR", "NFR", "DAT", "ERR"], min = 0 }
+  { dir = "from", targets = ["UC"], min = 1 }
+]
+
+# ========== Specification Relations ==========
+
+[references.FR]
+# Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
+rules = [
+  { dir = "from", targets = ["UC", "CON"], min = 1 },
+  { dir = "to", targets = ["NFR", "ERR", "BB", "RT", "CC", "IF"], min = 0 }
+]
+
+[references.NFR]
+# Non-Functional Requirement is derived from FR/Constraint and derives architecture
+rules = [
+  { dir = "from", targets = ["FR", "CON"], min = 1 },
+  { dir = "to", targets = ["BB", "CC"], min = 0 }
+]
+
+[references.ERR]
+# Error is derived from Functional Requirement
+rules = [
+  { dir = "from", targets = ["FR"], min = 1 }
+]
+
+[references.CON]
+# Constraint derives Functional/Non-Functional Requirements
+rules = [
+  { dir = "to", targets = ["FR", "NFR"], min = 1 }
 ]
 
 # ========== Architecture Relations ==========
 
 [references.CTX]
-# Context View references ACT
+# Context View derives from Actor (via UC mapping) - treated as top-level entry for system context
 rules = [
   { dir = "to", targets = ["ACT"], min = 1 }
 ]
 
 [references.BB]
-# Building Block references FR/NFR
+# Building Block is derived from Requirements and derives scenarios/deployment
 rules = [
-  { dir = "to", targets = ["FR", "NFR"], min = 1 }
+  { dir = "from", targets = ["FR", "NFR"], min = 1 },
+  { dir = "to", targets = ["RT", "DEP"], min = 0 }
 ]
 
 [references.RT]
-# Runtime View references BB (min 1), ACT (min 1), FR (min 1), and optionally CC, NFR
+# Runtime Scenario is derived from Building Block or Requirement
 rules = [
-  { dir = "to", targets = ["BB"], min = 1 },
-  { dir = "to", targets = ["ACT"], min = 1 },
-  { dir = "to", targets = ["FR"], min = 1 },
-  { dir = "to", targets = ["CC", "NFR"], min = 0 }
+  { dir = "from", targets = ["BB", "FR"], min = 1 }
 ]
 
 [references.DEP]
-# Deployment View references BB (min 1), and optionally CC, ADR, NFR
+# Deployment is derived from Building Block, Architecture Decision, or Concept
 rules = [
-  { dir = "to", targets = ["BB"], min = 1 },
-  { dir = "to", targets = ["CC", "ADR", "NFR"], min = 0 }
+  { dir = "from", targets = ["BB", "ADR", "CC", "NFR"], min = 1 }
 ]
 
 [references.CC]
-# Cross-cutting Concept references NFR, ADR, FR (CON is excluded)
+# Cross-cutting Concept is derived from Requirements and derives Decisions
 rules = [
-  { dir = "to", targets = ["NFR", "ADR", "FR"], min = 1 }
+  { dir = "from", targets = ["NFR", "FR"], min = 1 },
+  { dir = "to", targets = ["ADR"], min = 0 }
+]
+
+[references.ADR]
+# Architecture Decision derives Deployment
+rules = [
+  { dir = "to", targets = ["DEP"], min = 0 }
 ]
