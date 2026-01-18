@@ -60,6 +60,8 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                         .iter()
                         .filter(|e| {
                             let target_type = e.id.split('-').next().unwrap_or(&e.id);
+                            // Only count if it's NOT a documentation type
+                            !config.graph.doc_types.contains(&target_type.to_string()) &&
                             allowed_ref.contains(&target_type.to_string())
                         })
                         .count();
@@ -87,6 +89,12 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                 if config.graph.strict_relations {
                     for edge in &block.edges {
                         let target_type = edge.id.split('-').next().unwrap_or(&edge.id);
+
+                        // Always allow documentation types
+                        if config.graph.doc_types.contains(&target_type.to_string()) {
+                            continue;
+                        }
+
                         if !allowed_ref.contains(&target_type.to_string()) {
                             diagnostics.push(Diagnostic {
                                 severity: Severity::Error,

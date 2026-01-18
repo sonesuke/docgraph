@@ -25,6 +25,8 @@ pub struct GraphConfig {
     pub strict_node_types: bool,
     #[serde(default)]
     pub strict_relations: bool,
+    #[serde(default)]
+    pub doc_types: Vec<String>,
 }
 
 #[derive(Debug, Deserialize, Clone)]

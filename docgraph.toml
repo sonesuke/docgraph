@@ -4,6 +4,7 @@
 [graph]
 strict_node_types = true
 strict_relations  = true
+doc_types = ["ACT", "DAT", "IF", "ADR", "TERM", "FC"]
 
 [node_types]
 # Core dependency model types
@@ -26,16 +27,13 @@ FC   = { desc = "Future Consideration" }
 # FR → NFR/ERR
 # NFR ← FR/CON
 # CON → FR/NFR
-#
-# Documentation types (ACT, DAT, IF, ADR, TERM, FC) can be referenced by all core types
 
 [relations.UC]
 # UC is not typically referenced by other core types (top-level requirement/constraint)
 from = []
 from_min = 0
 # UC → FR/UC (core dependencies)
-# Also allows references to documentation types
-ref = ["FR", "UC", "ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+ref = ["FR", "UC"]
 ref_min = 0
 
 [relations.FR]
@@ -43,8 +41,7 @@ ref_min = 0
 from = ["UC"]
 from_min = 1
 # FR → NFR/ERR (core dependencies)
-# Also allows references to documentation types
-ref = ["NFR", "ERR", "ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+ref = ["NFR", "ERR"]
 ref_min = 0
 
 [relations.NFR]
@@ -52,8 +49,7 @@ ref_min = 0
 from = ["FR", "CON"]
 from_min = 1
 # NFR has no core outgoing dependencies
-# Allows references to documentation types
-ref = ["ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+ref = []
 ref_min = 0
 
 [relations.ERR]
@@ -61,14 +57,13 @@ ref_min = 0
 from = ["FR"]
 from_min = 1
 # ERR has no core outgoing dependencies
-# Allows references to documentation types
-ref = ["ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+ref = []
 ref_min = 0
 
 [relations.CON]
 # CON is not typically referenced by other core types (top-level requirement/constraint)
 from = []
 from_min = 0
-# CON references FR, NFR, and documentation types
-ref = ["FR", "NFR", "ACT", "DAT", "IF", "ADR", "TERM", "FC"]
-ref_min = 1
+# CON references FR, NFR
+ref = ["FR", "NFR"]
+ref_min = 0
