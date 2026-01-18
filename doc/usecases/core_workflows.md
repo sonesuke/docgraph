@@ -5,9 +5,9 @@
 
 ## Write Specifications
 
-The [ACT-USER (User)](../actors/system_users.md#ACT-USER) writes specifications in Markdown using anchor heading format.
+The [ACT-DEV (Developer)](../actors/system_users.md#ACT-DEV) writes specifications in Markdown using anchor heading format.
 
-Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER)
+Depends on: [ACT-DEV (Developer)](../actors/system_users.md#ACT-DEV)
 
 <a id="UC-LINT"></a>
 

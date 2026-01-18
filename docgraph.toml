@@ -65,6 +65,13 @@ from_min = 0
 to = ["FR", "NFR"]
 to_min = 1
 
+[references.ACT]
+# Actor must be referenced by at least one Use Case
+from = ["UC"]
+from_min = 1
+to = []
+to_min = 0
+
 # ========== Architecture Relations ==========
 
 [references.CTX]
