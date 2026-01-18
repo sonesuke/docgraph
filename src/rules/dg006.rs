@@ -60,8 +60,8 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                         .iter()
                         .filter(|e| {
                             let target_type = e.id.split('-').next().unwrap_or(&e.id);
-                            // Only count if it's NOT a documentation type
-                            !config.graph.doc_types.contains(&target_type.to_string()) &&
+                            // Count if it matches one of the allowed types
+                            // (Explicitly allowed doc types are counted to support required dependencies)
                             allowed_to.contains(&target_type.to_string())
                         })
                         .count();

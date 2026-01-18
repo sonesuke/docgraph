@@ -72,32 +72,32 @@ to_min = 1
 from = []
 from_min = 0
 to = ["ACT"]
-to_min = 0
+to_min = 1
 
 [references.BB]
 # Building Block references FR/NFR
 from = []
 from_min = 0
 to = ["FR", "NFR"]
-to_min = 0
+to_min = 1
 
 [references.RT]
 # Runtime View references BB
 from = []
 from_min = 0
 to = ["BB"]
-to_min = 0
+to_min = 1
 
 [references.DEP]
 # Deployment View references BB, ADR
 from = []
 from_min = 0
 to = ["BB", "ADR"]
-to_min = 0
+to_min = 1
 
 [references.CC]
 # Cross-cutting Concept references NFR, CON, ADR
 from = []
 from_min = 0
 to = ["NFR", "CON", "ADR"]
-to_min = 0
+to_min = 1
