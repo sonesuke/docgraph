@@ -36,75 +36,65 @@ FC   = { desc = "Future Consideration" }
 # ========== Specification Relations ==========
 
 [references.UC]
-from = []
-from_min = 0
-to = ["FR", "UC"]
-to_min = 0
+rules = [
+  { dir = "to", targets = ["FR", "UC"], min = 0 }
+]
 
 [references.FR]
-from = ["UC"]
-from_min = 1
-to = ["NFR", "ERR"]
-to_min = 0
+rules = [
+  { dir = "from", targets = ["UC"], min = 1 },
+  { dir = "to", targets = ["NFR", "ERR"], min = 0 }
+]
 
 [references.NFR]
-from = ["FR", "CON"]
-from_min = 1
-to = []
-to_min = 0
+rules = [
+  { dir = "from", targets = ["FR", "CON"], min = 1 }
+]
 
 [references.ERR]
-from = ["FR"]
-from_min = 1
-to = []
-to_min = 0
+rules = [
+  { dir = "from", targets = ["FR"], min = 1 }
+]
 
 [references.CON]
-from = []
-from_min = 0
-to = ["FR", "NFR"]
-to_min = 1
+rules = [
+  { dir = "to", targets = ["FR", "NFR"], min = 1 }
+]
 
 [references.ACT]
 # Actor must be referenced by at least one Use Case
-from = ["UC"]
-from_min = 1
-to = []
-to_min = 0
+rules = [
+  { dir = "from", targets = ["UC"], min = 1 }
+]
 
 # ========== Architecture Relations ==========
 
 [references.CTX]
 # Context View references ACT
-from = []
-from_min = 0
-to = ["ACT"]
-to_min = 1
+rules = [
+  { dir = "to", targets = ["ACT"], min = 1 }
+]
 
 [references.BB]
 # Building Block references FR/NFR
-from = []
-from_min = 0
-to = ["FR", "NFR"]
-to_min = 1
+rules = [
+  { dir = "to", targets = ["FR", "NFR"], min = 1 }
+]
 
 [references.RT]
 # Runtime View references BB
-from = []
-from_min = 0
-to = ["BB"]
-to_min = 1
+rules = [
+  { dir = "to", targets = ["BB"], min = 1 }
+]
 
 [references.DEP]
 # Deployment View references BB, ADR
-from = []
-from_min = 0
-to = ["BB", "ADR"]
-to_min = 1
+rules = [
+  { dir = "to", targets = ["BB", "ADR"], min = 1 }
+]
 
 [references.CC]
 # Cross-cutting Concept references NFR, CON, ADR
-from = []
-from_min = 0
-to = ["NFR", "CON", "ADR"]
-to_min = 1
+rules = [
+  { dir = "to", targets = ["NFR", "CON", "ADR"], min = 1 }
+]

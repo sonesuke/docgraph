@@ -31,10 +31,17 @@ pub struct GraphConfig {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct ReferenceConfig {
-    pub from: Option<Vec<String>>,
-    pub from_min: Option<usize>,
-    pub to: Option<Vec<String>>,
-    pub to_min: Option<usize>,
+    #[serde(default)]
+    pub rules: Vec<RuleConfig>,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct RuleConfig {
+    pub dir: String,      // "from" or "to"
+    pub targets: Vec<String>,
+    pub min: Option<usize>,
+    #[allow(dead_code)]
+    pub max: Option<usize>,
 }
 
 impl Config {
