@@ -113,7 +113,7 @@ impl Rule for DG003 {
                         rule_name: Some("DG003".to_string()),
                     });
                 }
-            } 
+            }
             // Case 2: Explicit file link (path/to/file.md#ID)
             else if let Some(hash_pos) = url_part.find('#') {
                 let file_part = &url_part[..hash_pos];
@@ -122,7 +122,7 @@ impl Rule for DG003 {
                 // Resolve target file path relative to current file
                 let current_dir = current_path.parent().unwrap_or_else(|| Path::new("."));
                 let target_path = current_dir.join(file_part);
-                
+
                 let (start_line, start_col) = get_pos(caps.get(2).unwrap().start());
                 let (end_line, end_col) = get_pos(caps.get(2).unwrap().end());
 
@@ -146,7 +146,6 @@ impl Rule for DG003 {
                     }
                 }
 
-
                 if target_file_index.is_some_and(|idx| idx.has_anchor(target_id)) {
                     // All good - ID exists in the specified file
                     continue;
@@ -161,7 +160,7 @@ impl Rule for DG003 {
                 }
 
                 if found_paths.is_empty() {
-                     warnings.push(LintWarning {
+                    warnings.push(LintWarning {
                         message: format!("Link to MISSING anchor ID '{}'", target_id),
                         line: start_line,
                         column: start_col,
@@ -174,28 +173,30 @@ impl Rule for DG003 {
                 } else if found_paths.len() == 1 {
                     // Found 1 match elsewhere -> Auto-fix
                     let correct_path = &found_paths[0];
-                    let relative_path = diff_paths(correct_path, current_dir).unwrap_or(correct_path.to_path_buf());
+                    let relative_path =
+                        diff_paths(correct_path, current_dir).unwrap_or(correct_path.to_path_buf());
                     let replacement = format!("{}#{}", relative_path.display(), target_id);
 
-                     warnings.push(LintWarning {
+                    warnings.push(LintWarning {
                         message: format!(
                             "ID '{}' exists but not in specified file. Correct file: {}",
-                            target_id, correct_path.display()
+                            target_id,
+                            correct_path.display()
                         ),
                         line: start_line,
                         column: start_col,
                         end_line,
                         end_column: end_col,
                         severity: Severity::Error,
-                         fix: Some(Fix {
+                        fix: Some(Fix {
                             replacement,
                             range: caps.get(2).unwrap().range(),
                         }),
                         rule_name: Some("DG003".to_string()),
                     });
                 } else {
-                     // Found multiple matches -> Error without fix
-                      warnings.push(LintWarning {
+                    // Found multiple matches -> Error without fix
+                    warnings.push(LintWarning {
                         message: format!(
                             "ID '{}' found in multiple files ({:?}), but not in specified file.",
                             target_id, found_paths

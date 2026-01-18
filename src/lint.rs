@@ -163,9 +163,7 @@ pub fn check_workspace(
                     });
 
                     // Collect fixes if fix mode is enabled
-                    if fix
-                        && let Some(fix_info) = &warning.fix
-                    {
+                    if fix && let Some(fix_info) = &warning.fix {
                         fixes_to_apply.push(fix_info.clone());
                     }
                 }
@@ -173,19 +171,20 @@ pub fn check_workspace(
         }
 
         // Apply fixes for this file (if any)
-        if fix && !fixes_to_apply.is_empty()
+        if fix
+            && !fixes_to_apply.is_empty()
             && let Ok(mut content) = fs::read_to_string(file_path)
         {
             // Sort fixes by range.start in descending order to avoid offset issues
             fixes_to_apply.sort_by(|a, b| b.range.start.cmp(&a.range.start));
-            
+
             for fix_info in fixes_to_apply {
                 // Replace the byte range with the replacement content
                 if fix_info.range.start <= content.len() && fix_info.range.end <= content.len() {
                     content.replace_range(fix_info.range.clone(), &fix_info.replacement);
                 }
             }
-            
+
             if let Err(e) = fs::write(file_path, &content) {
                 eprintln!("Failed to write fixed file {:?}: {}", file_path, e);
             }
