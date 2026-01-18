@@ -1,0 +1,123 @@
+# docgraph.toml - Document Graph Validation Configuration
+# Based on the Dependency Model specification
+
+[graph]
+strict_node_types = true
+strict_relations  = true
+doc_types = ["ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+
+[node_types]
+# Core specification types
+UC  = { desc = "Use Case" }
+FR  = { desc = "Functional Requirement" }
+NFR = { desc = "Non-Functional Requirement" }
+CON = { desc = "Constraint" }
+ERR = { desc = "Error Definition" }
+
+# Architecture types (Core Dependency Model)
+CTX = { desc = "Context View Element" }
+BB  = { desc = "Building Block" }
+RT  = { desc = "Runtime View Scenario" }
+DEP = { desc = "Deployment Element" }
+CC  = { desc = "Cross-cutting Concept" }
+
+# Documentation types (can be referenced by all core types)
+ACT  = { desc = "Actor" }
+DAT  = { desc = "Data Entity" }
+IF   = { desc = "Interface Specification" }
+ADR  = { desc = "Architecture Decision Record" }
+TERM = { desc = "Terminology/Glossary" }
+FC   = { desc = "Future Consideration" }
+
+# Dependency Model (Derive Flow):
+# Business: ACT/IF <- UC
+# Spec: UC -> FR -> NFR/ERR, CON -> FR/NFR
+# Arch: FR/NFR -> BB, BB -> RT/DEP, ADR -> DEP, CC -> ADR
+
+# ========== Business Relations ==========
+
+[references.UC]
+# Use Case derives Actor, Interface, and Requirements
+rules = [
+  { dir = "to", targets = ["ACT", "IF", "FR", "UC"], min = 0 }
+]
+
+[references.ACT]
+# Actor is derived from Use Case
+rules = [
+  { dir = "from", targets = ["UC"], min = 1 }
+]
+
+[references.IF]
+# Interface is derived from Use Case
+rules = [
+  { dir = "from", targets = ["UC"], min = 1 }
+]
+
+# ========== Specification Relations ==========
+
+[references.FR]
+# Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
+rules = [
+  { dir = "from", targets = ["UC", "CON"], min = 1 },
+  { dir = "to", targets = ["NFR", "ERR", "BB", "RT", "CC", "IF"], min = 0 }
+]
+
+[references.NFR]
+# Non-Functional Requirement is derived from FR/Constraint and derives architecture
+rules = [
+  { dir = "from", targets = ["FR", "CON"], min = 1 },
+  { dir = "to", targets = ["BB", "CC"], min = 0 }
+]
+
+[references.ERR]
+# Error is derived from Functional Requirement
+rules = [
+  { dir = "from", targets = ["FR"], min = 1 }
+]
+
+[references.CON]
+# Constraint derives Functional/Non-Functional Requirements
+rules = [
+  { dir = "to", targets = ["FR", "NFR"], min = 1 }
+]
+
+# ========== Architecture Relations ==========
+
+[references.CTX]
+# Context View derives from Actor (via UC mapping) - treated as top-level entry for system context
+rules = [
+  { dir = "to", targets = ["ACT"], min = 1 }
+]
+
+[references.BB]
+# Building Block is derived from Requirements and derives scenarios/deployment
+rules = [
+  { dir = "from", targets = ["FR", "NFR"], min = 1 },
+  { dir = "to", targets = ["RT", "DEP"], min = 0 }
+]
+
+[references.RT]
+# Runtime Scenario is derived from Building Block or Requirement
+rules = [
+  { dir = "from", targets = ["BB", "FR"], min = 1 }
+]
+
+[references.DEP]
+# Deployment is derived from Building Block, Architecture Decision, or Concept
+rules = [
+  { dir = "from", targets = ["BB", "ADR", "CC", "NFR"], min = 1 }
+]
+
+[references.CC]
+# Cross-cutting Concept is derived from Requirements and derives Decisions
+rules = [
+  { dir = "from", targets = ["NFR", "FR"], min = 1 },
+  { dir = "to", targets = ["ADR"], min = 0 }
+]
+
+[references.ADR]
+# Architecture Decision derives Deployment
+rules = [
+  { dir = "to", targets = ["DEP"], min = 0 }
+]

@@ -18,8 +18,24 @@ pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock
     let mut anchor_positions: Vec<(usize, String, Option<String>, usize)> = Vec::new(); // (line_idx, id, name, heading_line_idx)
 
     let mut i = 0;
+    let mut in_code_fence = false;
     while i < lines.len() {
-        if let Some(caps) = anchor_re.captures(lines[i].trim()) {
+        let trimmed = lines[i].trim();
+
+        // Toggle code fence state
+        if trimmed.starts_with("```") {
+            in_code_fence = !in_code_fence;
+            i += 1;
+            continue;
+        }
+
+        // Skip processing if inside a code fence
+        if in_code_fence {
+            i += 1;
+            continue;
+        }
+
+        if let Some(caps) = anchor_re.captures(trimmed) {
             let id = caps.get(1).unwrap().as_str().to_string();
 
             // Look for heading in next non-empty lines
@@ -30,7 +46,14 @@ pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock
 
             let (name, heading_idx) = if j < lines.len() {
                 if let Some(h_caps) = heading_re.captures(lines[j].trim()) {
-                    (Some(h_caps.get(2).unwrap().as_str().to_string()), j)
+                    let raw_name = h_caps.get(2).unwrap().as_str();
+                    // Strip ID prefix from heading if present
+                    let clean_name = raw_name
+                        .strip_prefix(&id)
+                        .map(|s| s.trim_start())
+                        .unwrap_or(raw_name)
+                        .to_string();
+                    (Some(clean_name), j)
                 } else {
                     (None, i)
                 }
@@ -96,7 +119,21 @@ pub fn extract_markdown_refs(content: &str, file_path: &Path) -> Vec<RefUse> {
     // Regex for Markdown links with fragment: [text](path#ID) or [text](#ID)
     let link_re = Regex::new(r"\[([^\]]*)\]\(([^)]*#([^)]+))\)").unwrap();
 
+    let mut in_code_fence = false;
     for (line_idx, line) in content.lines().enumerate() {
+        let trimmed = line.trim();
+
+        // Toggle code fence state
+        if trimmed.starts_with("```") {
+            in_code_fence = !in_code_fence;
+            continue;
+        }
+
+        // Skip processing if inside a code fence
+        if in_code_fence {
+            continue;
+        }
+
         let line_num = line_idx + 1; // 1-based
 
         for cap in link_re.captures_iter(line) {

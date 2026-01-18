@@ -1,6 +1,6 @@
 mod cli;
-
 mod collect;
+mod config;
 mod lint;
 
 mod parse;
@@ -22,7 +22,11 @@ fn main() -> ExitCode {
             fix,
             rule,
         } => {
-            let diagnostics = lint::check_workspace(&path, fix, rule, true);
+            let config = config::Config::load(&path).unwrap_or_else(|e| {
+                eprintln!("Warning: Failed to load docgraph.toml: {}", e);
+                config::Config::default()
+            });
+            let diagnostics = lint::check_workspace(&path, fix, rule, true, &config);
 
             if json {
                 let json_out = serde_json::to_string_pretty(&diagnostics).unwrap();
@@ -39,7 +43,8 @@ fn main() -> ExitCode {
             }
         }
         Commands::Fmt { path, rule } => {
-            let diagnostics = lint::check_workspace(&path, true, rule, false);
+            let config = config::Config::load(&path).unwrap_or_default();
+            let diagnostics = lint::check_workspace(&path, true, rule, false, &config);
             print_diagnostics(&diagnostics);
 
             // Fmt normally doesn't fail on lint errors unless critical,
@@ -51,11 +56,12 @@ fn main() -> ExitCode {
             // Let's keep it SUCCESS for now, as it's a formatter.
         }
         Commands::Rule { rule } => {
-            let config = rumdl_lib::config::Config::default();
-            let mut all_rules = rumdl_lib::rules::all_rules(&config);
+            let rumdl_config = rumdl_lib::config::Config::default();
+            let mut all_rules = rumdl_lib::rules::all_rules(&rumdl_config);
             all_rules.push(Box::new(rules::dg001::DG001));
             all_rules.push(Box::new(rules::dg002::DG002));
             all_rules.push(Box::new(rules::dg003::DG003));
+            all_rules.push(Box::new(rules::dg004::DG004));
 
             if let Some(rule_query) = rule {
                 let rule_query = rule_query.to_ascii_uppercase();

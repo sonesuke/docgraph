@@ -1,5 +1,4 @@
-use crate::types::{Diagnostic, Range, Severity};
-use crate::walk::find_markdown_files;
+use crate::types::Diagnostic;
 use rumdl_lib::fix_coordinator::FixCoordinator;
 use rumdl_lib::workspace_index::WorkspaceIndex;
 
@@ -20,28 +19,17 @@ fn should_skip_rumdl_warning(rule_name: &str, message: &str) -> bool {
 }
 
 pub fn check_workspace(
-    root: &Path,
+    path: &Path,
     fix: bool,
     rule_filter: Option<Vec<String>>,
     use_docgraph_filter: bool,
-) -> Vec<Diagnostic> {
-    // Run rumdl on each markdown file
-    run_rumdl_on_workspace(root, fix, rule_filter, use_docgraph_filter)
-}
-
-/// Run rumdl markdown linter on all markdown files in the workspace
-fn run_rumdl_on_workspace(
-    root: &Path,
-    fix: bool,
-    rule_filter: Option<Vec<String>>,
-    use_docgraph_filter: bool,
+    config: &crate::config::Config,
 ) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
-    let files = find_markdown_files(root);
+    let files = crate::walk::find_markdown_files(path);
 
-    // Create default rumdl config and rules
-    let config = rumdl_lib::config::Config::default();
-    let mut all_rules = rumdl_lib::rules::all_rules(&config);
+    let rumdl_config = rumdl_lib::config::Config::default();
+    let mut all_rules = rumdl_lib::rules::all_rules(&rumdl_config);
     // Add custom docgraph rules
     all_rules.push(Box::new(crate::rules::dg001::DG001));
     all_rules.push(Box::new(crate::rules::dg002::DG002));
@@ -71,7 +59,7 @@ fn run_rumdl_on_workspace(
 
     // Pass 1: Lint individual files and build index
     for file_path in &files {
-        match fs::read_to_string(file_path) {
+        match fs::read_to_string::<&Path>(file_path) {
             Ok(content) => {
                 let mut working_content = content.clone();
 
@@ -82,7 +70,7 @@ fn run_rumdl_on_workspace(
                         &rules,
                         &[],
                         &mut working_content,
-                        &config,
+                        &rumdl_config,
                         10,
                     );
                     if let Some(_result) = fix_result.ok().filter(|r| r.rules_fixed > 0) {
@@ -99,12 +87,12 @@ fn run_rumdl_on_workspace(
                     &rules,
                     false,
                     rumdl_lib::config::MarkdownFlavor::Standard,
-                    Some(file_path.clone()),
-                    Some(&config),
+                    Some(file_path.to_path_buf()),
+                    Some(&rumdl_config),
                 );
 
                 // Add to workspace index
-                workspace_index.insert_file(file_path.clone(), file_index);
+                workspace_index.insert_file(file_path.to_path_buf(), file_index);
 
                 if let Ok(warnings) = result {
                     for warning in warnings {
@@ -119,14 +107,13 @@ fn run_rumdl_on_workspace(
 
                         diagnostics.push(Diagnostic {
                             severity: match warning.severity {
-                                rumdl_lib::rule::Severity::Error => Severity::Error,
-                                rumdl_lib::rule::Severity::Warning
-                                | rumdl_lib::rule::Severity::Info => Severity::Warning,
+                                rumdl_lib::rule::Severity::Error => crate::types::Severity::Error,
+                                _ => crate::types::Severity::Warning,
                             },
                             code: rule_name.to_string(),
                             message: warning.message,
-                            path: file_path.clone(),
-                            range: Range {
+                            path: file_path.to_path_buf(),
+                            range: crate::types::Range {
                                 start_line: warning.line,
                                 start_col: warning.column,
                                 end_line: warning.line,
@@ -142,65 +129,79 @@ fn run_rumdl_on_workspace(
         }
     }
 
-    // Pass 2: Run cross-file checks
-    for (path, file_index) in workspace_index.files() {
-        if let Ok(warnings) = rumdl_lib::run_cross_file_checks(
-            path,
-            file_index,
-            &rules,
-            &workspace_index,
-            Some(&config),
-        ) {
-            let mut triggers_write = false;
-            let mut fixes_to_apply = Vec::new();
+    // Pass 2: Run cross-file checks for rules that support it (DG002, DG003, DG004)
+    for file_path in &files {
+        let file_index = match workspace_index.get_file(file_path) {
+            Some(idx) => idx,
+            None => continue,
+        };
 
-            for warning in warnings {
-                // Apply same filtering if needed
-                let rule_name = warning.rule_name.as_deref().unwrap_or("");
-                if use_docgraph_filter && should_skip_rumdl_warning(rule_name, &warning.message) {
-                    continue;
-                }
+        // Collect fixes to apply for this file
+        let mut fixes_to_apply: Vec<rumdl_lib::rule::Fix> = Vec::new();
 
-                if let Some(f) = warning.fix.filter(|_| fix) {
-                    fixes_to_apply.push(f);
-                    triggers_write = true;
-                } else {
+        for rule in &rules {
+            if rule.cross_file_scope() != rumdl_lib::rule::CrossFileScope::None
+                && let Ok(warnings) = rule.cross_file_check(file_path, file_index, &workspace_index)
+            {
+                for warning in &warnings {
+                    let rule_name = warning.rule_name.as_deref().unwrap_or("");
+
                     diagnostics.push(Diagnostic {
                         severity: match warning.severity {
-                            rumdl_lib::rule::Severity::Error => Severity::Error,
-                            rumdl_lib::rule::Severity::Warning
-                            | rumdl_lib::rule::Severity::Info => Severity::Warning,
+                            rumdl_lib::rule::Severity::Error => crate::types::Severity::Error,
+                            _ => crate::types::Severity::Warning,
                         },
                         code: rule_name.to_string(),
-                        message: warning.message,
-                        path: path.to_path_buf(),
-                        range: Range {
+                        message: warning.message.clone(),
+                        path: file_path.to_path_buf(),
+                        range: crate::types::Range {
                             start_line: warning.line,
                             start_col: warning.column,
                             end_line: warning.line,
                             end_col: warning.column,
                         },
                     });
-                }
-            }
 
-            if let Some(mut content) = triggers_write
-                .then(|| fs::read_to_string(path).ok())
-                .flatten()
-            {
-                fixes_to_apply.sort_by(|a, b| b.range.start.cmp(&a.range.start));
-
-                for f in fixes_to_apply {
-                    content.replace_range(f.range, &f.replacement);
-                }
-
-                let write_result = fs::write(path, content);
-                if let Err(e) = write_result {
-                    eprintln!("Failed to write fixed file {:?}: {}", path, e);
+                    // Collect fixes if fix mode is enabled
+                    if fix && let Some(fix_info) = &warning.fix {
+                        fixes_to_apply.push(fix_info.clone());
+                    }
                 }
             }
         }
+
+        // Apply fixes for this file (if any)
+        if fix
+            && !fixes_to_apply.is_empty()
+            && let Ok(mut content) = fs::read_to_string(file_path)
+        {
+            // Sort fixes by range.start in descending order to avoid offset issues
+            fixes_to_apply.sort_by(|a, b| b.range.start.cmp(&a.range.start));
+
+            for fix_info in fixes_to_apply {
+                // Replace the byte range with the replacement content
+                if fix_info.range.start <= content.len() && fix_info.range.end <= content.len() {
+                    content.replace_range(fix_info.range.clone(), &fix_info.replacement);
+                }
+            }
+
+            if let Err(e) = fs::write(file_path, &content) {
+                eprintln!("Failed to write fixed file {:?}: {}", file_path, e);
+            }
+        }
     }
+
+    // Pass 3: Run custom docgraph workspace-level checks (DG005, DG006)
+    // Collect docgraph's own SpecBlock data
+    let (spec_blocks, _refs) = crate::collect::collect_workspace_all(path);
+
+    // DG005: Strict Node Types
+    let dg005_diags = crate::rules::dg005::check_strict_node_types(&spec_blocks, config);
+    diagnostics.extend(dg005_diags);
+
+    // DG006: Strict Relations
+    let dg006_diags = crate::rules::dg006::check_strict_relations(&spec_blocks, config);
+    diagnostics.extend(dg006_diags);
 
     diagnostics
 }
