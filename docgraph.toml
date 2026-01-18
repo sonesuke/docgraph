@@ -35,69 +35,69 @@ FC   = { desc = "Future Consideration" }
 
 # ========== Specification Relations ==========
 
-[relations.UC]
+[references.UC]
 from = []
 from_min = 0
-ref = ["FR", "UC"]
-ref_min = 0
+to = ["FR", "UC"]
+to_min = 0
 
-[relations.FR]
+[references.FR]
 from = ["UC"]
 from_min = 1
-ref = ["NFR", "ERR"]
-ref_min = 0
+to = ["NFR", "ERR"]
+to_min = 0
 
-[relations.NFR]
+[references.NFR]
 from = ["FR", "CON"]
 from_min = 1
-ref = []
-ref_min = 0
+to = []
+to_min = 0
 
-[relations.ERR]
+[references.ERR]
 from = ["FR"]
 from_min = 1
-ref = []
-ref_min = 0
+to = []
+to_min = 0
 
-[relations.CON]
+[references.CON]
 from = []
 from_min = 0
-ref = ["FR", "NFR"]
-ref_min = 1
+to = ["FR", "NFR"]
+to_min = 1
 
 # ========== Architecture Relations ==========
 
-[relations.CTX]
+[references.CTX]
 # Context View references FR/NFR
 from = []
 from_min = 0
-ref = ["FR", "NFR"]
-ref_min = 0
+to = ["FR", "NFR"]
+to_min = 0
 
-[relations.BB]
+[references.BB]
 # Building Block references FR/NFR
 from = []
 from_min = 0
-ref = ["FR", "NFR"]
-ref_min = 0
+to = ["FR", "NFR"]
+to_min = 0
 
-[relations.RT]
+[references.RT]
 # Runtime View references BB
 from = []
 from_min = 0
-ref = ["BB"]
-ref_min = 0
+to = ["BB"]
+to_min = 0
 
-[relations.DEP]
+[references.DEP]
 # Deployment View references BB, ADR
 from = []
 from_min = 0
-ref = ["BB", "ADR"]
-ref_min = 0
+to = ["BB", "ADR"]
+to_min = 0
 
-[relations.CC]
+[references.CC]
 # Cross-cutting Concept references NFR, CON, ADR
 from = []
 from_min = 0
-ref = ["NFR", "CON", "ADR"]
-ref_min = 0
+to = ["NFR", "CON", "ADR"]
+to_min = 0

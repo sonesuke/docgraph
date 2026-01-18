@@ -10,7 +10,7 @@ pub struct Config {
     #[serde(default)]
     pub graph: GraphConfig,
     #[serde(default)]
-    pub relations: HashMap<String, RelationConfig>,
+    pub references: HashMap<String, ReferenceConfig>,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -30,11 +30,11 @@ pub struct GraphConfig {
 }
 
 #[derive(Debug, Deserialize, Clone)]
-pub struct RelationConfig {
+pub struct ReferenceConfig {
     pub from: Option<Vec<String>>,
     pub from_min: Option<usize>,
-    pub r#ref: Option<Vec<String>>,
-    pub ref_min: Option<usize>,
+    pub to: Option<Vec<String>>,
+    pub to_min: Option<usize>,
 }
 
 impl Config {
