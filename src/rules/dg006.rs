@@ -4,10 +4,7 @@ use std::collections::HashMap;
 
 /// DG006: Strict Relation Enforcement
 /// Validates incoming and outgoing edge constraints based on docgraph.toml
-pub fn check_strict_relations(
-    blocks: &[SpecBlock],
-    config: &Config,
-) -> Vec<Diagnostic> {
+pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
 
     // Map of target_id -> list of source node types that refer to it
@@ -58,10 +55,14 @@ pub fn check_strict_relations(
             if let Some(allowed_ref) = &rel_config.r#ref {
                 // Check min count
                 if let Some(min) = rel_config.ref_min {
-                    let count = block.edges.iter().filter(|e| {
-                        let target_type = e.id.split('-').next().unwrap_or(&e.id);
-                        allowed_ref.contains(&target_type.to_string())
-                    }).count();
+                    let count = block
+                        .edges
+                        .iter()
+                        .filter(|e| {
+                            let target_type = e.id.split('-').next().unwrap_or(&e.id);
+                            allowed_ref.contains(&target_type.to_string())
+                        })
+                        .count();
 
                     if count < min {
                         diagnostics.push(Diagnostic {

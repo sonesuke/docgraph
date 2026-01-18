@@ -142,7 +142,6 @@ pub fn check_workspace(
     diagnostics.extend(dg006_diags);
 
     diagnostics
-
 }
 
 // Legacy tests removed (migrated to DG002/DG003 integration tests)

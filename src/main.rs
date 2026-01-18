@@ -1,6 +1,6 @@
 mod cli;
-mod config;
 mod collect;
+mod config;
 mod lint;
 
 mod parse;
