@@ -14,8 +14,9 @@ pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock
     // Regex for Markdown links with fragment: [text](#ID) or [text](path#ID)
     let link_re = Regex::new(r"\[([^\]]*)\]\(([^)]*#([^)]+))\)").unwrap();
 
-    // First pass: find all anchor positions
+    // First pass: find all anchor positions and track code blocks
     let mut anchor_positions: Vec<(usize, String, Option<String>, usize)> = Vec::new(); // (line_idx, id, name, heading_line_idx)
+    let mut is_code_line = vec![false; lines.len()];
 
     let mut i = 0;
     let mut in_code_fence = false;
@@ -25,12 +26,14 @@ pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock
         // Toggle code fence state
         if trimmed.starts_with("```") {
             in_code_fence = !in_code_fence;
+            is_code_line[i] = true;
             i += 1;
             continue;
         }
 
-        // Skip processing if inside a code fence
+        // Track if inside a code fence
         if in_code_fence {
+            is_code_line[i] = true;
             i += 1;
             continue;
         }
@@ -84,7 +87,7 @@ pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock
         // Extract refs within scope
         let mut edges = Vec::new();
         for line_idx in scope_start..scope_end {
-            if line_idx < lines.len() {
+            if line_idx < lines.len() && !is_code_line[line_idx] {
                 for cap in link_re.captures_iter(lines[line_idx]) {
                     if let Some(id_match) = cap.get(3) {
                         let target_id = id_match.as_str().to_string();
@@ -209,5 +212,60 @@ A user in the system.
         assert_eq!(b2.name.as_deref(), Some("User"));
         assert_eq!(b2.edges.len(), 1);
         assert_eq!(b2.edges[0].id, "DAT-SSO-CONFIG");
+    }
+
+    #[test]
+    fn test_extract_anchor_headings_skips_code_blocks() {
+        let content = r#"
+<a id="REQ-001"></a>
+# REQ-001
+
+This requirement references [REQ-002](#REQ-002).
+
+```markdown
+This link should be ignored: [REQ-003](#REQ-003)
+```
+
+The following is not in a code block: [REQ-004](#REQ-004)
+"#;
+        let path = PathBuf::from("test.md");
+        let blocks = extract_anchor_headings(content, &path);
+
+        assert_eq!(blocks.len(), 1);
+        let b = &blocks[0];
+        assert_eq!(b.id, "REQ-001");
+
+        // Should find REQ-002 and REQ-004, but NOT REQ-003
+        let target_ids: Vec<String> = b.edges.iter().map(|e| e.id.clone()).collect();
+        assert!(target_ids.contains(&"REQ-002".to_string()));
+        assert!(target_ids.contains(&"REQ-004".to_string()));
+        assert!(
+            !target_ids.contains(&"REQ-003".to_string()),
+            "Should not extract refs from code blocks"
+        );
+    }
+
+    #[test]
+    fn test_extract_markdown_refs_skips_code_blocks() {
+        let content = r#"
+This is a standalone ref: [REF-001](#REF-001)
+
+```markdown
+This should be ignored: [REF-002](#REF-002)
+```
+
+Another valid ref: [REF-003](#REF-003)
+"#;
+        let path = PathBuf::from("test.md");
+        let refs = extract_markdown_refs(content, &path);
+
+        // Should find REF-001 and REF-003, but NOT REF-002
+        let target_ids: Vec<String> = refs.iter().map(|r| r.target_id.clone()).collect();
+        assert!(target_ids.contains(&"REF-001".to_string()));
+        assert!(target_ids.contains(&"REF-003".to_string()));
+        assert!(
+            !target_ids.contains(&"REF-002".to_string()),
+            "Should not extract standalone refs from code blocks"
+        );
     }
 }
