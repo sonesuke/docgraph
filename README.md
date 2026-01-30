@@ -191,3 +191,24 @@ Output:
   }
 ]
 ```
+
+## Configuration (`docgraph.toml`)
+
+You can configure node types and relationship rules in `docgraph.toml`.
+
+### Relationship Rules
+
+Rules define constraints on incoming (`from`) and outgoing (`to`) relationships. You can add an optional `desc` field to provide a more helpful error message when a rule is violated.
+
+```toml
+[references.FR]
+# Functional Requirement rules
+rules = [
+  # Must be derived from a UC or CON
+  { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Requirements must have a source use case or constraint" },
+  # Can reference other types
+  { dir = "to", targets = ["NFR", "ERR", "BB", "RT", "CC", "IF"], min = 0 }
+]
+```
+
+If a rule with a `desc` is violated, the description will be displayed in the lint output to help identify the cause and resolution.
