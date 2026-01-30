@@ -20,12 +20,14 @@ The `graph` command shall output the graph structure in JSON format.
 The `list` command shall output spec blocks matching a specific query with their names.
 The query can contain wildcards (`*` and `?`).
 If no wildcards are present, the command performs a prefix match (forward match).
-```
+
+```bash
 docgraph list "FR-*"
 docgraph list FR
 ```
+
 Output format:
-```
+```text
 ID : Description
 ```
 
@@ -34,7 +36,8 @@ ID : Description
 ### Command: `trace`
 
 The `trace` command shall find and display all paths between a start ID and target IDs matching a query.
-```
+
+```bash
 docgraph trace <from> <to> [--direction <down|up>]
 ```
 - `<from>`: The starting SpecBlock ID.
@@ -44,7 +47,8 @@ docgraph trace <from> <to> [--direction <down|up>]
   - `up`: Follow incoming links (reverse references).
 
 Output format:
-```
+
+```text
 ID1 -> ID2 -> ID3
 ```
 (Using `<-` for `up` direction)
@@ -54,13 +58,15 @@ ID1 -> ID2 -> ID3
 ### Command: `describe`
 
 The `describe` command shall display the details and relationships of a specific SpecBlock.
-```
+
+```bash
 docgraph describe <id>
 ```
 - `<id>`: The ID of the SpecBlock to describe.
 
 Output format:
-```
+
+```text
 ID: Name
 ID references to
 target_id: target_name

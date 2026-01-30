@@ -27,6 +27,7 @@ Docgraph is a specialized linter and graph generator for product documentation m
 ### Getting Started
 
 To verify the current documentation graph, run:
+
 ```bash
 docgraph check doc
 ```
