@@ -21,7 +21,7 @@ The [ACT-USER (User)](../actors/system_users.md#ACT-USER) checks for errors in t
 2. User runs the lint command ([IF-CLI-LINT (Command: `lint`)](../specs/cli_specs.md#IF-CLI-LINT)).
 3. User reviews any error messages regarding duplicate IDs or missing references.
 
-Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE), [FR-UNIQUE (Unique IDs)](../requirements/verification.md#FR-UNIQUE), [FR-VALID-REF (Valid References)](../requirements/verification.md#FR-VALID-REF)
+Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE), [FR-UNIQUE (Unique IDs)](../requirements/verification.md#FR-UNIQUE), [FR-VALID-REF (Valid References)](../requirements/verification.md#FR-VALID-REF), [FR-STRICT-NODES (Strict Node Types)](../requirements/verification.md#FR-STRICT-NODES), [FR-RELATION-RULES (Relation Rules)](../requirements/verification.md#FR-RELATION-RULES)
 
 <a id="UC-GRAPH"></a>
 
@@ -60,3 +60,43 @@ Depends on: [ACT-AGENT (AI Agent)](../actors/system_users.md#ACT-AGENT), [UC-GRA
 The [ACT-AGENT (AI Agent)](../actors/system_users.md#ACT-AGENT) suggests how to use the system based on the constructed knowledge.
 
 Depends on: [ACT-AGENT (AI Agent)](../actors/system_users.md#ACT-AGENT), [UC-BUILD-KNOWLEDGE (Build Knowledge Graph)](#UC-BUILD-KNOWLEDGE)
+
+<a id="UC-SEARCH"></a>
+
+## Search Spec Blocks
+
+The [ACT-USER (User)](../actors/system_users.md#ACT-USER) searches for spec blocks by ID or wildcards.
+
+**Steps:**
+
+1. User runs the list command ([IF-CLI-LIST (Command: `list`)](../specs/cli_specs.md#IF-CLI-LIST)).
+2. User reviews the list of matching IDs and their descriptions.
+
+Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE)
+
+<a id="UC-TRACE"></a>
+
+## Trace Relationships
+
+The [ACT-USER (User)](../actors/system_users.md#ACT-USER) visualizes paths between two spec blocks.
+
+**Steps:**
+
+1. User identifies a starting ID and a target ID/pattern.
+2. User runs the trace command ([IF-CLI-TRACE (Command: `trace`)](../specs/cli_specs.md#IF-CLI-TRACE)).
+3. User analyzes the displayed paths to understand dependencies or verified coverage.
+
+Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE)
+
+<a id="UC-DESCRIBE"></a>
+
+## Describe Spec Block
+
+The [ACT-USER (User)](../actors/system_users.md#ACT-USER) inspects the detailed relationships of a specific block.
+
+**Steps:**
+
+1. User runs the describe command ([IF-CLI-DESCRIBE (Command: `describe`)](../specs/cli_specs.md#IF-CLI-DESCRIBE)).
+2. User reviews the bidirectional relationship information (outgoing references and incoming dependencies).
+
+Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE)
