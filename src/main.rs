@@ -93,9 +93,52 @@ fn main() -> ExitCode {
             let json_out = serde_json::to_string_pretty(&blocks).unwrap();
             println!("{}", json_out);
         }
+        Commands::List { query, path } => {
+            let (blocks, _refs) = collect::collect_workspace_all(&path);
+            let regex_str = glob_to_regex(&query);
+            let re = match regex::Regex::new(&regex_str) {
+                Ok(re) => re,
+                Err(e) => {
+                    eprintln!("Error: Invalid query '{}': {}", query, e);
+                    return ExitCode::FAILURE;
+                }
+            };
+
+            for block in blocks {
+                if re.is_match(&block.id) {
+                    println!(
+                        "{} : {}",
+                        block.id,
+                        block.name.as_deref().unwrap_or("No description")
+                    );
+                }
+            }
+        }
     }
 
     ExitCode::SUCCESS
+}
+
+fn glob_to_regex(glob: &str) -> String {
+    let mut regex = String::from("^");
+    let has_wildcard = glob.contains('*') || glob.contains('?');
+
+    for c in glob.chars() {
+        match c {
+            '*' => regex.push_str(".*"),
+            '?' => regex.push_str("."),
+            '.' | '+' | '(' | ')' | '[' | ']' | '{' | '}' | '^' | '$' | '|' | '\\' => {
+                regex.push('\\');
+                regex.push(c);
+            }
+            _ => regex.push(c),
+        }
+    }
+
+    if has_wildcard {
+        regex.push('$');
+    }
+    regex
 }
 
 fn print_diagnostics(diagnostics: &[types::Diagnostic]) {
