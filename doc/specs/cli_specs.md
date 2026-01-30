@@ -46,3 +46,24 @@ Output format:
 ID1 -> ID2 -> ID3
 ```
 (Using `<-` for `up` direction)
+
+<a id="IF-CLI-DESCRIBE"></a>
+
+### Command: `describe`
+
+The `describe` command shall display the details and relationships of a specific SpecBlock.
+```
+docgraph describe <id>
+```
+- `<id>`: The ID of the SpecBlock to describe.
+
+Output format:
+```
+ID references to
+target_id: target_name
+...
+
+The following IDs are depends on ID
+source_id: source_name
+...
+```
