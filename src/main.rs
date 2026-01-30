@@ -3,6 +3,7 @@ mod collect;
 mod config;
 mod lint;
 
+mod lsp;
 mod parse;
 mod rules;
 mod types;
@@ -12,10 +13,14 @@ use clap::Parser;
 use cli::{Cli, Commands};
 use std::process::ExitCode;
 
-fn main() -> ExitCode {
+#[tokio::main]
+async fn main() -> ExitCode {
     let args = Cli::parse();
 
     match args.command {
+        Commands::Lsp => {
+            lsp::run_server().await;
+        }
         Commands::Check {
             path,
             json,

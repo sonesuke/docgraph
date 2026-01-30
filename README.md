@@ -47,6 +47,7 @@ docgraph check .
 - `list <query>`: Search for spec blocks matching a pattern.
 - `trace <from> <to>`: Find relationship paths between two nodes.
 - `describe <id>`: Show detailed bidirectional relationships for a specific node.
+- `lsp`: Start the Language Server Protocol (LSP) server.
 
 ## Configuration (`docgraph.toml`)
 

@@ -85,4 +85,6 @@ pub enum Commands {
         #[arg(default_value = ".")]
         path: PathBuf,
     },
+    /// Start the language server
+    Lsp,
 }
