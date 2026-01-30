@@ -73,6 +73,12 @@ docgraph trace REQ-001 TC-
 docgraph trace TC-001 REQ- --direction up
 ```
 
+Describe a specific item and its relations:
+
+```bash
+docgraph describe REQ-001
+```
+
 ## MyST Support (Subset)
 
 This tool supports only the standard directive syntax of MyST. No custom extensions are used.

@@ -76,4 +76,13 @@ pub enum Commands {
         #[arg(long, default_value = "down")]
         direction: String,
     },
+    /// Describe a spec block and its relationships
+    Describe {
+        /// The ID of the spec block to describe
+        id: String,
+
+        /// Path to search for markdown files (defaults to current directory)
+        #[arg(default_value = ".")]
+        path: PathBuf,
+    },
 }
