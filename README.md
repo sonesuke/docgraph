@@ -1,11 +1,11 @@
 # docgraph
 
-A lint tool to verify document graphs embedded in Markdown (MyST).
-It uses a subset of MyST (Markedly Structured Text) to ensure traceability between documents.
+A lint tool to verify document graphs embedded in Markdown.
+It uses standard Markdown with HTML anchors to ensure traceability between documents.
 
 ## Overview
 
-`docgraph` parses `{document}` blocks within Markdown files and checks for duplicate IDs and missing references. It also extracts and verifies relationships (edges) such as `verifies` or `depends_on`, which are often used in requirements specifications or test specifications.
+`docgraph` parses HTML anchor tags (`<a id="..."></a>`) followed by headings within Markdown files and checks for duplicate IDs and missing references. It also extracts and verifies relationships (edges) defined as links within the block scope.
 
 ## Installation
 
@@ -79,37 +79,29 @@ Describe a specific item and its relations:
 docgraph describe REQ-001
 ```
 
-## MyST Support (Subset)
+## Markdown Syntax Support
 
-This tool supports only the standard directive syntax of MyST. No custom extensions are used.
+This tool supports standard Markdown with HTML anchors for ID definition.
 
-### Supported Directives
+### Defining a SpecBlock
 
-- `{document}`: Document definition block
+To define a block with an ID, place an HTML anchor tag on its own line, immediately followed by a heading.
 
-````markdown
-```{document} Requirements
-:id: RQ-001
-:kind: requirement
-:verifies: TC-001
-:depends_on: DEC-005
+```markdown
+<a id="RQ-001"></a>
 
-Details of the requirement are described here.
-References to other documents are made in the format {ref}`another-id`.
+## Requirement: Login
+
+This is the content of the requirement.
+It can reference other documents using standard Markdown links: [another-id](#another-id).
 ```
-````
 
-### Supported Options
+### Scoped Relationships
 
-| Option           | Required | Description                                         | Multiple |
-| :--------------- | :------- | :-------------------------------------------------- | :------- |
-| `:id:`           | Yes      | Unique identifier for the document                  | No       |
-| `:kind:`         | No       | Type of document (e.g., `requirement`, `test_case`) | No       |
-| `:verifies:`     | No       | ID to verify (Edge)                                 | Yes      |
-| `:depends_on:`   | No       | ID to depend on (Edge)                              | Yes      |
-| `:derived_from:` | No       | ID derived from (Edge)                              | Yes      |
+Relationships are extracted from any link within the scope of a block (from its heading to the next anchor).
 
-`<multiple>` can be expressed by specifying multiple IDs separated by spaces, or by writing the option line multiple times (planned implementation).
+- **Explicit Edges**: Links like `Depends on: [another-id](#another-id)` or `Verifies: [TC-001](#TC-001)`.
+- **Inline References**: Standard Markdown links within the text.
 
 ## Graph Structure Example
 
@@ -117,28 +109,27 @@ From Markdown files like the following, it recognizes and verifies the graph str
 
 **spec/reqs.md**
 
-````markdown
-```{document} Login Requirement
-:id: RQ-AUTH-01
-:kind: requirement
+```markdown
+<a id="RQ-AUTH-01"></a>
+
+## Login Requirement
 
 Users must be able to log in with an email address and password.
 ```
-````
 
 **spec/tests.md**
 
-````markdown
-```{document} Login Test
-:id: TC-AUTH-01
-:kind: test
-:verifies: RQ-AUTH-01
+```markdown
+<a id="TC-AUTH-01"></a>
+
+## Login Test
 
 1. Open the login page
 2. Enter valid credentials
-3. Verify that the dashboard is displayed ({ref}`RQ-AUTH-01`)
+3. Verify that the dashboard is displayed ([RQ-AUTH-01](#RQ-AUTH-01))
+
+Verifies: [RQ-AUTH-01](#RQ-AUTH-01)
 ```
-````
 
 In this example, a `verifies` edge of `TC-AUTH-01` -> `RQ-AUTH-01` is formed.
 `docgraph` reports an error if `RQ-AUTH-01` does not exist or if `TC-AUTH-01` is defined duplicately.
