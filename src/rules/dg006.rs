@@ -34,13 +34,17 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                         if let Some(min) = rule.min {
                             let count = sources.iter().filter(|t| rule.targets.contains(t)).count();
                             if count < min {
+                                let mut message = format!(
+                                    "Node '{}' (type {}) requires at least {} incoming relation(s) from {:?}, but found {}.",
+                                    block.id, prefix, min, rule.targets, count
+                                );
+                                if let Some(desc) = &rule.desc {
+                                    message.push_str(&format!(" (Description: {})", desc));
+                                }
                                 diagnostics.push(Diagnostic {
                                     severity: Severity::Error,
                                     code: "DG006".to_string(),
-                                    message: format!(
-                                        "Node '{}' (type {}) requires at least {} incoming relation(s) from {:?}, but found {}.",
-                                        block.id, prefix, min, rule.targets, count
-                                    ),
+                                    message,
                                     path: block.file_path.clone(),
                                     range: Range {
                                         start_line: block.line_start,
@@ -68,13 +72,17 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                                 .count();
 
                             if count < min {
+                                let mut message = format!(
+                                    "Node '{}' (type {}) requires at least {} outgoing relation(s) to {:?}, but found {}.",
+                                    block.id, prefix, min, rule.targets, count
+                                );
+                                if let Some(desc) = &rule.desc {
+                                    message.push_str(&format!(" (Description: {})", desc));
+                                }
                                 diagnostics.push(Diagnostic {
                                     severity: Severity::Error,
                                     code: "DG006".to_string(),
-                                    message: format!(
-                                        "Node '{}' (type {}) requires at least {} outgoing relation(s) to {:?}, but found {}.",
-                                        block.id, prefix, min, rule.targets, count
-                                    ),
+                                    message,
                                     path: block.file_path.clone(),
                                     range: Range {
                                         start_line: block.line_start,

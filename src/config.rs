@@ -42,6 +42,7 @@ pub struct RuleConfig {
     pub min: Option<usize>,
     #[allow(dead_code)]
     pub max: Option<usize>,
+    pub desc: Option<String>,
 }
 
 impl Config {
