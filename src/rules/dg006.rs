@@ -39,7 +39,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                                     block.id, prefix, min, rule.targets, count
                                 );
                                 if let Some(desc) = &rule.desc {
-                                    message.push_str(&format!("\nDescription: {}", desc));
+                                    message.push_str(&format!(" (Description: {})", desc));
                                 }
                                 diagnostics.push(Diagnostic {
                                     severity: Severity::Error,
@@ -77,7 +77,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                                     block.id, prefix, min, rule.targets, count
                                 );
                                 if let Some(desc) = &rule.desc {
-                                    message.push_str(&format!("\nDescription: {}", desc));
+                                    message.push_str(&format!(" (Description: {})", desc));
                                 }
                                 diagnostics.push(Diagnostic {
                                     severity: Severity::Error,
