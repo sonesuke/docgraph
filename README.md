@@ -63,6 +63,16 @@ docgraph list FR
 docgraph list "FR-*"
 ```
 
+Trace relationships between documents:
+
+```bash
+# Forward trace (outgoing references)
+docgraph trace REQ-001 TC-
+
+# Backward trace (incoming dependencies)
+docgraph trace TC-001 REQ- --direction up
+```
+
 ## MyST Support (Subset)
 
 This tool supports only the standard directive syntax of MyST. No custom extensions are used.
