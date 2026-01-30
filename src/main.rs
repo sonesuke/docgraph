@@ -142,7 +142,10 @@ fn main() -> ExitCode {
                     }
                 }
             } else {
-                eprintln!("Error: Invalid direction '{}'. Use 'down' or 'up'.", direction);
+                eprintln!(
+                    "Error: Invalid direction '{}'. Use 'down' or 'up'.",
+                    direction
+                );
                 return ExitCode::FAILURE;
             }
 
@@ -188,9 +191,9 @@ fn find_paths(
 ) {
     if target_re.is_match(current) && current_path.len() > 1 {
         paths.push(current_path.clone());
-        // Continue searching? In many trace cases, we want all paths, 
+        // Continue searching? In many trace cases, we want all paths,
         // but maybe stop at first match in this branch to avoid redundant sub-paths.
-        // Let's continue to find potentially deeper matches if they exist, 
+        // Let's continue to find potentially deeper matches if they exist,
         // but usually, once we hit a "FR-*" we might stop.
         // For simplicity, let's continue.
     }
@@ -200,14 +203,7 @@ fn find_paths(
             if !visited.contains(neighbor) {
                 visited.insert(neighbor.clone());
                 current_path.push(neighbor.clone());
-                find_paths(
-                    neighbor,
-                    target_re,
-                    adjacency,
-                    visited,
-                    current_path,
-                    paths,
-                );
+                find_paths(neighbor, target_re, adjacency, visited, current_path, paths);
                 current_path.pop();
                 visited.remove(neighbor);
             }
