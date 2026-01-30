@@ -126,7 +126,7 @@ fn glob_to_regex(glob: &str) -> String {
     for c in glob.chars() {
         match c {
             '*' => regex.push_str(".*"),
-            '?' => regex.push_str("."),
+            '?' => regex.push('.'),
             '.' | '+' | '(' | ')' | '[' | ']' | '{' | '}' | '^' | '$' | '|' | '\\' => {
                 regex.push('\\');
                 regex.push(c);
