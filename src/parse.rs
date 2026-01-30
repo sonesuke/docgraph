@@ -234,12 +234,15 @@ The following is not in a code block: [REQ-004](#REQ-004)
         assert_eq!(blocks.len(), 1);
         let b = &blocks[0];
         assert_eq!(b.id, "REQ-001");
-        
+
         // Should find REQ-002 and REQ-004, but NOT REQ-003
         let target_ids: Vec<String> = b.edges.iter().map(|e| e.id.clone()).collect();
         assert!(target_ids.contains(&"REQ-002".to_string()));
         assert!(target_ids.contains(&"REQ-004".to_string()));
-        assert!(!target_ids.contains(&"REQ-003".to_string()), "Should not extract refs from code blocks");
+        assert!(
+            !target_ids.contains(&"REQ-003".to_string()),
+            "Should not extract refs from code blocks"
+        );
     }
 
     #[test]
@@ -260,6 +263,9 @@ Another valid ref: [REF-003](#REF-003)
         let target_ids: Vec<String> = refs.iter().map(|r| r.target_id.clone()).collect();
         assert!(target_ids.contains(&"REF-001".to_string()));
         assert!(target_ids.contains(&"REF-003".to_string()));
-        assert!(!target_ids.contains(&"REF-002".to_string()), "Should not extract standalone refs from code blocks");
+        assert!(
+            !target_ids.contains(&"REF-002".to_string()),
+            "Should not extract standalone refs from code blocks"
+        );
     }
 }
