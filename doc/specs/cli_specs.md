@@ -59,6 +59,7 @@ docgraph describe <id>
 
 Output format:
 ```
+ID: Name
 ID references to
 target_id: target_name
 ...

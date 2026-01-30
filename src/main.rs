@@ -184,7 +184,8 @@ fn main() -> ExitCode {
 
             match target_block {
                 Some(block) => {
-                    println!("{} references to", id);
+                    println!("{}: {}", id, block.name.as_deref().unwrap_or("No description"));
+                    println!("\n{} references to", id);
                     for edge in &block.edges {
                         let name = blocks
                             .iter()
