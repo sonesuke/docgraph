@@ -33,6 +33,27 @@ fn main() -> ExitCode {
                 println!("{}", json_out);
             } else {
                 print_diagnostics(&diagnostics);
+
+                let error_count = diagnostics
+                    .iter()
+                    .filter(|d| matches!(d.severity, types::Severity::Error))
+                    .count();
+
+                if error_count == 0 {
+                    println!("No errors found.");
+                } else {
+                    if !fix {
+                        println!(
+                            "\nFound {} error(s). Run with --fix to automatically fix some issues.",
+                            error_count
+                        );
+                    } else {
+                        println!(
+                            "\nFound {} error(s) that could not be fixed automatically.",
+                            error_count
+                        );
+                    }
+                }
             }
 
             if diagnostics

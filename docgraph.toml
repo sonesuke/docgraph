@@ -85,9 +85,9 @@ rules = [
 # ========== Architecture Relations ==========
 
 [references.CTX]
-# Context View derives from Actor (via UC mapping) - treated as top-level entry for system context
+# Context View derives from Actor or refers to other high-level components for overview
 rules = [
-  { dir = "to", targets = ["ACT"], min = 1 }
+  { dir = "to", targets = ["ACT", "UC", "FR", "DAT", "IF", "ADR", "RT"], min = 0 }
 ]
 
 [references.BB]
