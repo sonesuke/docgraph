@@ -7,8 +7,8 @@ use std::path::Path;
 pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock> {
     let lines: Vec<&str> = content.lines().collect();
 
-    // Regex for <a id="XXX"></a> or <a id='XXX'></a>
-    let anchor_re = Regex::new(r#"<a\s+id=["']([^"']+)["']\s*>\s*</a>"#).unwrap();
+    // Regex for <a id="XXX"></a> or <a id='XXX'></a> (must be the entire line)
+    let anchor_re = Regex::new(r#"^<a\s+id=["']([^"']+)["']\s*>\s*</a>$"#).unwrap();
     // Regex for Markdown heading
     let heading_re = Regex::new(r"^(#{1,6})\s+(.+)$").unwrap();
     // Regex for Markdown links with fragment: [text](#ID) or [text](path#ID)
