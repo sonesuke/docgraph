@@ -38,19 +38,33 @@ fn main() -> ExitCode {
                     .iter()
                     .filter(|d| matches!(d.severity, types::Severity::Error))
                     .count();
+                let warning_count = diagnostics
+                    .iter()
+                    .filter(|d| matches!(d.severity, types::Severity::Warning))
+                    .count();
 
-                if error_count == 0 {
-                    println!("No errors found.");
+                if error_count == 0 && warning_count == 0 {
+                    println!("No errors or warnings found.");
                 } else {
+                    let mut summary = Vec::new();
+                    if error_count > 0 {
+                        summary.push(format!("{} error(s)", error_count));
+                    }
+                    if warning_count > 0 {
+                        summary.push(format!("{} warning(s)", warning_count));
+                    }
+
+                    let summary_str = summary.join(" and ");
+
                     if !fix {
                         println!(
-                            "\nFound {} error(s). Run with --fix to automatically fix some issues.",
-                            error_count
+                            "\nFound {}. Run with --fix to automatically fix some issues.",
+                            summary_str
                         );
                     } else {
                         println!(
-                            "\nFound {} error(s) that could not be fixed automatically.",
-                            error_count
+                            "\nFound {} that could not be fixed automatically.",
+                            summary_str
                         );
                     }
                 }
