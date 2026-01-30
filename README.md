@@ -53,6 +53,16 @@ Generate a graph JSON:
 docgraph gen --json
 ```
 
+List spec blocks matching a query:
+
+```bash
+# Prefix match (matches FR-ABC, FR-DEF, etc.)
+docgraph list FR
+
+# Wildcard match
+docgraph list "FR-*"
+```
+
 ## MyST Support (Subset)
 
 This tool supports only the standard directive syntax of MyST. No custom extensions are used.

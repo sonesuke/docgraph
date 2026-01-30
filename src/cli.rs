@@ -51,4 +51,13 @@ pub enum Commands {
         #[arg(default_value = ".")]
         path: PathBuf,
     },
+    /// List spec blocks matching a query
+    List {
+        /// Query pattern (e.g., "FR-*")
+        query: String,
+
+        /// Path to search for markdown files (defaults to current directory)
+        #[arg(default_value = ".")]
+        path: PathBuf,
+    },
 }
