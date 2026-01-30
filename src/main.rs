@@ -114,9 +114,101 @@ fn main() -> ExitCode {
                 }
             }
         }
+        Commands::Trace {
+            from,
+            to,
+            path,
+            direction,
+        } => {
+            let (blocks, _refs) = collect::collect_workspace_all(&path);
+            let target_regex_str = glob_to_regex(&to);
+            let target_re = regex::Regex::new(&target_regex_str).unwrap();
+
+            let mut adjacency: std::collections::HashMap<String, Vec<String>> =
+                std::collections::HashMap::new();
+
+            if direction == "down" {
+                for block in &blocks {
+                    let targets: Vec<String> = block.edges.iter().map(|e| e.id.clone()).collect();
+                    adjacency.insert(block.id.clone(), targets);
+                }
+            } else if direction == "up" {
+                for block in &blocks {
+                    for edge in &block.edges {
+                        adjacency
+                            .entry(edge.id.clone())
+                            .or_default()
+                            .push(block.id.clone());
+                    }
+                }
+            } else {
+                eprintln!(
+                    "Error: Invalid direction '{}'. Use 'down' or 'up'.",
+                    direction
+                );
+                return ExitCode::FAILURE;
+            }
+
+            if !blocks.iter().any(|b| b.id == from) && direction == "down" {
+                eprintln!("Error: Start ID '{}' not found.", from);
+            }
+
+            let mut paths = Vec::new();
+            let mut current_path = vec![from.clone()];
+            let mut visited = std::collections::HashSet::new();
+            visited.insert(from.clone());
+
+            find_paths(
+                &from,
+                &target_re,
+                &adjacency,
+                &mut visited,
+                &mut current_path,
+                &mut paths,
+            );
+
+            if paths.is_empty() {
+                println!("No paths found from '{}' to '{}'.", from, to);
+            } else {
+                for path in paths {
+                    let sep = if direction == "down" { " -> " } else { " <- " };
+                    println!("{}", path.join(sep));
+                }
+            }
+        }
     }
 
     ExitCode::SUCCESS
+}
+
+fn find_paths(
+    current: &str,
+    target_re: &regex::Regex,
+    adjacency: &std::collections::HashMap<String, Vec<String>>,
+    visited: &mut std::collections::HashSet<String>,
+    current_path: &mut Vec<String>,
+    paths: &mut Vec<Vec<String>>,
+) {
+    if target_re.is_match(current) && current_path.len() > 1 {
+        paths.push(current_path.clone());
+        // Continue searching? In many trace cases, we want all paths,
+        // but maybe stop at first match in this branch to avoid redundant sub-paths.
+        // Let's continue to find potentially deeper matches if they exist,
+        // but usually, once we hit a "FR-*" we might stop.
+        // For simplicity, let's continue.
+    }
+
+    if let Some(neighbors) = adjacency.get(current) {
+        for neighbor in neighbors {
+            if !visited.contains(neighbor) {
+                visited.insert(neighbor.clone());
+                current_path.push(neighbor.clone());
+                find_paths(neighbor, target_re, adjacency, visited, current_path, paths);
+                current_path.pop();
+                visited.remove(neighbor);
+            }
+        }
+    }
 }
 
 fn glob_to_regex(glob: &str) -> String {

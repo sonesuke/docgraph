@@ -60,4 +60,20 @@ pub enum Commands {
         #[arg(default_value = ".")]
         path: PathBuf,
     },
+    /// Trace relationships between spec blocks
+    Trace {
+        /// Start ID
+        from: String,
+
+        /// Target ID or prefix
+        to: String,
+
+        /// Path to search for markdown files (defaults to current directory)
+        #[arg(default_value = ".")]
+        path: PathBuf,
+
+        /// Direction of trace (down: outgoing, up: incoming)
+        #[arg(long, default_value = "down")]
+        direction: String,
+    },
 }
