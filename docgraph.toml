@@ -13,6 +13,7 @@ UC  = { desc = "Use Case" }
 FR  = { desc = "Functional Requirement" }
 NFR = { desc = "Non-Functional Requirement" }
 CON = { desc = "Constraint" }
+MOD = { desc = "Module" }
 
 
 # Architecture types (Core Dependency Model)
@@ -57,14 +58,15 @@ rules = [
 # Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
 rules = [
   { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Functional requirements are derived from business needs (UC) or constraints (CON) to clarify their existence" },
-  { dir = "to", targets = ["NFR", "CC", "IF", "DAT"], min = 0, desc = "Functional requirements must be traceable to non-functional requirements or defined data entities (DAT)" }
+  { dir = "to", targets = ["MOD"], min = 1, desc = "Each functional requirement must be realized by at least one module (MOD) to ensure implementation" },
+  { dir = "to", targets = ["NFR", "CC", "IF", "DAT"], min = 0, desc = "Functional requirements may be traceable to non-functional requirements or defined data entities (DAT)" }
 ]
 
 [references.NFR]
 # Non-Functional Requirement is derived from FR/Constraint and derives architecture
 rules = [
   { dir = "from", targets = ["FR", "CON"], min = 1, desc = "Non-functional requirements should be defined to meet specific functionality or overall constraints" },
-  { dir = "to", targets = ["CC"], min = 0, desc = "Non-functional requirements must be reflected in cross-cutting concerns (CC)" }
+  { dir = "to", targets = ["CC", "MOD"], min = 0, desc = "Non-functional requirements must be reflected in cross-cutting concerns (CC) or implementation modules (MOD)" }
 ]
 
 
@@ -85,4 +87,10 @@ rules = [
 # Architecture Decision derives Deployment
 rules = [
   { dir = "to", targets = ["DEP"], min = 0, desc = "Architectural decisions influence physical deployment configurations and implementation" }
+]
+
+[references.MOD]
+# Module is derived from Functional Requirements
+rules = [
+  { dir = "from", targets = ["FR"], min = 1, desc = "Each module must be justified by at least one functional requirement to ensure traceability" }
 ]

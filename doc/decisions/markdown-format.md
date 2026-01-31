@@ -16,7 +16,7 @@ Initially, reStructuredText (reST) and complex MyST directives were considered.
 
 ### Decision
 
-We will use **Plain Markdown** with **HTML anchor tags** (`<a id="..."></a>`) placed immediately before headings to define document IDs.
+We will use **Plain Markdown** with **HTML anchor tags** (`<a id="EXAMPLE-ID-2"></a>`) placed immediately before headings to define document IDs.
 
 ### Rationale
 
