@@ -1,13 +1,30 @@
 use super::common::glob_to_regex;
 use crate::core::{collect, config};
+use anyhow::Context;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
 pub fn handle_trace(from: String, to: String, path: PathBuf, direction: String) -> ExitCode {
-    let config = config::Config::load(&path).unwrap_or_default();
+    match try_trace(from, to, path, direction) {
+        Ok(code) => code,
+        Err(e) => {
+            eprintln!("Error: {:#}", e);
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn try_trace(
+    from: String,
+    to: String,
+    path: PathBuf,
+    direction: String,
+) -> anyhow::Result<ExitCode> {
+    let config = config::Config::load(&path).context("failed to load docgraph.toml")?;
     let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore);
     let target_regex_str = glob_to_regex(&to);
-    let target_re = regex::Regex::new(&target_regex_str).unwrap();
+    let target_re = regex::Regex::new(&target_regex_str)
+        .with_context(|| format!("Invalid target pattern: '{}'", to))?;
 
     let mut adjacency: std::collections::HashMap<String, Vec<String>> =
         std::collections::HashMap::new();
@@ -27,15 +44,11 @@ pub fn handle_trace(from: String, to: String, path: PathBuf, direction: String) 
             }
         }
     } else {
-        eprintln!(
-            "Error: Invalid direction '{}'. Use 'down' or 'up'.",
-            direction
-        );
-        return ExitCode::FAILURE;
+        anyhow::bail!("Invalid direction '{}'. Use 'down' or 'up'", direction);
     }
 
     if !blocks.iter().any(|b| b.id == from) && direction == "down" {
-        eprintln!("Error: Start ID '{}' not found.", from);
+        anyhow::bail!("Start ID '{}' not found", from);
     }
 
     let mut paths = Vec::new();
@@ -60,7 +73,7 @@ pub fn handle_trace(from: String, to: String, path: PathBuf, direction: String) 
             println!("{}", path.join(sep));
         }
     }
-    ExitCode::SUCCESS
+    Ok(ExitCode::SUCCESS)
 }
 
 fn find_paths(

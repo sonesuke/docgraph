@@ -2,13 +2,23 @@ use crate::core::rules;
 use std::process::ExitCode;
 
 pub fn handle_rule(rule: Option<String>) -> ExitCode {
+    match try_rule(rule) {
+        Ok(code) => code,
+        Err(e) => {
+            eprintln!("Error: {:#}", e);
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn try_rule(rule: Option<String>) -> anyhow::Result<ExitCode> {
     let rumdl_config = rumdl_lib::config::Config::default();
     let mut all_rules = rumdl_lib::rules::all_rules(&rumdl_config);
     all_rules.push(Box::new(rules::dg001::DG001));
     all_rules.push(Box::new(rules::dg002::DG002));
     all_rules.push(Box::new(rules::dg003::DG003));
     all_rules.push(Box::new(rules::dg004::DG004));
-    all_rules.push(Box::new(rules::dg004::DG004));
+    // TODO: Add DG005 and DG006 when they implement the Rule trait
 
     if let Some(rule_query) = rule {
         let rule_query = rule_query.to_ascii_uppercase();
@@ -25,8 +35,7 @@ pub fn handle_rule(rule: Option<String>) -> ExitCode {
                 rule.description()
             );
         } else {
-            eprintln!("Rule '{}' not found.", rule_query);
-            return ExitCode::FAILURE;
+            anyhow::bail!("Rule '{}' not found", rule_query);
         }
     } else {
         println!("Available rules:");
@@ -34,5 +43,5 @@ pub fn handle_rule(rule: Option<String>) -> ExitCode {
             println!("  {} - {}", rule.name(), rule.description());
         }
     }
-    ExitCode::SUCCESS
+    Ok(ExitCode::SUCCESS)
 }

@@ -12,3 +12,4 @@ Realized by:
 - [CC-DEPENDENCY-RULE (Overview)](../../architecture/design/dependency-rule.md#CC-DEPENDENCY-RULE)
 - [CC-SINGLE-RESPONSIBILITY (Overview)](../../architecture/design/single-responsibility.md#CC-SINGLE-RESPONSIBILITY)
 - [CC-THIN-HANDLERS (Overview)](../../architecture/design/thin-handlers.md#CC-THIN-HANDLERS)
+- [CC-ERROR-HANDLING (Overview)](../../architecture/design/error-handling.md#CC-ERROR-HANDLING)
