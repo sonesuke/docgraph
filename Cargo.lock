@@ -376,7 +376,9 @@ dependencies = [
  "rumdl",
  "serde",
  "serde_json",
+ "tokio",
  "toml 0.8.23",
+ "tower-lsp",
 ]
 
 [[package]]

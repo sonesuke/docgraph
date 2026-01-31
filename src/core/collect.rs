@@ -1,6 +1,6 @@
-use crate::parse::extract_all;
-use crate::types::{RefUse, SpecBlock};
-use crate::walk::find_markdown_files;
+use crate::core::parse::extract_all;
+use crate::core::types::{RefUse, SpecBlock};
+use crate::core::walk::find_markdown_files;
 use std::fs;
 use std::path::Path;
 
@@ -17,9 +17,7 @@ pub fn collect_workspace_all(root: &Path) -> (Vec<SpecBlock>, Vec<RefUse>) {
                 all_blocks.extend(blocks);
                 all_refs.extend(refs);
             }
-            Err(e) => {
-                eprintln!("Failed to read file {:?}: {}", file_path, e);
-            }
+            Err(_e) => {} // Silence read errors in core
         }
     }
     (all_blocks, all_refs)

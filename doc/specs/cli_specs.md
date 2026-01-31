@@ -74,5 +74,13 @@ target_id: target_name
 
 The following IDs are depends on ID
 source_id: source_name
+source_id: source_name
 ...
 ```
+
+<a id="IF-CLI-LSP"></a>
+
+### Command: `lsp`
+
+The `lsp` command shall start a Language Server Protocol (LSP) server communicating over standard input and output.
+It provides real-time diagnostics for document graph violations and broken links.

@@ -1,4 +1,4 @@
-use crate::types::Diagnostic;
+use crate::core::types::Diagnostic;
 use rumdl_lib::fix_coordinator::FixCoordinator;
 use rumdl_lib::workspace_index::WorkspaceIndex;
 
@@ -23,18 +23,18 @@ pub fn check_workspace(
     fix: bool,
     rule_filter: Option<Vec<String>>,
     use_docgraph_filter: bool,
-    config: &crate::config::Config,
+    config: &crate::core::config::Config,
 ) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
-    let files = crate::walk::find_markdown_files(path);
+    let files = crate::core::walk::find_markdown_files(path);
 
     let rumdl_config = rumdl_lib::config::Config::default();
     let mut all_rules = rumdl_lib::rules::all_rules(&rumdl_config);
     // Add custom docgraph rules
-    all_rules.push(Box::new(crate::rules::dg001::DG001));
-    all_rules.push(Box::new(crate::rules::dg002::DG002));
-    all_rules.push(Box::new(crate::rules::dg003::DG003));
-    all_rules.push(Box::new(crate::rules::dg004::DG004));
+    all_rules.push(Box::new(crate::core::rules::dg001::DG001));
+    all_rules.push(Box::new(crate::core::rules::dg002::DG002));
+    all_rules.push(Box::new(crate::core::rules::dg003::DG003));
+    all_rules.push(Box::new(crate::core::rules::dg004::DG004));
 
     let rules: Vec<Box<dyn rumdl_lib::rule::Rule>> = if let Some(names) = rule_filter {
         // Run only specific rules
@@ -76,7 +76,18 @@ pub fn check_workspace(
                     if let Some(_result) = fix_result.ok().filter(|r| r.rules_fixed > 0) {
                         let write_result = fs::write(file_path, &working_content);
                         if let Err(e) = write_result {
-                            eprintln!("Failed to write fixed file {:?}: {}", file_path, e);
+                            diagnostics.push(Diagnostic {
+                                severity: crate::core::types::Severity::Error,
+                                code: "DG000".to_string(),
+                                message: format!("Failed to write fixed file: {}", e),
+                                path: file_path.to_path_buf(),
+                                range: crate::core::types::Range {
+                                    start_line: 1,
+                                    start_col: 1,
+                                    end_line: 1,
+                                    end_col: 1,
+                                },
+                            });
                         }
                     }
                 }
@@ -107,13 +118,15 @@ pub fn check_workspace(
 
                         diagnostics.push(Diagnostic {
                             severity: match warning.severity {
-                                rumdl_lib::rule::Severity::Error => crate::types::Severity::Error,
-                                _ => crate::types::Severity::Warning,
+                                rumdl_lib::rule::Severity::Error => {
+                                    crate::core::types::Severity::Error
+                                }
+                                _ => crate::core::types::Severity::Warning,
                             },
                             code: rule_name.to_string(),
                             message: warning.message,
                             path: file_path.to_path_buf(),
-                            range: crate::types::Range {
+                            range: crate::core::types::Range {
                                 start_line: warning.line,
                                 start_col: warning.column,
                                 end_line: warning.line,
@@ -148,13 +161,13 @@ pub fn check_workspace(
 
                     diagnostics.push(Diagnostic {
                         severity: match warning.severity {
-                            rumdl_lib::rule::Severity::Error => crate::types::Severity::Error,
-                            _ => crate::types::Severity::Warning,
+                            rumdl_lib::rule::Severity::Error => crate::core::types::Severity::Error,
+                            _ => crate::core::types::Severity::Warning,
                         },
                         code: rule_name.to_string(),
                         message: warning.message.clone(),
                         path: file_path.to_path_buf(),
-                        range: crate::types::Range {
+                        range: crate::core::types::Range {
                             start_line: warning.line,
                             start_col: warning.column,
                             end_line: warning.line,
@@ -193,14 +206,14 @@ pub fn check_workspace(
 
     // Pass 3: Run custom docgraph workspace-level checks (DG005, DG006)
     // Collect docgraph's own SpecBlock data
-    let (spec_blocks, _refs) = crate::collect::collect_workspace_all(path);
+    let (spec_blocks, _refs) = crate::core::collect::collect_workspace_all(path);
 
     // DG005: Strict Node Types
-    let dg005_diags = crate::rules::dg005::check_strict_node_types(&spec_blocks, config);
+    let dg005_diags = crate::core::rules::dg005::check_strict_node_types(&spec_blocks, config);
     diagnostics.extend(dg005_diags);
 
     // DG006: Strict Relations
-    let dg006_diags = crate::rules::dg006::check_strict_relations(&spec_blocks, config);
+    let dg006_diags = crate::core::rules::dg006::check_strict_relations(&spec_blocks, config);
     diagnostics.extend(dg006_diags);
 
     diagnostics

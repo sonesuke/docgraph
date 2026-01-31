@@ -20,7 +20,7 @@ Docgraph is a specialized linter and graph generator for product documentation m
 | **Use Cases** | Core workflows and user goals. | [UC-WRITE (Write Specifications)](./usecases/core_workflows.md#UC-WRITE) |
 | **Requirements** | Functional and verification rules. | [FR-UNIQUE (Unique IDs)](./requirements/verification.md#FR-UNIQUE) |
 | **Model** | Internal data structures and configuration schema. | [DAT-DOC (Document Block)](./model/domain_model.md#DAT-DOC), [DAT-CONFIG (Config)](./model/config_model.md#DAT-CONFIG) |
-| **Specifications**| CLI behavior and interfaces. | [IF-CLI-LINT (Command: `lint`)](./specs/cli_specs.md#IF-CLI-LINT) |
+| **Specifications**| CLI behavior and interfaces. | [IF-CLI-LINT (Command: `lint`)](./specs/cli_specs.md#IF-CLI-LINT), [IF-LSP (Language Server)](./specs/lsp_specs.md#IF-LSP) |
 | **Architecture**  | Design decisions and rationale. | [ADR-MARKDOWN-FORMAT (Choice of Plain Markdown and HTML Anchors)](./decisions/markdown_format.md#ADR-MARKDOWN-FORMAT) |
 | **Quality** | Integration tests and validation scenarios. | [RT-INT-LINT (Lint Integration Test)](./tests/integration_metrics.md#RT-INT-LINT) |
 

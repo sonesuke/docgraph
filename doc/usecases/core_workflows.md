@@ -100,3 +100,16 @@ The [ACT-USER (User)](../actors/system_users.md#ACT-USER) inspects the detailed 
 2. User reviews the bidirectional relationship information (outgoing references and incoming dependencies).
 
 Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE)
+
+<a id="UC-EDITOR-LSP"></a>
+
+## Interactive Editing via LSP
+
+The [ACT-DEV (Developer)](../actors/system_users.md#ACT-DEV) uses a compatible editor to write and navigate specifications interactively.
+
+**Features used:**
+- **Navigation**: Jump to definition and find references.
+- **Verification**: Real-time linting diagnostics.
+- **Refactoring**: Workspace-wide renaming of SpecBlock IDs.
+
+Depends on: [ACT-DEV (Developer)](../actors/system_users.md#ACT-DEV), [UC-WRITE (Write Specifications)](#UC-WRITE), [IF-LSP (Language Server)](../specs/lsp_specs.md#IF-LSP)

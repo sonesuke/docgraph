@@ -1,5 +1,5 @@
-use crate::config::Config;
-use crate::types::{Diagnostic, Range, Severity, SpecBlock};
+use crate::core::config::Config;
+use crate::core::types::{Diagnostic, Range, Severity, SpecBlock};
 
 /// DG005: Strict Node Type Enforcement
 /// Validates that all documented IDs start with a registered prefix from docgraph.toml
