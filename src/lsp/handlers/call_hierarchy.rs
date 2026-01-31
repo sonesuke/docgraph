@@ -30,39 +30,41 @@ pub async fn prepare_call_hierarchy(
             }
         }
 
-        if let Some(id) = target_id {
-            if let Some(target_block) = blocks.iter().find(|b| b.id == id) {
-                if let Ok(target_uri) = Url::from_file_path(&target_block.file_path) {
-                    return Ok(Some(vec![CallHierarchyItem {
-                        name: target_block.name.clone().unwrap_or_else(|| id.clone()),
-                        kind: SymbolKind::INTERFACE,
-                        tags: None,
-                        detail: Some(id.clone()),
-                        uri: target_uri,
-                        range: Range {
-                            start: Position {
-                                line: target_block.line_start as u32 - 1,
-                                character: 0,
-                            },
-                            end: Position {
-                                line: target_block.line_start as u32 - 1,
-                                character: 0,
-                            },
-                        },
-                        selection_range: Range {
-                            start: Position {
-                                line: target_block.line_start as u32 - 1,
-                                character: 0,
-                            },
-                            end: Position {
-                                line: target_block.line_start as u32 - 1,
-                                character: 0,
-                            },
-                        },
-                        data: Some(serde_json::to_value(id).unwrap()),
-                    }]));
-                }
-            }
+        if let Some(id) = target_id
+            && let Some(target_block) = blocks.iter().find(|b| b.id == id)
+            && let Ok(target_uri) = Url::from_file_path(&target_block.file_path)
+        {
+            return Ok(Some(vec![CallHierarchyItem {
+                name: target_block
+                    .name
+                    .clone()
+                    .unwrap_or_else(|| id.clone()),
+                kind: SymbolKind::INTERFACE,
+                tags: None,
+                detail: Some(format!("Ref count: {}", target_block.edges.len())),
+                uri: target_uri,
+                range: Range {
+                    start: Position {
+                        line: target_block.line_start as u32 - 1,
+                        character: 0,
+                    },
+                    end: Position {
+                        line: target_block.line_start as u32 - 1,
+                        character: 0,
+                    },
+                },
+                selection_range: Range {
+                    start: Position {
+                        line: target_block.line_start as u32 - 1,
+                        character: 0,
+                    },
+                    end: Position {
+                        line: target_block.line_start as u32 - 1,
+                        character: 0,
+                    },
+                },
+                data: Some(serde_json::to_value(id).unwrap()),
+            }]));
         }
     }
     Ok(None)
@@ -97,40 +99,40 @@ pub async fn incoming_calls(
                 });
             }
         }
-        if !from_ranges.is_empty() {
-            if let Ok(u) = Url::from_file_path(&block.file_path) {
-                calls.push(CallHierarchyIncomingCall {
-                    from: CallHierarchyItem {
-                        name: block.name.clone().unwrap_or_else(|| block.id.clone()),
-                        kind: SymbolKind::INTERFACE,
-                        tags: None,
-                        detail: Some(block.id.clone()),
-                        uri: u,
-                        range: Range {
-                            start: Position {
-                                line: block.line_start as u32 - 1,
-                                character: 0,
-                            },
-                            end: Position {
-                                line: block.line_start as u32 - 1,
-                                character: 0,
-                            },
+        if !from_ranges.is_empty()
+            && let Ok(u) = Url::from_file_path(&block.file_path)
+        {
+            calls.push(CallHierarchyIncomingCall {
+                from: CallHierarchyItem {
+                    name: block.name.clone().unwrap_or_else(|| block.id.clone()),
+                    kind: SymbolKind::INTERFACE,
+                    tags: None,
+                    detail: None,
+                    uri: u,
+                    range: Range {
+                        start: Position {
+                            line: block.line_start as u32 - 1,
+                            character: 0,
                         },
-                        selection_range: Range {
-                            start: Position {
-                                line: block.line_start as u32 - 1,
-                                character: 0,
-                            },
-                            end: Position {
-                                line: block.line_start as u32 - 1,
-                                character: 0,
-                            },
+                        end: Position {
+                            line: block.line_start as u32 - 1,
+                            character: 0,
                         },
-                        data: Some(serde_json::to_value(block.id.clone()).unwrap()),
                     },
-                    from_ranges,
-                });
-            }
+                    selection_range: Range {
+                        start: Position {
+                            line: block.line_start as u32 - 1,
+                            character: 0,
+                        },
+                        end: Position {
+                            line: block.line_start as u32 - 1,
+                            character: 0,
+                        },
+                    },
+                    data: Some(serde_json::to_value(&block.id).unwrap()),
+                },
+                from_ranges,
+            });
         }
     }
     Ok(Some(calls))
@@ -165,43 +167,43 @@ pub async fn outgoing_calls(
             });
         }
         for (target_id, from_ranges) in targets {
-            if let Some(target_block) = blocks.iter().find(|b| b.id == target_id) {
-                if let Ok(u) = Url::from_file_path(&target_block.file_path) {
-                    calls.push(CallHierarchyOutgoingCall {
-                        to: CallHierarchyItem {
-                            name: target_block
-                                .name
-                                .clone()
-                                .unwrap_or_else(|| target_id.clone()),
-                            kind: SymbolKind::INTERFACE,
-                            tags: None,
-                            detail: Some(target_id.clone()),
-                            uri: u,
-                            range: Range {
-                                start: Position {
-                                    line: target_block.line_start as u32 - 1,
-                                    character: 0,
-                                },
-                                end: Position {
-                                    line: target_block.line_start as u32 - 1,
-                                    character: 0,
-                                },
+            if let Some(target_block) = blocks.iter().find(|b| b.id == target_id)
+                && let Ok(u) = Url::from_file_path(&target_block.file_path)
+            {
+                calls.push(CallHierarchyOutgoingCall {
+                    to: CallHierarchyItem {
+                        name: target_block
+                            .name
+                            .clone()
+                            .unwrap_or_else(|| target_id.clone()),
+                        kind: SymbolKind::INTERFACE,
+                        tags: None,
+                        detail: None,
+                        uri: u,
+                        range: Range {
+                            start: Position {
+                                line: target_block.line_start as u32 - 1,
+                                character: 0,
                             },
-                            selection_range: Range {
-                                start: Position {
-                                    line: target_block.line_start as u32 - 1,
-                                    character: 0,
-                                },
-                                end: Position {
-                                    line: target_block.line_start as u32 - 1,
-                                    character: 0,
-                                },
+                            end: Position {
+                                line: target_block.line_start as u32 - 1,
+                                character: 0,
                             },
-                            data: Some(serde_json::to_value(target_id).unwrap()),
                         },
-                        from_ranges,
-                    });
-                }
+                        selection_range: Range {
+                            start: Position {
+                                line: target_block.line_start as u32 - 1,
+                                character: 0,
+                            },
+                            end: Position {
+                                line: target_block.line_start as u32 - 1,
+                                character: 0,
+                            },
+                        },
+                        data: Some(serde_json::to_value(target_id).unwrap()),
+                    },
+                    from_ranges,
+                });
             }
         }
     }

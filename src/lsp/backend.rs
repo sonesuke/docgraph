@@ -85,12 +85,11 @@ impl LanguageServer for Backend {
             if let Ok(path) = uri.to_file_path() {
                 *root = Some(path);
             }
-        } else if let Some(folders) = params.workspace_folders {
-            if let Some(folder) = folders.first() {
-                if let Ok(path) = folder.uri.to_file_path() {
-                    *root = Some(path);
-                }
-            }
+        } else if let Some(folders) = params.workspace_folders
+            && let Some(folder) = folders.first()
+            && let Ok(path) = folder.uri.to_file_path()
+        {
+            *root = Some(path);
         }
 
         Ok(InitializeResult {

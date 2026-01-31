@@ -37,24 +37,23 @@ pub async fn goto_definition(
             }
         }
 
-        if let Some(id) = target_id {
-            if let Some(target_block) = blocks.iter().find(|b| b.id == id) {
-                if let Ok(target_uri) = Url::from_file_path(&target_block.file_path) {
-                    return Ok(Some(GotoDefinitionResponse::Scalar(Location {
-                        uri: target_uri,
-                        range: Range {
-                            start: Position {
-                                line: target_block.line_start as u32 - 1,
-                                character: 0,
-                            },
-                            end: Position {
-                                line: target_block.line_start as u32 - 1,
-                                character: 0,
-                            },
-                        },
-                    })));
-                }
-            }
+        if let Some(id) = target_id
+            && let Some(target_block) = blocks.iter().find(|b| b.id == id)
+            && let Ok(target_uri) = Url::from_file_path(&target_block.file_path)
+        {
+            return Ok(Some(GotoDefinitionResponse::Scalar(Location {
+                uri: target_uri,
+                range: Range {
+                    start: Position {
+                        line: target_block.line_start as u32 - 1,
+                        character: 0,
+                    },
+                    end: Position {
+                        line: target_block.line_start as u32 - 1,
+                        character: 0,
+                    },
+                },
+            })));
         }
     }
     Ok(None)

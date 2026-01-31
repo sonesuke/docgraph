@@ -41,29 +41,27 @@ pub async fn hover(backend: &Backend, params: HoverParams) -> Result<Option<Hove
             }
         }
 
-        if let Some(id) = target_id {
-            if let Some(target_block) = blocks.iter().find(|b| b.id == id) {
-                let title = target_block.name.as_deref().unwrap_or(&id);
-                let mut markdown = format!("**{}** ({})", title, id);
-                let ref_count = blocks
-                    .iter()
-                    .flat_map(|b| b.edges.iter())
-                    .filter(|e| e.id == id)
-                    .count()
-                    + refs.iter().filter(|r| r.target_id == id).count();
-                markdown.push_str(&format!(
-                    "\n\nReferenced {} times in the workspace.",
-                    ref_count
-                ));
+        if let Some(id) = target_id
+            && let Some(target_block) = blocks.iter().find(|b| b.id == id)
+        {
+            let title = target_block.name.as_deref().unwrap_or(&id);
+            let mut markdown = format!("**{}** ({})", title, id);
 
-                return Ok(Some(Hover {
-                    contents: HoverContents::Markup(MarkupContent {
-                        kind: MarkupKind::Markdown,
-                        value: markdown,
-                    }),
-                    range: None,
-                }));
-            }
+            let incoming = blocks
+                .iter()
+                .filter(|b| b.edges.iter().any(|e| e.id == id))
+                .count();
+            let outgoing = target_block.edges.len();
+
+            markdown.push_str(&format!(
+                "\n\nIncoming: {} | Outgoing: {}",
+                incoming, outgoing
+            ));
+
+            return Ok(Some(Hover {
+                contents: HoverContents::Scalar(MarkedString::String(markdown)),
+                range: None,
+            }));
         }
     }
     Ok(None)

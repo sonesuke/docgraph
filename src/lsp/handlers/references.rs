@@ -44,42 +44,42 @@ pub async fn references(
             let mut locations = Vec::new();
             for block in blocks.iter() {
                 for edge in &block.edges {
-                    if edge.id == id {
-                        if let Ok(u) = Url::from_file_path(&block.file_path) {
-                            locations.push(Location {
-                                uri: u,
-                                range: Range {
-                                    start: Position {
-                                        line: edge.line as u32 - 1,
-                                        character: edge.col_start as u32 - 1,
-                                    },
-                                    end: Position {
-                                        line: edge.line as u32 - 1,
-                                        character: edge.col_end as u32 - 1,
-                                    },
-                                },
-                            });
-                        }
-                    }
-                }
-            }
-            for r in refs.iter() {
-                if r.target_id == id {
-                    if let Ok(u) = Url::from_file_path(&r.file_path) {
+                    if edge.id == id
+                        && let Ok(u) = Url::from_file_path(&block.file_path)
+                    {
                         locations.push(Location {
                             uri: u,
                             range: Range {
                                 start: Position {
-                                    line: r.line as u32 - 1,
-                                    character: r.col_start as u32 - 1,
+                                    line: edge.line as u32 - 1,
+                                    character: edge.col_start as u32 - 1,
                                 },
                                 end: Position {
-                                    line: r.line as u32 - 1,
-                                    character: r.col_end as u32 - 1,
+                                    line: edge.line as u32 - 1,
+                                    character: edge.col_end as u32 - 1,
                                 },
                             },
                         });
                     }
+                }
+            }
+            for r in refs.iter() {
+                if r.target_id == id
+                    && let Ok(u) = Url::from_file_path(&r.file_path)
+                {
+                    locations.push(Location {
+                        uri: u,
+                        range: Range {
+                            start: Position {
+                                line: r.line as u32 - 1,
+                                character: r.col_start as u32 - 1,
+                            },
+                            end: Position {
+                                line: r.line as u32 - 1,
+                                character: r.col_end as u32 - 1,
+                            },
+                        },
+                    });
                 }
             }
             return Ok(Some(locations));
