@@ -27,6 +27,7 @@ docgraph list FR
 ```
 
 Output format:
+
 ```text
 ID : Description
 ```
@@ -40,6 +41,7 @@ The `trace` command shall find and display all paths between a start ID and targ
 ```bash
 docgraph trace <from> <to> [--direction <down|up>]
 ```
+
 - `<from>`: The starting SpecBlock ID.
 - `<to>`: Target ID or prefix (supports wildcards).
 - `--direction`:
@@ -51,6 +53,7 @@ Output format:
 ```text
 ID1 -> ID2 -> ID3
 ```
+
 (Using `<-` for `up` direction)
 
 <a id="IF-CLI-DESCRIBE"></a>
@@ -62,6 +65,7 @@ The `describe` command shall display the details and relationships of a specific
 ```bash
 docgraph describe <id>
 ```
+
 - `<id>`: The ID of the SpecBlock to describe.
 
 Output format:

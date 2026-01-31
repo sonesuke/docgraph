@@ -1,6 +1,6 @@
 # Documentation Overview
 
-<a id="CTX-OVERVIEW"></a>
+<a id="IF-OVERVIEW"></a>
 
 ## Project Context
 
@@ -16,14 +16,13 @@ Docgraph is a specialized linter and graph generator for product documentation m
 
 | Category | Description | Key Documents |
 | :--- | :--- | :--- |
-| **Actors** | Systems and users interacting with the system. | [ACT-USER (User)](./actors/system_users.md#ACT-USER) |
-| **Use Cases** | Core workflows and user goals. | [UC-WRITE (Write Specifications)](./usecases/core_workflows.md#UC-WRITE) |
-| **Requirements** | Functional and verification rules. | [FR-UNIQUE (Unique IDs)](./requirements/verification.md#FR-UNIQUE) |
-| **Specifications**| CLI behavior and interfaces. | [IF-CLI-LINT (Command: `lint`)](./specs/cli_specs.md#IF-CLI-LINT), [IF-LSP (Language Server)](./specs/lsp_specs.md#IF-LSP), [IF-CONFIG (docgraph.toml)](./specs/config_specs.md#IF-CONFIG) |
-| **Architecture**  | Design decisions and rationale. | [ADR-MARKDOWN-FORMAT (Choice of Plain Markdown and HTML Anchors)](./decisions/markdown_format.md#ADR-MARKDOWN-FORMAT) |
-| **Model** | Internal data structures. | [DAT-DOC (Document Block)](./model/domain_model.md#DAT-DOC) |
-| **Quality** | Integration tests and validation scenarios. | [RT-INT-LINT (Lint Integration Test)](./tests/integration_metrics.md#RT-INT-LINT) |
-| **Development** | Onboarding guide and architecture for developers. | [Developer Guide](./devel/guide.md) |
+| **Actors** | Systems and users interacting with the system. | [ACT-USER (User)](./actors/users.md#ACT-USER) |
+| **Use Cases** | Core workflows and user goals. | [UC-WRITE (Write Specifications)](./usecases/authoring.md#UC-WRITE) |
+| **Requirements** | Functional and verification rules. | [FR-UNIQUE (Unique IDs)](./requirements/functional/verification.md#FR-UNIQUE), [NFR-PERF (High Performance)](./requirements/non-functional/performance.md#NFR-PERF), [NFR-EXT (Modular Design)](./requirements/non-functional/extensibility.md#NFR-EXT) |
+| **Constraints** | System-wide limitations and technology choices. | [CON-PERF (High Performance)](./constraints/development.md#CON-PERF), [CON-SOLO (Solo Development)](./constraints/development.md#CON-SOLO), [CON-EXT (Extensibility)](./constraints/development.md#CON-EXT) |
+| **Specifications**| CLI behavior and interfaces. | [IF-CLI-LINT (Command: `lint`)](./requirements/interfaces/cli-specs.md#IF-CLI-LINT), [IF-LSP (Language Server Protocol (LSP) Support)](./requirements/interfaces/lsp-specs.md#IF-LSP), [IF-CONFIG (docgraph.toml Configuration)](./requirements/interfaces/config-specs.md#IF-CONFIG) |
+| **Architecture**  | Design decisions and rationale. | [ADR-MARKDOWN-FORMAT (Choice of Plain Markdown and HTML Anchors)](./decisions/markdown-format.md#ADR-MARKDOWN-FORMAT) |
+| **Development** | Onboarding guide and architecture for developers. | [Developer Guide](./architecture/view/guide.md) |
 
 ### Getting Started
 

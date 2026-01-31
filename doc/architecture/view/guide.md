@@ -5,6 +5,7 @@ Welcome to the `docgraph` project! This guide is designed to help you get up to 
 ## Quick Start
 
 ### 1. Environment Setup
+
 `docgraph` is built with Rust. Ensure you have the latest stable toolchain installed:
 
 ```bash
@@ -13,6 +14,7 @@ rustup component add clippy rustfmt llvm-tools-preview
 ```
 
 ### 2. Building the Project
+
 Clone the repository and build using cargo:
 
 ```bash
@@ -22,6 +24,7 @@ cargo build
 ```
 
 ### 3. Running docgraph
+
 You can run the CLI directly using `cargo run`:
 
 ```bash
@@ -42,13 +45,16 @@ The project is split into several main areas:
 
 - **Formatting**: Always run `cargo fmt` before committing.
 - **Linting**: We use Clippy to ensure idiomatic code. The CI will fail if there are any warnings.
+
   ```bash
   cargo clippy -- -D warnings
   ```
+
 - **Security**: Be mindful of dependency security. CI includes a `cargo audit` step.
 
 ---
 
 For deeper insights, check out:
-- [Architecture Overview](./architecture.md)
+
+- [Architecture Overview](../design/architecture.md)
 - [Testing & Coverage](./testing.md)
