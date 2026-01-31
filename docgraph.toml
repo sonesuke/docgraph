@@ -68,20 +68,18 @@ rules = [
   { dir = "to", targets = ["CC"], min = 0, desc = "Non-functional requirements must be reflected in cross-cutting concerns (CC)" }
 ]
 
-[references.ERR]
-# Error is derived from Functional Requirement
-rules = [
-  { dir = "from", targets = ["FR"], min = 1, desc = "Defined error states must relate to the behavior (abnormal flow) of at least one functional requirement" }
-]
 
 [references.CON]
 # Constraint derives Functional/Non-Functional Requirements
 rules = [
   { dir = "to", targets = ["FR", "NFR"], min = 1, desc = "Constraints must be embodied as specific functional or quality requirements for the system" }
 
-# ========== Architecture Relations ==========
 
-
+[references.CON]
+# Constraint derives Functional/Non-Functional Requirements
+rules = [
+  { dir = "to", targets = ["FR", "NFR"], min = 1, desc = "Constraints must be embodied as specific functional or quality requirements for the system" }
+]
 
 [references.CC]
 # Cross-cutting Concept is derived from Requirements and derives Decisions
