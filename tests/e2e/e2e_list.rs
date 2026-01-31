@@ -1,10 +1,9 @@
-use assert_cmd::Command;
+
 use predicates::prelude::*;
 
 #[test]
 fn list_help_works() {
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("list")
         .arg("--help")
         .assert()
@@ -25,8 +24,7 @@ fn list_all_nodes() {
         "<a id=\"TEST-02\"></a>\n\n# Second\n",
     );
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("list")
         .arg("*")
         .arg(tmp.path())
@@ -47,8 +45,7 @@ fn list_with_pattern() {
         "<a id=\"REQ-01\"></a>\n\n# Requirement\n",
     );
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("list")
         .arg("TEST-*")
         .arg(tmp.path())
@@ -62,8 +59,7 @@ fn list_with_pattern() {
 fn list_empty_directory() {
     let tmp = crate::common::setup_temp_dir();
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("list")
         .arg("*")
         .arg(tmp.path())

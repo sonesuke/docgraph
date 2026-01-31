@@ -1,4 +1,4 @@
-use assert_cmd::Command;
+
 use std::path::Path;
 
 fn create_doc_missing_heading(dir: &Path, id: &str) -> std::path::PathBuf {
@@ -20,8 +20,7 @@ use predicates::prelude::*;
 
 #[test]
 fn check_help_works() {
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("check")
         .arg("--help")
         .assert()
@@ -35,8 +34,7 @@ fn check_valid_doc_succeeds() {
     crate::common::create_config(tmp.path(), crate::common::default_config());
     crate::common::create_valid_doc(tmp.path(), "TEST-01", "Test Document");
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("check")
         .arg(tmp.path())
         .assert()
@@ -50,8 +48,7 @@ fn check_missing_heading_fails() {
     crate::common::create_config(tmp.path(), crate::common::default_config());
     create_doc_missing_heading(tmp.path(), "TEST-01");
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("check")
         .arg(tmp.path())
         .assert()
@@ -66,8 +63,7 @@ fn check_duplicate_id_fails() {
     crate::common::create_config(tmp.path(), crate::common::default_config());
     create_docs_with_duplicate_id(tmp.path(), "TEST-01");
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("check")
         .arg(tmp.path())
         .assert()
@@ -82,8 +78,7 @@ fn check_json_output() {
     crate::common::create_config(tmp.path(), crate::common::default_config());
     crate::common::create_valid_doc(tmp.path(), "TEST-01", "Test");
 
-    let output = Command::cargo_bin("docgraph")
-        .unwrap()
+    let output = assert_cmd::cargo_bin_cmd!()
         .arg("check")
         .arg("--json")
         .arg(tmp.path())
@@ -104,8 +99,7 @@ fn check_with_rule_filter() {
     create_doc_missing_heading(tmp.path(), "TEST-01");
 
     // Run only DG001
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("check")
         .arg("--rule")
         .arg("DG001")
@@ -119,8 +113,7 @@ fn check_with_rule_filter() {
 fn check_empty_directory() {
     let tmp = crate::common::setup_temp_dir();
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("check")
         .arg(tmp.path())
         .assert()
@@ -130,8 +123,7 @@ fn check_empty_directory() {
 
 #[test]
 fn check_nonexistent_path_fails() {
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("check")
         .arg("/nonexistent/path/that/does/not/exist")
         .assert()
@@ -144,8 +136,7 @@ fn check_with_config_file() {
     crate::common::create_config(tmp.path(), crate::common::default_config());
     crate::common::create_valid_doc(tmp.path(), "TEST-01", "Test");
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("check")
         .arg(tmp.path())
         .assert()
@@ -169,8 +160,7 @@ TEST = { desc = "Test node" }
     // Valid node type
     crate::common::create_valid_doc(tmp.path(), "TEST-01", "Test");
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("check")
         .arg(tmp.path())
         .assert()
@@ -183,8 +173,7 @@ TEST = { desc = "Test node" }
         "<a id=\"INVALID-01\"></a>\n\n# Invalid\n",
     );
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("check")
         .arg(tmp.path())
         .assert()

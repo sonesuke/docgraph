@@ -1,10 +1,9 @@
-use assert_cmd::Command;
+
 use predicates::prelude::*;
 
 #[test]
 fn graph_help_works() {
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("graph")
         .arg("--help")
         .assert()
@@ -18,8 +17,7 @@ fn graph_json_output() {
     crate::common::create_config(tmp.path(), crate::common::default_config());
     crate::common::create_valid_doc(tmp.path(), "TEST-01", "Test");
 
-    let output = Command::cargo_bin("docgraph")
-        .unwrap()
+    let output = assert_cmd::cargo_bin_cmd!()
         .arg("graph")
         .arg(tmp.path())
         .assert()
@@ -48,8 +46,7 @@ fn graph_with_references() {
         "<a id=\"TEST-02\"></a>\n\n# Target\n",
     );
 
-    let output = Command::cargo_bin("docgraph")
-        .unwrap()
+    let output = assert_cmd::cargo_bin_cmd!()
         .arg("graph")
         .arg(tmp.path())
         .assert()
@@ -67,8 +64,7 @@ fn graph_with_references() {
 fn graph_empty_directory() {
     let tmp = crate::common::setup_temp_dir();
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("graph")
         .arg(tmp.path())
         .assert()

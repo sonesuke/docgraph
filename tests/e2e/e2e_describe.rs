@@ -1,10 +1,9 @@
-use assert_cmd::Command;
+
 use predicates::prelude::*;
 
 #[test]
 fn describe_help_works() {
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("describe")
         .arg("--help")
         .assert()
@@ -18,8 +17,7 @@ fn describe_existing_node() {
     crate::common::create_config(tmp.path(), crate::common::default_config());
     crate::common::create_valid_doc(tmp.path(), "TEST-01", "Test Document");
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("describe")
         .arg("TEST-01")
         .arg(tmp.path())
@@ -44,8 +42,7 @@ fn describe_with_references() {
         "<a id=\"TEST-02\"></a>\n\n# Target\n",
     );
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("describe")
         .arg("TEST-01")
         .arg(tmp.path())
@@ -60,8 +57,7 @@ fn describe_nonexistent_node() {
     let tmp = crate::common::setup_temp_dir();
     crate::common::create_config(tmp.path(), crate::common::default_config());
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("describe")
         .arg("NONEXISTENT")
         .arg(tmp.path())

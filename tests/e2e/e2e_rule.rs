@@ -1,10 +1,9 @@
-use assert_cmd::Command;
+
 use predicates::prelude::*;
 
 #[test]
 fn rule_help_works() {
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("rule")
         .arg("--help")
         .assert()
@@ -16,8 +15,7 @@ fn rule_help_works() {
 
 #[test]
 fn rule_list_all() {
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("rule")
         .assert()
         .success()
@@ -28,8 +26,7 @@ fn rule_list_all() {
 
 #[test]
 fn rule_show_specific() {
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("rule")
         .arg("DG001")
         .assert()
@@ -39,8 +36,7 @@ fn rule_show_specific() {
 
 #[test]
 fn rule_not_found() {
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("rule")
         .arg("NONEXISTENT")
         .assert()
@@ -50,8 +46,7 @@ fn rule_not_found() {
 
 #[test]
 fn rule_case_insensitive() {
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("rule")
         .arg("dg001")
         .assert()

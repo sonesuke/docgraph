@@ -1,10 +1,9 @@
-use assert_cmd::Command;
+
 use predicates::prelude::*;
 
 #[test]
 fn trace_help_works() {
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("trace")
         .arg("--help")
         .assert()
@@ -25,8 +24,7 @@ fn trace_direct_path() {
     );
     crate::common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("trace")
         .arg("TEST-A")
         .arg("TEST-B")
@@ -48,8 +46,7 @@ fn trace_with_direction_down() {
     );
     crate::common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("trace")
         .arg("TEST-A")
         .arg("TEST-B")
@@ -71,8 +68,7 @@ fn trace_with_direction_up() {
     );
     crate::common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("trace")
         .arg("TEST-B")
         .arg("TEST-A")
@@ -90,8 +86,7 @@ fn trace_no_path_found() {
     crate::common::create_valid_doc(tmp.path(), "TEST-A", "A");
     crate::common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("trace")
         .arg("TEST-A")
         .arg("TEST-B")
@@ -105,8 +100,7 @@ fn trace_no_path_found() {
 fn trace_invalid_direction() {
     let tmp = crate::common::setup_temp_dir();
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
+    assert_cmd::cargo_bin_cmd!()
         .arg("trace")
         .arg("TEST-A")
         .arg("TEST-B")
