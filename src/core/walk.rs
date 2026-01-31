@@ -21,10 +21,10 @@ pub fn find_markdown_files(root: &Path, ignore_patterns: &[String]) -> Vec<PathB
             let is_dir = entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
             let rel_path = path.strip_prefix(&root_owned).unwrap_or(path);
 
-            if let Some(m) = &ignore_matcher {
-                if m.matched(rel_path, is_dir).is_ignore() {
-                    return false;
-                }
+            if let Some(m) = &ignore_matcher
+                && m.matched(rel_path, is_dir).is_ignore()
+            {
+                return false;
             }
             true
         })
