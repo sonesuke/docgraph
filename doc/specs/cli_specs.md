@@ -1,26 +1,28 @@
-
 # CLI Specifications
 
-<a id="IF-CLI-LINT"></a>
-
-## Command: `lint`
+```{document} CLI Lint Specification
+:id: SPEC-CLI-LINT
+:kind: specification
 
 The `lint` command shall parse all Markdown files in the target directory, build the graph, and report any violations of validation rules.
+```
 
-<a id="IF-CLI-GRAPH"></a>
+```{document} CLI Gen Specification
+:id: SPEC-CLI-GEN
+:kind: specification
 
-### Command: `graph`
+The `gen` command shall output the graph structure in JSON format.
+```
 
-The `graph` command shall output the graph structure in JSON format.
-
-<a id="IF-CLI-LIST"></a>
-
-### Command: `list`
+```{document} CLI List Specification
+:id: SPEC-CLI-LIST
+:kind: specification
 
 The `list` command shall output spec blocks matching a specific query with their names.
 The query can contain wildcards (`*` and `?`).
 If no wildcards are present, the command performs a prefix match (forward match).
 
+Usage:
 ```bash
 docgraph list "FR-*"
 docgraph list FR
@@ -30,42 +32,44 @@ Output format:
 ```text
 ID : Description
 ```
+```
 
-<a id="IF-CLI-TRACE"></a>
-
-### Command: `trace`
+```{document} CLI Trace Specification
+:id: SPEC-CLI-TRACE
+:kind: specification
 
 The `trace` command shall find and display all paths between a start ID and target IDs matching a query.
 
+Usage:
 ```bash
 docgraph trace <from> <to> [--direction <down|up>]
 ```
 - `<from>`: The starting SpecBlock ID.
-- `<to>`: Target ID or prefix (supports wildcards).
+- `<to>` : Target ID or prefix (supports wildcards).
 - `--direction`:
   - `down` (default): Follow outgoing links (references).
   - `up`: Follow incoming links (reverse references).
 
 Output format:
-
 ```text
 ID1 -> ID2 -> ID3
 ```
 (Using `<-` for `up` direction)
+```
 
-<a id="IF-CLI-DESCRIBE"></a>
-
-### Command: `describe`
+```{document} CLI Describe Specification
+:id: SPEC-CLI-DESCRIBE
+:kind: specification
 
 The `describe` command shall display the details and relationships of a specific SpecBlock.
 
+Usage:
 ```bash
 docgraph describe <id>
 ```
 - `<id>`: The ID of the SpecBlock to describe.
 
 Output format:
-
 ```text
 ID: Name
 ID references to
@@ -74,13 +78,6 @@ target_id: target_name
 
 The following IDs are depends on ID
 source_id: source_name
-source_id: source_name
 ...
 ```
-
-<a id="IF-CLI-LSP"></a>
-
-### Command: `lsp`
-
-The `lsp` command shall start a Language Server Protocol (LSP) server communicating over standard input and output.
-It provides real-time diagnostics for document graph violations and broken links.
+```

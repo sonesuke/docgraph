@@ -4,7 +4,7 @@
 [graph]
 strict_node_types = true
 strict_relations  = true
-doc_types = ["ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+doc_types = ["ACT", "DAT", "SPEC", "ADR", "TERM", "FC"]
 
 [node_types]
 # Core specification types
@@ -20,11 +20,12 @@ BB  = { desc = "Building Block" }
 RT  = { desc = "Runtime View Scenario" }
 DEP = { desc = "Deployment Element" }
 CC  = { desc = "Cross-cutting Concept" }
+TEST = { desc = "Test Specification" }
 
 # Documentation types (can be referenced by all core types)
 ACT  = { desc = "Actor" }
 DAT  = { desc = "Data Entity" }
-IF   = { desc = "Interface Specification" }
+SPEC = { desc = "Specification" }
 ADR  = { desc = "Architecture Decision Record" }
 TERM = { desc = "Terminology/Glossary" }
 FC   = { desc = "Future Consideration" }
@@ -39,7 +40,7 @@ FC   = { desc = "Future Consideration" }
 [references.UC]
 # Use Case derives Actor, Interface, and Requirements
 rules = [
-  { dir = "to", targets = ["ACT", "IF", "FR", "UC"], min = 0, desc = "Use cases serve as the foundation for actor behavior, interfaces, and functional requirements" }
+  { dir = "to", targets = ["ACT", "SPEC", "FR", "UC"], min = 0, desc = "Use cases serve as the foundation for actor behavior, interfaces, and functional requirements" }
 ]
 
 [references.ACT]
@@ -48,7 +49,7 @@ rules = [
   { dir = "from", targets = ["UC"], min = 1, desc = "System actors must be involved in at least one use case to ensure they are defined and relevant" }
 ]
 
-[references.IF]
+[references.SPEC]
 # Interface is derived from Use Case
 rules = [
   { dir = "from", targets = ["UC"], min = 1, desc = "Exposed interfaces must be justified by business use cases" }
@@ -60,7 +61,7 @@ rules = [
 # Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
 rules = [
   { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Functional requirements are derived from business needs (UC) or constraints (CON) to clarify their existence" },
-  { dir = "to", targets = ["NFR", "ERR", "BB", "RT", "CC", "IF"], min = 0, desc = "Functional requirements must be traceable to non-functional requirements or detailed designs (BB)" }
+  { dir = "to", targets = ["NFR", "ERR", "BB", "RT", "CC", "SPEC"], min = 0, desc = "Functional requirements must be traceable to non-functional requirements or detailed designs (BB)" }
 ]
 
 [references.NFR]
@@ -87,7 +88,7 @@ rules = [
 [references.CTX]
 # Context View derives from Actor (via UC mapping) - treated as top-level entry for system context
 rules = [
-  { dir = "to", targets = ["ACT", "UC", "FR", "DAT", "IF", "ADR", "RT"], min = 0, desc = "Context views aggregate major elements from all layers to explain the overall system picture" }
+  { dir = "to", targets = ["ACT", "UC", "FR", "DAT", "SPEC", "ADR", "RT"], min = 0, desc = "Context views aggregate major elements from all layers to explain the overall system picture" }
 ]
 
 [references.BB]

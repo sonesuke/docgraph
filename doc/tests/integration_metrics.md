@@ -1,17 +1,17 @@
 # Test Specifications
 
-<a id="RT-INT-LINT"></a>
+```{document} Lint Integration Test
+:id: TEST-INT-LINT
+:kind: test
+:verifies: SPEC-CLI-LINT
 
-## Lint Integration Test
+Run `docgraph lint` (defined in {ref}`SPEC-CLI-LINT`) on a known defective graph and verify it reports errors.
+```
 
-Run `docgraph lint` (defined in [IF-CLI-LINT (Command: `lint`)](../specs/cli_specs.md#IF-CLI-LINT)) on a known defective graph and verify it reports errors.
+```{document} Gen Integration Test
+:id: TEST-INT-GEN
+:kind: test
+:verifies: SPEC-CLI-GEN
 
-Depends on: [IF-CLI-LINT (Command: `lint`)](../specs/cli_specs.md#IF-CLI-LINT)
-
-<a id="RT-INT-GEN"></a>
-
-## Gen Integration Test
-
-Run `docgraph graph` (defined in [IF-CLI-GRAPH (Command: `graph`)](../specs/cli_specs.md#IF-CLI-GRAPH)) on a sample graph and verify the JSON output matches the expected structure.
-
-Depends on: [IF-CLI-GRAPH (Command: `graph`)](../specs/cli_specs.md#IF-CLI-GRAPH)
+Run `docgraph gen` (defined in {ref}`SPEC-CLI-GEN`) on a sample graph and verify the JSON output matches the expected structure.
+```
