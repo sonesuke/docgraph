@@ -33,10 +33,12 @@ ADR  = { desc = "Architecture Decision Record" }
 
 # ========== Business Relations ==========
 
-[references.UC]
 # Use Case derives Actor, Interface, and Requirements
 rules = [
-  { dir = "to", targets = ["ACT", "IF", "FR", "UC", "NFR"], min = 0, desc = "Use cases serve as the foundation for actor behavior, interfaces, and functional requirements" }
+  { dir = "to", targets = ["ACT"], min = 1, desc = "Use cases must involve at least one Actor" },
+  { dir = "to", targets = ["IF"], min = 1, desc = "Use cases must interact through at least one Interface" },
+  { dir = "to", targets = ["FR"], min = 1, desc = "Use cases must realize at least one Functional Requirement" },
+  { dir = "to", targets = ["UC", "NFR"], min = 0, desc = "Use cases may relate to other Use Cases or NFRs" }
 ]
 
 [references.ACT]
