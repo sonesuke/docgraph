@@ -15,8 +15,6 @@ CON = { desc = "Constraint" }
 
 
 # Architecture types (Core Dependency Model)
-# Architecture types (Core Dependency Model)
-# CTX, BB, RT, DEP removed as per user request
 CC  = { desc = "Cross-cutting Concept" }
 
 # Documentation types (can be referenced by all core types)
