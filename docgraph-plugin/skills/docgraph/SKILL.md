@@ -4,7 +4,7 @@ description: Use Docgraph CLI to check document consistency, analyze, and manipu
 
 # Docgraph CLI Usage
 
-Docgraph is a tool for managing dependencies and traceability in MyST (Markedly Structured Text) formatted documents.
+Docgraph is a tool for managing dependencies and traceability in Markdown documents using HTML anchor tags.
 
 ## Basic Syntax
 
@@ -79,3 +79,12 @@ Starts the Language Server for IDE integration.
 ```bash
 docgraph lsp
 ```
+
+### `type` - Show Node Type Information
+Displays node type information from the configuration file.
+
+```bash
+docgraph type              # List all node types with descriptions
+docgraph type <TYPE_ID>    # Show type details and rules
+```
+- `TYPE_ID`: Type ID to show details for (e.g., `FR`, `NFR`)

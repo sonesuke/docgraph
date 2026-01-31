@@ -31,5 +31,6 @@ pub async fn run() -> ExitCode {
             direction,
         } => handlers::trace::handle_trace(from, to, path, direction),
         Commands::Describe { id, path } => handlers::describe::handle_describe(id, path),
+        Commands::Type { type_id } => handlers::type_cmd::handle_type(type_id),
     }
 }
