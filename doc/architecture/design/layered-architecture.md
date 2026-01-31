@@ -82,4 +82,4 @@ LSP Request → Handler → Core Logic → Handler → LSP Response
 
 ## Related
 
-- [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](file:///Users/sonesuke/Desktop/docgraph/doc/decisions/layered-architecture.md#ADR_LAYERED_ARCH)
+- [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](../../decisions/layered-architecture.md#ADR_LAYERED_ARCH)

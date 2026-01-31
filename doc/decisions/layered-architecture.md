@@ -123,4 +123,4 @@ This flow demonstrates:
 
 ## Related
 
-- [ADR_MARKDOWN_FORMAT (Choice of Plain Markdown and HTML Anchors)](file:///Users/sonesuke/Desktop/docgraph/doc/decisions/markdown-format.md#ADR_MARKDOWN_FORMAT)
+- [ADR_MARKDOWN_FORMAT (Choice of Plain Markdown and HTML Anchors)](./markdown-format.md#ADR_MARKDOWN_FORMAT)

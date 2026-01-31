@@ -7,6 +7,7 @@ The [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT) builds a GraphRAG kno
 **Derives:**
 
 - [IF_CLAUDE_CODE (Interface: Claude Code Plugin)](../requirements/interfaces/claude-plugin.md#IF_CLAUDE_CODE)
+- [FR_AGENT_RAG (Retrieval-Augmented Generation)](../requirements/functional/agent.md#FR_AGENT_RAG)
 
 Depends on: [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT), [UC_GRAPH (Generate Graph)](./analysis.md#UC_GRAPH)
 
@@ -19,6 +20,7 @@ The [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT) suggests how to use t
 **Derives:**
 
 - [IF_CLAUDE_CODE (Interface: Claude Code Plugin)](../requirements/interfaces/claude-plugin.md#IF_CLAUDE_CODE)
+- [FR_AGENT_SUGGEST (Usage Suggestions)](../requirements/functional/agent.md#FR_AGENT_SUGGEST)
 
 Depends on: [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT), [UC_BUILD_KNOWLEDGE (Build Knowledge Graph)](#UC_BUILD_KNOWLEDGE)
 
@@ -31,6 +33,7 @@ The [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT) automatically fixes d
 **Derives:**
 
 - [IF_CLAUDE_CODE (Interface: Claude Code Plugin)](../requirements/interfaces/claude-plugin.md#IF_CLAUDE_CODE)
+- [FR_AGENT_FIX (Automated Fixes)](../requirements/functional/agent.md#FR_AGENT_FIX)
 
 Depends on: [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT), [UC_LINT (Lint Documents)](./quality.md#UC_LINT)
 
@@ -43,6 +46,8 @@ The [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT) explains validation r
 **Derives:**
 
 - [IF_CLAUDE_CODE (Interface: Claude Code Plugin)](../requirements/interfaces/claude-plugin.md#IF_CLAUDE_CODE)
+- [FR_AGENT_EXPLAIN (Rule Explanation)](../requirements/functional/agent.md#FR_AGENT_EXPLAIN)
+- [FR_CLI_TYPE (Type Information)](../requirements/functional/cli.md#FR_CLI_TYPE)
 
 Depends on: [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT), [IF_CONFIG (docgraph.toml Configuration)](../requirements/interfaces/config-specs.md#IF_CONFIG)
 
@@ -55,5 +60,6 @@ The [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT) assists in the docume
 **Derives:**
 
 - [IF_CLAUDE_CODE (Interface: Claude Code Plugin)](../requirements/interfaces/claude-plugin.md#IF_CLAUDE_CODE)
+- [FR_AGENT_WORKFLOW (Workflow Assistance)](../requirements/functional/agent.md#FR_AGENT_WORKFLOW)
 
 Depends on: [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT), [UC_BUILD_KNOWLEDGE (Build Knowledge Graph)](#UC_BUILD_KNOWLEDGE)
