@@ -222,9 +222,47 @@ pub fn check_workspace(
 
 // Legacy tests removed (migrated to DG002/DG003 integration tests)
 
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fs::File;
+    use std::io::Write;
+    use tempfile::tempdir;
+    use crate::core::config::Config;
+
+    #[test]
+    fn test_check_workspace_basic() {
+        let dir = tempdir().unwrap();
+        let f1 = dir.path().join("test.md");
+        // Create file with rule violation (DG001: anchor not followed by heading)
+        // DG001: Anchor must be followed by a heading
+        let content = r#"<a id="FAIL"></a>
+Text instead of heading"#;
+        std::fs::write(&f1, content).unwrap();
+
+        let config = Config::default();
+        let diagnostics = check_workspace(dir.path(), false, None, true, &config);
+
+        // Expect DG001 error
+        assert!(diagnostics.iter().any(|d| d.code == "DG001" && d.severity == crate::core::types::Severity::Error));
+    }
+
+    #[test]
+    fn test_check_workspace_skip_rumdl() {
+        // Test that MD033 (inline HTML for anchor) is skipped by default
+        let dir = tempdir().unwrap();
+        let f1 = dir.path().join("test.md");
+        let content = r#"<a id="OK"></a>
+# Heading"#;
+        std::fs::write(&f1, content).unwrap();
+
+        let config = Config::default();
+        let diagnostics = check_workspace(dir.path(), false, None, true, &config);
+
+        // MD033 should be skipped for <a id="...">
+        assert!(!diagnostics.iter().any(|d| d.code == "MD033"));
+    }
 
     #[test]
     fn test_should_skip_rumdl_anchor_id() {
@@ -273,5 +311,71 @@ mod tests {
             "MD001",
             "Inline HTML found: <a id=\"TEST\">"
         ));
+    }
+
+    #[test]
+    fn test_check_workspace_with_fix() {
+        let dir = tempdir().unwrap();
+        let f1 = dir.path().join("test.md");
+        // Create file with fixable violation (e.g., missing heading for anchor, but DG001 is unfixable)
+        // We can use a rumdl rule that is fixable. 
+        // MD047 (single trailing newline) is usually fixable.
+        let content = "No newline at end";
+        std::fs::write(&f1, content).unwrap();
+
+        let config = Config::default();
+        // Enable fix=true, use_docgraph_filter=false (to ensure we run standard rules)
+        let _diagnostics = check_workspace(dir.path(), true, None, false, &config);
+
+        // Content should be updated
+        let new_content = std::fs::read_to_string(&f1).unwrap();
+        assert!(new_content.ends_with('\n'));
+    }
+
+    #[test]
+    fn test_check_workspace_with_rule_filter() {
+        let dir = tempdir().unwrap();
+        let f1 = dir.path().join("test.md");
+        let content = "<span>test</span>"; 
+        std::fs::write(&f1, content).unwrap();
+
+        let config = Config::default();
+        
+        // Filter ONLY MD033
+        let diagnostics = check_workspace(dir.path(), false, Some(vec!["MD033".to_string()]), false, &config);
+        assert!(diagnostics.iter().any(|d| d.code == "MD033"));
+
+        // Filter ONLY MD001
+        let diagnostics_empty = check_workspace(dir.path(), false, Some(vec!["MD001".to_string()]), false, &config);
+        assert!(!diagnostics_empty.iter().any(|d| d.code == "MD033"));
+    }
+
+    #[test]
+    fn test_check_workspace_with_fix_write_error() {
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            let dir = tempdir().unwrap();
+            let f1 = dir.path().join("test.md");
+            // Fixable content
+            let content = "No newline";
+            std::fs::write(&f1, content).unwrap();
+
+            // Make directory read-only to prevent writing the FIXED file?
+            // Actually, we write to the FILE.
+            // So make the FILE read-only? 
+            // fs::write will try to open with write permissions.
+            let mut perms = std::fs::metadata(&f1).unwrap().permissions();
+            perms.set_mode(0o400); // Read only
+            std::fs::set_permissions(&f1, perms).unwrap();
+
+            let config = Config::default();
+            // We need rules that trigger a fix. MD047 adds a newline.
+            // Rumdl default rules include MD047.
+            let diags = check_workspace(dir.path(), true, None, false, &config);
+
+            // Expect DG000 error for write failure
+            assert!(diags.iter().any(|d| d.code == "DG000" && d.message.contains("Failed to write")));
+        }
     }
 }
