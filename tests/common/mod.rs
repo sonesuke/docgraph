@@ -3,11 +3,13 @@ use std::path::Path;
 use tempfile::TempDir;
 
 /// Create a temporary directory for testing
+#[allow(dead_code)]
 pub fn setup_temp_dir() -> TempDir {
     TempDir::new().expect("Failed to create temp dir")
 }
 
 /// Create a test document with given content
+#[allow(dead_code)]
 pub fn create_test_doc(dir: &Path, name: &str, content: &str) -> std::path::PathBuf {
     let path = dir.join(name);
     fs::write(&path, content).expect("Failed to write test file");
@@ -15,18 +17,21 @@ pub fn create_test_doc(dir: &Path, name: &str, content: &str) -> std::path::Path
 }
 
 /// Create a valid document with anchor and heading
+#[allow(dead_code)]
 pub fn create_valid_doc(dir: &Path, id: &str, title: &str) -> std::path::PathBuf {
     let content = format!("<a id=\"{}\"></a>\n\n# {}\n", id, title);
     create_test_doc(dir, "test.md", &content)
 }
 
 /// Create a document with missing heading (DG001 violation)
+#[allow(dead_code)]
 pub fn create_doc_missing_heading(dir: &Path, id: &str) -> std::path::PathBuf {
     let content = format!("<a id=\"{}\"></a>\n", id);
     create_test_doc(dir, "test.md", &content)
 }
 
 /// Create a document with duplicate ID (DG002 violation)
+#[allow(dead_code)]
 pub fn create_docs_with_duplicate_id(
     dir: &Path,
     id: &str,
@@ -41,6 +46,7 @@ pub fn create_docs_with_duplicate_id(
 }
 
 /// Create a docgraph.toml config file
+#[allow(dead_code)]
 pub fn create_config(dir: &Path, content: &str) -> std::path::PathBuf {
     let path = dir.join("docgraph.toml");
     fs::write(&path, content).expect("Failed to write config");
@@ -48,6 +54,7 @@ pub fn create_config(dir: &Path, content: &str) -> std::path::PathBuf {
 }
 
 /// Default docgraph.toml with basic node types
+#[allow(dead_code)]
 pub fn default_config() -> &'static str {
     r#"
 [node_types]
