@@ -14,8 +14,6 @@ NFR = { desc = "Non-Functional Requirement" }
 CON = { desc = "Constraint" }
 ERR = { desc = "Error Definition" }
 
-# Test types
-TEST = { desc = "Test Specification" }
 
 # Architecture types (Core Dependency Model)
 # Architecture types (Core Dependency Model)
@@ -52,7 +50,7 @@ rules = [
 # Interface is derived from Use Case and may reference other specs or data
 rules = [
   { dir = "from", targets = ["UC"], min = 0, desc = "Exposed interfaces should be justified by business use cases" },
-  { dir = "to", targets = ["IF", "FR", "DAT", "ERR", "UC", "TEST"], min = 0, desc = "Interfaces may reference other specifications, requirements, data entities, error definitions, or related business/test contexts" }
+  { dir = "to", targets = ["IF", "FR", "DAT", "ERR", "UC"], min = 0, desc = "Interfaces may reference other specifications, requirements, data entities, error definitions, or related business contexts" }
 ]
 
 # ========== Specification Relations ==========
@@ -61,7 +59,7 @@ rules = [
 # Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
 rules = [
   { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Functional requirements are derived from business needs (UC) or constraints (CON) to clarify their existence" },
-  { dir = "to", targets = ["NFR", "ERR", "CC", "IF", "DAT", "TEST"], min = 0, desc = "Functional requirements must be traceable to non-functional requirements, tests (TEST), or defined data entities (DAT)" }
+  { dir = "to", targets = ["NFR", "ERR", "CC", "IF", "DAT"], min = 0, desc = "Functional requirements must be traceable to non-functional requirements or defined data entities (DAT)" }
 ]
 
 [references.NFR]
@@ -86,11 +84,6 @@ rules = [
 # ========== Architecture Relations ==========
 
 
-[references.TEST]
-# Test verifies Interface or Requirement
-rules = [
-  { dir = "to", targets = ["FR", "IF", "NFR"], min = 1, desc = "Test specifications must verify at least one requirement or interface" }
-]
 
 [references.CC]
 # Cross-cutting Concept is derived from Requirements and derives Decisions
