@@ -135,7 +135,7 @@ mod tests {
         // Extract blocks to simulate Pass 3 collection
         let blocks1 = extract_anchor_headings(c1, &p1);
         let blocks2 = extract_anchor_headings(c2, &p2); // No blocks here but checking logical consistency
-        
+
         let mut all_blocks = Vec::new();
         all_blocks.extend(blocks1);
         all_blocks.extend(blocks2);
@@ -169,14 +169,14 @@ mod tests {
 
         let blocks1 = extract_anchor_headings(c1, &p1);
         let blocks2 = extract_anchor_headings(c2, &p2);
-        
+
         let mut all_blocks = Vec::new();
         all_blocks.extend(blocks1);
         all_blocks.extend(blocks2);
 
         let files = vec![p2.clone()];
         let warnings = check_link_text(&files, &all_blocks);
-        
+
         assert!(warnings.is_empty());
     }
 }
