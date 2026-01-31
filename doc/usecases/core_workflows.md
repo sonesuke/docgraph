@@ -22,7 +22,7 @@ The [ACT-USER (User)](../actors/system_users.md#ACT-USER) checks for errors in t
 ).
 3. User reviews any error messages regarding duplicate IDs or missing references.
 
-Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE), [FR-UNIQUE (Unique IDs)](../requirements/verification.md#FR-UNIQUE), [FR-VALID-REF (Valid References)](../requirements/verification.md#FR-VALID-REF), [FR-STRICT-NODES (Strict Node Types)](../requirements/verification.md#FR-STRICT-NODES), [FR-RELATION-RULES (Relation Rules)](../requirements/verification.md#FR-RELATION-RULES)
+Depends on: [ACT-USER (User)](../actors/system_users.md#ACT-USER), [UC-WRITE (Write Specifications)](#UC-WRITE), [FR-UNIQUE (Unique IDs)](../requirements/functional/verification.md#FR-UNIQUE), [FR-VALID-REF (Valid References)](../requirements/functional/verification.md#FR-VALID-REF), [FR-STRICT-NODES (Strict Node Types)](../requirements/functional/verification.md#FR-STRICT-NODES), [FR-RELATION-RULES (Relation Rules)](../requirements/functional/verification.md#FR-RELATION-RULES)
 
 <a id="UC-GRAPH"></a>
 
