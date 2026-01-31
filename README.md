@@ -1,5 +1,9 @@
 # docgraph
 
+[![CI](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml/badge.svg)](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml)
+[![Security audit](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml/badge.svg)](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-view-blue)](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml)
+
 A lint tool to build and verify directed graphs embedded in standard Markdown files.
 
 ## Overview
@@ -70,4 +74,8 @@ rules = [
 ```
 
 ---
+## Contributing
+
+Contributions are welcome! If you're interested in helping improve `docgraph`, please check out our **[Developer Guide](./doc/devel/README.md)** for information on environment setup, architecture, and testing standards.
+
 Detailed technical documentation and use cases can be found in the **[doc/](./doc/overview.md)** directory.
