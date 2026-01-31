@@ -8,9 +8,9 @@ The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) installs the `docgraph` VS
 
 **Derives:**
 
-- [FR_VSC_002_RENAMED (Binary Path Configuration)](../requirements/functional/vscode-extension.md#FR_VSC_002_RENAMED)
-- [FR_VSC_003 (Markdown Activation)](../requirements/functional/vscode-extension.md#FR_VSC_003)
-- [FR_VSC_004 (Server Lifecycle Commands)](../requirements/functional/vscode-extension.md#FR_VSC_004)
+- [FR_VSC_BINARY_PATH (Binary Path Configuration)](../requirements/functional/vscode-extension.md#FR_VSC_BINARY_PATH)
+- [FR_VSC_MARKDOWN_ACTIVATION (Markdown Activation)](../requirements/functional/vscode-extension.md#FR_VSC_MARKDOWN_ACTIVATION)
+- [FR_VSC_SERVER_LIFECYCLE (Server Lifecycle Commands)](../requirements/functional/vscode-extension.md#FR_VSC_SERVER_LIFECYCLE)
 
 Depends on: [ACT_DEV (Developer)](../actors/users.md#ACT_DEV)
 
@@ -22,7 +22,7 @@ The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) sees real-time diagnostics
 
 **Derives:**
 
-- [FR_VSC_001 (LSP Client Integration)](../requirements/functional/vscode-extension.md#FR_VSC_001)
+- [FR_VSC_LSP_CLIENT (LSP Client Integration)](../requirements/functional/vscode-extension.md#FR_VSC_LSP_CLIENT)
 
 Depends on: [UC_EDITOR_LSP (Interactive Editing via LSP)](authoring.md#UC_EDITOR_LSP)
 
@@ -37,7 +37,7 @@ The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) navigates through the spec
 
 **Derives:**
 
-- [FR_VSC_001 (LSP Client Integration)](../requirements/functional/vscode-extension.md#FR_VSC_001)
+- [FR_VSC_LSP_CLIENT (LSP Client Integration)](../requirements/functional/vscode-extension.md#FR_VSC_LSP_CLIENT)
 
 Depends on: [UC_EDITOR_LSP (Interactive Editing via LSP)](authoring.md#UC_EDITOR_LSP)
 
@@ -49,6 +49,6 @@ The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) renames a SpecBlock ID, an
 
 **Derives:**
 
-- [FR_VSC_001 (LSP Client Integration)](../requirements/functional/vscode-extension.md#FR_VSC_001)
+- [FR_VSC_LSP_CLIENT (LSP Client Integration)](../requirements/functional/vscode-extension.md#FR_VSC_LSP_CLIENT)
 
 Depends on: [UC_EDITOR_LSP (Interactive Editing via LSP)](authoring.md#UC_EDITOR_LSP)

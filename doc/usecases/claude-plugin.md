@@ -32,7 +32,6 @@ After adding the marketplace, install the Docgraph plugin by running:
 
 **Derives:**
 
-- [FR_CLAUDE_PLUGIN (Functional Requirements: Claude Plugin)](../requirements/functional/claude-plugin.md#FR_CLAUDE_PLUGIN)
 - [FR_CLAUDE_MARKETPLACE (Claude Marketplace Support)](../requirements/functional/claude-plugin.md#FR_CLAUDE_MARKETPLACE)
 - [FR_CLAUDE_INSTALL (Claude Plugin Installation)](../requirements/functional/claude-plugin.md#FR_CLAUDE_INSTALL)
 
