@@ -5,8 +5,8 @@ use std::fs;
 use std::path::Path;
 
 /// Collect all SpecBlocks and standalone RefUses from the workspace
-pub fn collect_workspace_all(root: &Path) -> (Vec<SpecBlock>, Vec<RefUse>) {
-    let files = find_markdown_files(root);
+pub fn collect_workspace_all(root: &Path, ignore_patterns: &[String]) -> (Vec<SpecBlock>, Vec<RefUse>) {
+    let files = find_markdown_files(root, ignore_patterns);
     let mut all_blocks = Vec::new();
     let mut all_refs = Vec::new();
 

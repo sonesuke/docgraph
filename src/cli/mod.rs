@@ -118,13 +118,15 @@ pub async fn run() -> ExitCode {
             ExitCode::SUCCESS
         }
         Commands::Graph { path } => {
-            let (blocks, _refs) = collect::collect_workspace_all(&path);
+            let config = config::Config::load(&path).unwrap_or_default();
+            let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore);
             let json_out = serde_json::to_string_pretty(&blocks).unwrap();
             println!("{}", json_out);
             ExitCode::SUCCESS
         }
         Commands::List { query, path } => {
-            let (blocks, _refs) = collect::collect_workspace_all(&path);
+            let config = config::Config::load(&path).unwrap_or_default();
+            let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore);
             let regex_str = glob_to_regex(&query);
             let re = match regex::Regex::new(&regex_str) {
                 Ok(re) => re,
@@ -151,7 +153,8 @@ pub async fn run() -> ExitCode {
             path,
             direction,
         } => {
-            let (blocks, _refs) = collect::collect_workspace_all(&path);
+            let config = config::Config::load(&path).unwrap_or_default();
+            let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore);
             let target_regex_str = glob_to_regex(&to);
             let target_re = regex::Regex::new(&target_regex_str).unwrap();
 
@@ -209,7 +212,8 @@ pub async fn run() -> ExitCode {
             ExitCode::SUCCESS
         }
         Commands::Describe { id, path } => {
-            let (blocks, _refs) = collect::collect_workspace_all(&path);
+            let config = config::Config::load(&path).unwrap_or_default();
+            let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore);
 
             let target_block = blocks.iter().find(|b| b.id == id);
 

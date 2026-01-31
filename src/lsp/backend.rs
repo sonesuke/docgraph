@@ -32,7 +32,7 @@ impl Backend {
             let diagnostics = lint::check_workspace(&root, false, None, true, &config);
 
             // Update index
-            let (blocks, refs) = collect::collect_workspace_all(&root);
+            let (blocks, refs) = collect::collect_workspace_all(&root, &config.graph.ignore);
             {
                 let mut b = self.blocks.lock().await;
                 *b = blocks;
