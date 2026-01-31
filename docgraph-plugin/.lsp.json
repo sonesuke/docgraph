@@ -1,0 +1,11 @@
+{
+    "docgraph": {
+        "command": "docgraph",
+        "args": [
+            "lsp"
+        ],
+        "extensionToLanguage": {
+            ".md": "md"
+        }
+    }
+}

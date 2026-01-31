@@ -12,31 +12,28 @@ pub fn find_markdown_files(root: &Path, ignore_patterns: &[String]) -> Vec<PathB
     }
     let ignore_matcher = builder.build().ok();
 
+    let root_owned = root.to_path_buf();
     let walker = WalkBuilder::new(root)
         .hidden(false) // Look into hidden folders if needed
         .git_ignore(true)
+        .filter_entry(move |entry| {
+            let path = entry.path();
+            let is_dir = entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
+            let rel_path = path.strip_prefix(&root_owned).unwrap_or(path);
+
+            if let Some(m) = &ignore_matcher {
+                if m.matched(rel_path, is_dir).is_ignore() {
+                    return false;
+                }
+            }
+            true
+        })
         .build();
 
     for result in walker {
         match result {
             Ok(entry) => {
                 let path = entry.path();
-
-                // transform path to relative for checking against ignore_matcher if needed,
-                // but ignore_matcher.matched(path, is_dir) usually handles absolute if root matches?
-                // Actually Gitignore::matched checks relative to the builder root.
-                // Let's rely on standard ignore crate behavior or just simple check.
-
-                let is_dir = entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
-
-                // Check custom ignore config
-                if ignore_matcher
-                    .as_ref()
-                    .is_some_and(|m| m.matched(path, is_dir).is_ignore())
-                {
-                    continue;
-                }
-
                 if path.is_file()
                     && let Some(ext) = path.extension()
                     && ext == "md"
@@ -88,5 +85,37 @@ mod tests {
         let files = find_markdown_files(dir.path(), &["ignored.md".to_string()]);
         assert_eq!(files.len(), 1);
         assert_eq!(files[0].file_name().unwrap(), "a.md");
+    }
+
+    #[test]
+    fn test_find_markdown_files_ignore_folder() {
+        let dir = tempdir().unwrap();
+        let subdir = dir.path().join("ignored_dir");
+        std::fs::create_dir(&subdir).unwrap();
+        let f1 = subdir.join("a.md");
+        let f2 = dir.path().join("b.md");
+
+        File::create(&f1).unwrap();
+        File::create(&f2).unwrap();
+
+        let files = find_markdown_files(dir.path(), &["ignored_dir".to_string()]);
+        assert_eq!(files.len(), 1);
+        assert_eq!(files[0].file_name().unwrap(), "b.md");
+    }
+
+    #[test]
+    fn test_find_markdown_files_ignore_folder_trailing_slash() {
+        let dir = tempdir().unwrap();
+        let subdir = dir.path().join("ignored_dir");
+        std::fs::create_dir(&subdir).unwrap();
+        let f1 = subdir.join("a.md");
+        let f2 = dir.path().join("b.md");
+
+        File::create(&f1).unwrap();
+        File::create(&f2).unwrap();
+
+        let files = find_markdown_files(dir.path(), &["ignored_dir/".to_string()]);
+        assert_eq!(files.len(), 1);
+        assert_eq!(files[0].file_name().unwrap(), "b.md");
     }
 }
