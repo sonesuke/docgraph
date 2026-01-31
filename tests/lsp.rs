@@ -13,3 +13,9 @@ mod rename;
 
 #[path = "lsp/call_hierarchy.rs"]
 mod call_hierarchy;
+
+#[path = "lsp/navigation.rs"]
+mod navigation;
+
+#[path = "lsp/symbols.rs"]
+mod symbols;
