@@ -35,10 +35,7 @@ pub async fn prepare_call_hierarchy(
             && let Ok(target_uri) = Url::from_file_path(&target_block.file_path)
         {
             return Ok(Some(vec![CallHierarchyItem {
-                name: target_block
-                    .name
-                    .clone()
-                    .unwrap_or_else(|| id.clone()),
+                name: target_block.name.clone().unwrap_or_else(|| id.clone()),
                 kind: SymbolKind::INTERFACE,
                 tags: None,
                 detail: Some(format!("Ref count: {}", target_block.edges.len())),
