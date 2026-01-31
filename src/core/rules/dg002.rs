@@ -24,7 +24,11 @@ impl Rule for DG002 {
         // Extract <a id="..."> tags and add them as headings with custom anchors
         // This allows them to be indexed for cross-file checks
         let anchor_re = Regex::new(r#"<a\s+id=["']([^"']+)["']\s*>\s*</a>"#).unwrap();
-        for (i, line) in ctx.content.lines().enumerate() {
+
+        // Strip code blocks and inline code to avoid false positives
+        let clean_content = crate::core::utils::strip_markdown_code(ctx.content);
+
+        for (i, line) in clean_content.lines().enumerate() {
             for caps in anchor_re.captures_iter(line) {
                 if let Some(cap_id) = caps.get(1) {
                     let id = cap_id.as_str().to_string();

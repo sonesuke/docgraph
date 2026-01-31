@@ -58,13 +58,17 @@ impl Rule for DG003 {
         // Check if current file has an index (it should)
         let local_index = workspace_index.get_file(current_path);
 
-        for caps in link_re.captures_iter(&content) {
-            let url_part = caps.get(2).unwrap().as_str();
+        // Strip code blocks and inline code to avoid false positives
+        let clean_content = crate::core::utils::strip_markdown_code(&content);
+
+        for caps in link_re.captures_iter(&clean_content) {
+            let url_range = caps.get(2).unwrap().range();
+            let url_part = &content[url_range.clone()];
 
             // Case 1: Implicit local link (#ID)
             if let Some(target_id) = url_part.strip_prefix('#') {
-                let (start_line, start_col) = get_pos(caps.get(2).unwrap().start());
-                let (end_line, end_col) = get_pos(caps.get(2).unwrap().end());
+                let (start_line, start_col) = get_pos(url_range.start);
+                let (end_line, end_col) = get_pos(url_range.end);
 
                 if local_index.is_some_and(|idx| idx.has_anchor(target_id)) {
                     continue;
