@@ -1,5 +1,6 @@
 pub mod collect;
 pub mod config;
+pub mod error;
 pub mod lint;
 pub mod parse;
 pub mod rules;

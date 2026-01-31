@@ -3,6 +3,8 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
+use crate::core::error::Result;
+
 #[derive(Debug, Deserialize, Default, Clone)]
 pub struct Config {
     #[serde(default)]
@@ -48,7 +50,7 @@ pub struct RuleConfig {
 }
 
 impl Config {
-    pub fn load(path: &Path) -> anyhow::Result<Self> {
+    pub fn load(path: &Path) -> Result<Self> {
         // Start from the given path and search upward for docgraph.toml
         let start_dir = if path.is_dir() {
             path.to_path_buf()
