@@ -5,7 +5,7 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 use std::path::PathBuf;
 
-use crate::{config, lint, types, collect};
+use crate::core::{config, lint, types, collect};
 use super::handlers;
 
 pub struct Backend {

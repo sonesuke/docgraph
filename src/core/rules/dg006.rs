@@ -1,5 +1,5 @@
-use crate::config::Config;
-use crate::types::{Diagnostic, Range, Severity, SpecBlock};
+use crate::core::config::Config;
+use crate::core::types::{Diagnostic, Range, Severity, SpecBlock};
 use std::collections::HashMap;
 
 /// DG006: Strict Relation Enforcement

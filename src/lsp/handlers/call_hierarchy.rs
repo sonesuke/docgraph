@@ -1,6 +1,6 @@
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
-use super::super::backend::Backend;
+use crate::lsp::backend::Backend;
 
 pub async fn prepare_call_hierarchy(
     backend: &Backend,

@@ -1,4 +1,4 @@
-use crate::parse::extract_anchor_headings;
+use crate::core::parse::extract_anchor_headings;
 use regex::Regex;
 use rumdl_lib::lint_context::LintContext;
 use rumdl_lib::rule::{CrossFileScope, LintError, LintResult, LintWarning, Rule, Severity};

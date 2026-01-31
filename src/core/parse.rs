@@ -1,4 +1,4 @@
-use crate::types::{EdgeUse, RefUse, SpecBlock};
+use crate::core::types::{EdgeUse, RefUse, SpecBlock};
 use regex::Regex;
 use std::path::Path;
 

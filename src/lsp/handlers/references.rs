@@ -1,6 +1,6 @@
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
-use super::super::backend::Backend;
+use crate::lsp::backend::Backend;
 
 pub async fn references(backend: &Backend, params: ReferenceParams) -> Result<Option<Vec<Location>>> {
     let uri = params.text_document_position.text_document.uri;
