@@ -1,4 +1,3 @@
-
 use std::path::Path;
 
 fn create_doc_missing_heading(dir: &Path, id: &str) -> std::path::PathBuf {
