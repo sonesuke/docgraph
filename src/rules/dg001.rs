@@ -19,8 +19,8 @@ impl Rule for DG001 {
         let content = ctx.content;
         let lines: Vec<&str> = content.lines().collect();
 
-        // Regex logic from extract_anchor_headings (must be the entire line)
-        let anchor_re = Regex::new(r#"^<a\s+id=["']([^"']+)["']\s*>\s*</a>$"#).unwrap();
+        // Regex logic from extract_anchor_headings
+        let anchor_re = Regex::new(r#"<a\s+id=["']([^"']+)["']\s*>\s*</a>"#).unwrap();
         let heading_re = Regex::new(r"^(#{1,6})\s+(.+)$").unwrap();
 
         for (i, line) in lines.iter().enumerate() {

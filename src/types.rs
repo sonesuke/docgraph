@@ -16,8 +16,6 @@ pub struct EdgeUse {
     pub id: String,
     pub name: Option<String>,
     pub line: usize,
-    pub col_start: usize,
-    pub col_end: usize,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -25,8 +23,7 @@ pub struct RefUse {
     pub target_id: String,
     pub file_path: PathBuf,
     pub line: usize,
-    pub col_start: usize,
-    pub col_end: usize,
+    pub col: usize,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

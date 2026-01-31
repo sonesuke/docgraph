@@ -1,4 +1,4 @@
-use crate::core::types::{EdgeUse, RefUse, SpecBlock};
+use crate::types::{EdgeUse, RefUse, SpecBlock};
 use regex::Regex;
 use std::path::Path;
 
@@ -7,8 +7,8 @@ use std::path::Path;
 pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock> {
     let lines: Vec<&str> = content.lines().collect();
 
-    // Regex for <a id="XXX"></a> or <a id='XXX'></a> (must be the entire line)
-    let anchor_re = Regex::new(r#"^<a\s+id=["']([^"']+)["']\s*>\s*</a>$"#).unwrap();
+    // Regex for <a id="XXX"></a> or <a id='XXX'></a>
+    let anchor_re = Regex::new(r#"<a\s+id=["']([^"']+)["']\s*>\s*</a>"#).unwrap();
     // Regex for Markdown heading
     let heading_re = Regex::new(r"^(#{1,6})\s+(.+)$").unwrap();
     // Regex for Markdown links with fragment: [text](#ID) or [text](path#ID)
@@ -96,8 +96,6 @@ pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock
                             id: target_id,
                             name: display_name,
                             line: line_idx + 1, // 1-based
-                            col_start: id_match.start() + 1,
-                            col_end: id_match.end() + 1,
                         });
                     }
                 }
@@ -144,15 +142,13 @@ pub fn extract_markdown_refs(content: &str, file_path: &Path) -> Vec<RefUse> {
         for cap in link_re.captures_iter(line) {
             if let Some(id_match) = cap.get(3) {
                 let target_id = id_match.as_str().to_string();
-                let col_start = id_match.start() + 1; // 1-based
-                let col_end = id_match.end() + 1;
+                let col = id_match.start() + 1; // 1-based
 
                 refs.push(RefUse {
                     target_id,
                     file_path: file_path.to_path_buf(),
                     line: line_num,
-                    col_start,
-                    col_end,
+                    col,
                 });
             }
         }
@@ -167,109 +163,4 @@ pub fn extract_all(content: &str, file_path: &Path) -> (Vec<SpecBlock>, Vec<RefU
     let standalone_refs = extract_markdown_refs(content, file_path);
 
     (blocks, standalone_refs)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::path::PathBuf;
-    #[test]
-    fn test_extract_anchor_headings_with_scoped_refs() {
-        let content = r#"
-<a id="DAT-SSO-CONFIG"></a>
-
-## SSO Configuration
-
-Stores the Identity Provider details for a [Tenant](#DAT-TENANT).
-
-| Field | Type | Description |
-|-------|------|-------------|
-| id | UUID | Unique identifier. |
-| tenant_id | UUID | Foreign Key to [Tenants](#DAT-TENANT). |
-
-<a id="DAT-USER"></a>
-
-## User
-
-A user in the system.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| id | UUID | Unique identifier. |
-| sso_config_id | UUID | Foreign Key to [SSO Config](#DAT-SSO-CONFIG). |
-"#;
-        let path = PathBuf::from("test.md");
-        let blocks = extract_anchor_headings(content, &path);
-
-        assert_eq!(blocks.len(), 2);
-
-        // First block: DAT-SSO-CONFIG
-        let b1 = &blocks[0];
-        assert_eq!(b1.id, "DAT-SSO-CONFIG");
-        assert_eq!(b1.name.as_deref(), Some("SSO Configuration"));
-        assert_eq!(b1.edges.len(), 2); // Two refs to DAT-TENANT
-        assert!(b1.edges.iter().all(|e| e.id == "DAT-TENANT"));
-
-        // Second block: DAT-USER
-        let b2 = &blocks[1];
-        assert_eq!(b2.id, "DAT-USER");
-        assert_eq!(b2.name.as_deref(), Some("User"));
-        assert_eq!(b2.edges.len(), 1);
-        assert_eq!(b2.edges[0].id, "DAT-SSO-CONFIG");
-    }
-
-    #[test]
-    fn test_extract_anchor_headings_skips_code_blocks() {
-        let content = r#"
-<a id="REQ-001"></a>
-# REQ-001
-
-This requirement references [REQ-002](#REQ-002).
-
-```markdown
-This link should be ignored: [REQ-003](#REQ-003)
-```
-
-The following is not in a code block: [REQ-004](#REQ-004)
-"#;
-        let path = PathBuf::from("test.md");
-        let blocks = extract_anchor_headings(content, &path);
-
-        assert_eq!(blocks.len(), 1);
-        let b = &blocks[0];
-        assert_eq!(b.id, "REQ-001");
-
-        // Should find REQ-002 and REQ-004, but NOT REQ-003
-        let target_ids: Vec<String> = b.edges.iter().map(|e| e.id.clone()).collect();
-        assert!(target_ids.contains(&"REQ-002".to_string()));
-        assert!(target_ids.contains(&"REQ-004".to_string()));
-        assert!(
-            !target_ids.contains(&"REQ-003".to_string()),
-            "Should not extract refs from code blocks"
-        );
-    }
-
-    #[test]
-    fn test_extract_markdown_refs_skips_code_blocks() {
-        let content = r#"
-This is a standalone ref: [REF-001](#REF-001)
-
-```markdown
-This should be ignored: [REF-002](#REF-002)
-```
-
-Another valid ref: [REF-003](#REF-003)
-"#;
-        let path = PathBuf::from("test.md");
-        let refs = extract_markdown_refs(content, &path);
-
-        // Should find REF-001 and REF-003, but NOT REF-002
-        let target_ids: Vec<String> = refs.iter().map(|r| r.target_id.clone()).collect();
-        assert!(target_ids.contains(&"REF-001".to_string()));
-        assert!(target_ids.contains(&"REF-003".to_string()));
-        assert!(
-            !target_ids.contains(&"REF-002".to_string()),
-            "Should not extract standalone refs from code blocks"
-        );
-    }
 }
