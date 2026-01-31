@@ -45,6 +45,25 @@ Verify that the user can log in ([REQ-001](#REQ-001)).
 docgraph check .
 ```
 
+## Running Tests and Coverage
+
+To run the test suite and generate a coverage report locally:
+
+1.  Install `cargo-llvm-cov`:
+    ```bash
+    cargo install cargo-llvm-cov
+    rustup component add llvm-tools-preview
+    ```
+2.  Run coverage:
+    ```bash
+    cargo llvm-cov
+    ```
+3.  Generate and open HTML report:
+    ```bash
+    cargo llvm-cov --html
+    open target/llvm-cov/html/index.html
+    ```
+
 ## CLI Commands
 
 - `check [path]`: Validate the graph for broken links and rule violations.
@@ -56,6 +75,9 @@ docgraph check .
 
 ## Configuration (`docgraph.toml`)
 
+[![CI](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml/badge.svg)](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml)
+[![Security audit](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml/badge.svg)](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-view-blue)](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml)
 `docgraph` is highly configurable. You can define custom node prefixes and strict relationship rules to enforce your documentation architecture. Refer to the **[Configuration Model](./doc/model/config_model.md)** for details.
 
 ```toml
