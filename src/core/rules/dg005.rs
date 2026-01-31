@@ -12,7 +12,7 @@ pub fn check_strict_node_types(blocks: &[SpecBlock], config: &Config) -> Vec<Dia
 
     for block in blocks {
         let s: &str = block.id.as_str();
-        let prefix = s.split(|c| c == '-' || c == '_').next().unwrap_or(s);
+        let prefix = s.split(['-', '_']).next().unwrap_or(s);
 
         if !config.node_types.contains_key(prefix) {
             diagnostics.push(Diagnostic {

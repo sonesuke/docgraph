@@ -13,7 +13,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
     for block in blocks {
         let source_type = block
             .id
-            .split(|c| c == '-' || c == '_')
+            .split(['-', '_'])
             .next()
             .unwrap_or(&block.id)
             .to_string();
@@ -28,7 +28,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
     for block in blocks {
         let prefix = block
             .id
-            .split(|c| c == '-' || c == '_')
+            .split(['-', '_'])
             .next()
             .unwrap_or(&block.id);
 
@@ -75,7 +75,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                                 .iter()
                                 .filter(|e| {
                                     let target_type =
-                                        e.id.split(|c| c == '-' || c == '_')
+                                        e.id.split(['-', '_'])
                                             .next()
                                             .unwrap_or(&e.id);
                                     // Count if it matches one of the allowed types
@@ -115,7 +115,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                 for edge in &block.edges {
                     let target_type = edge
                         .id
-                        .split(|c| c == '-' || c == '_')
+                        .split(['-', '_'])
                         .next()
                         .unwrap_or(&edge.id);
 
