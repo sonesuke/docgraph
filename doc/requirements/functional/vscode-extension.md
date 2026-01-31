@@ -22,7 +22,7 @@ The extension SHALL implement a Language Server Protocol (LSP) client that estab
 
 - [IF_LSP (Language Server Protocol (LSP) Support)](../interfaces/lsp-specs.md#IF_LSP)
 
-<a id="FR_VSC_002"></a>
+<a id="FR_VSC_002_RENAMED"></a>
 
 ## Binary Path Configuration
 

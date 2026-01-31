@@ -1,6 +1,6 @@
-# Cross-Cutting Concept: Layered Architecture
-
 <a id="CC_LAYERED_ARCH"></a>
+
+# Cross-Cutting Concept: Layered Architecture
 
 ## Overview
 

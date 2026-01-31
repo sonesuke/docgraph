@@ -8,7 +8,7 @@ The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) installs the `docgraph` VS
 
 **Derives:**
 
-- [FR_VSC_002 (Binary Path Configuration)](../requirements/functional/vscode-extension.md#FR_VSC_002)
+- [FR_VSC_002_RENAMED (Binary Path Configuration)](../requirements/functional/vscode-extension.md#FR_VSC_002_RENAMED)
 - [FR_VSC_003 (Markdown Activation)](../requirements/functional/vscode-extension.md#FR_VSC_003)
 - [FR_VSC_004 (Server Lifecycle Commands)](../requirements/functional/vscode-extension.md#FR_VSC_004)
 

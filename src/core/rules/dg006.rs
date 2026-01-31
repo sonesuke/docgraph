@@ -60,24 +60,49 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                                 });
                             }
                         }
+                        
+                        // Check max count
+                        if let Some(max) = rule.max {
+                            let count = sources.iter().filter(|t| rule.targets.contains(t)).count();
+                            if count > max {
+                                let mut message = format!(
+                                    "Node '{}' (type {}) requires at most {} incoming relation(s) from {:?}, but found {}.",
+                                    block.id, prefix, max, rule.targets, count
+                                );
+                                if let Some(desc) = &rule.desc {
+                                    message.push_str(&format!(" (Description: {})", desc));
+                                }
+                                diagnostics.push(Diagnostic {
+                                    severity: Severity::Error,
+                                    code: "DG006".to_string(),
+                                    message,
+                                    path: block.file_path.clone(),
+                                    range: Range {
+                                        start_line: block.line_start,
+                                        start_col: 1,
+                                        end_line: block.line_start,
+                                        end_col: 1,
+                                    },
+                                });
+                            }
+                        }
                     }
                     "to" => {
                         allowed_outgoing_types.extend(rule.targets.iter().cloned());
 
-                        // Check min count
-                        if let Some(min) = rule.min {
-                            let count = block
-                                .edges
-                                .iter()
-                                .filter(|e| {
-                                    let target_type =
-                                        e.id.split(['-', '_']).next().unwrap_or(&e.id);
-                                    // Count if it matches one of the allowed types
-                                    rule.targets.contains(&target_type.to_string())
-                                })
-                                .count();
+                        let count = block
+                            .edges
+                            .iter()
+                            .filter(|e| {
+                                let target_type =
+                                    e.id.split(['-', '_']).next().unwrap_or(&e.id);
+                                // Count if it matches one of the allowed types
+                                rule.targets.contains(&target_type.to_string())
+                            })
+                            .count();
 
-                            if count < min {
+                        // Check min count
+                        if let Some(min) = rule.min && count < min {
                                 let mut message = format!(
                                     "Node '{}' (type {}) requires at least {} outgoing relation(s) to {:?}, but found {}.",
                                     block.id, prefix, min, rule.targets, count
@@ -98,6 +123,29 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                                     },
                                 });
                             }
+
+                        // Check max count
+                        if let Some(max) = rule.max && count > max {
+                                let mut message = format!(
+                                    "Node '{}' (type {}) requires at most {} outgoing relation(s) to {:?}, but found {}.",
+                                    block.id, prefix, max, rule.targets, count
+                                );
+                                if let Some(desc) = &rule.desc {
+                                    message.push_str(&format!(" (Description: {})", desc));
+                                }
+                                diagnostics.push(Diagnostic {
+                                    severity: Severity::Error,
+                                    code: "DG006".to_string(),
+                                    message,
+                                    path: block.file_path.clone(),
+                                    range: Range {
+                                        start_line: block.line_start,
+                                        start_col: 1,
+                                        end_line: block.line_start,
+                                        end_col: 1,
+                                    },
+                                });
+
                         }
                     }
                     _ => {}
@@ -247,6 +295,38 @@ mod tests {
         ];
         let diags_ok = check_strict_relations(&blocks_ok, &config);
         assert!(diags_ok.is_empty());
+    }
+
+    #[test]
+    fn test_dg006_max_incoming() {
+        let mut config = Config::default();
+        config.graph.strict_relations = false;
+
+        let mut ref_config = ReferenceConfig::default();
+        ref_config.rules.push(RuleConfig {
+            dir: "from".to_string(),
+            targets: vec!["REQ".to_string()],
+            min: None,
+            max: Some(1),
+            desc: None,
+        });
+
+        config.references.insert("SYS".to_string(), ref_config);
+
+        // Case 1: SYS has 2 incoming from REQ (Error)
+        // We need 2 separate blocks pointing to SYS
+        let blocks_fail = vec![
+            create_block("SYS-01", vec![]),
+            create_block("REQ-01", vec!["SYS-01"]),
+            create_block("REQ-02", vec!["SYS-01"]),
+        ];
+        let diags_fail = check_strict_relations(&blocks_fail, &config);
+        assert_eq!(diags_fail.len(), 1);
+        assert!(
+            diags_fail[0]
+                .message
+                .contains("requires at most 1 incoming relation")
+        );
     }
 
     #[test]

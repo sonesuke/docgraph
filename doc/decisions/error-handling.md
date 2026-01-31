@@ -1,14 +1,12 @@
-# Architecture Decision Records
-
 <a id="ADR_ERROR_HANDLING"></a>
 
-## Error Handling Strategy: thiserror for Core, anyhow for Binaries
+# Error Handling Strategy: thiserror for Core, anyhow for Binaries
 
-### Status
+## Status
 
 Accepted
 
-### Context
+## Context
 
 The `docgraph` project has a layered architecture with:
 
@@ -22,7 +20,7 @@ We need a consistent error handling strategy that:
 2. Offers rich context for end-user error messages
 3. Converts errors appropriately at layer boundaries
 
-### Decision
+## Decision
 
 We adopt a **boundary-based error handling strategy**:
 
@@ -30,9 +28,9 @@ We adopt a **boundary-based error handling strategy**:
 2. **CLI binary**: Use `anyhow` for contextual error reporting
 3. **LSP server**: Use `anyhow` internally, convert to JSON-RPC errors at the boundary
 
-### Rationale
+## Rationale
 
-#### 1. Core Library: thiserror (Typed Errors)
+### 1. Core Library: thiserror (Typed Errors)
 
 **Why**: The core library is called by other crates (CLI, LSP), so errors should be **typed** for programmatic handling.
 
@@ -125,9 +123,9 @@ async fn handle_hover(...) -> Result<Option<Hover>, jsonrpc::Error> {
 }
 ```
 
-### Consequences
+## Consequences
 
-#### Positive
+### Positive
 
 - **Clear boundaries**: Error types change at architectural boundaries
 - **Type safety where needed**: Core library errors are typed and matchable
@@ -141,9 +139,9 @@ async fn handle_hover(...) -> Result<Option<Hover>, jsonrpc::Error> {
 - **Conversion overhead**: LSP needs explicit conversion to JSON-RPC errors
 - **Learning curve**: Developers need to understand when to use which crate
 
-### Implementation Example
+## Implementation Example
 
-#### Core Module
+### Core Module
 
 ```rust
 // src/core/error.rs
@@ -213,6 +211,6 @@ fn to_jsonrpc_error(err: anyhow::Error) -> jsonrpc::Error {
 }
 ```
 
-### Related
+## Related
 
 - [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./layered-architecture.md#ADR_LAYERED_ARCH)

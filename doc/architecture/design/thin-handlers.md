@@ -1,6 +1,6 @@
-# Cross-Cutting Concept: Thin Handlers
-
 <a id="CC_THIN_HANDLERS"></a>
+
+# Cross-Cutting Concept: Thin Handlers
 
 ## Overview
 

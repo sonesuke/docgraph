@@ -1,6 +1,6 @@
-# Cross-Cutting Concept: Single Responsibility Principle
-
 <a id="CC_SINGLE_RESPONSIBILITY"></a>
+
+# Cross-Cutting Concept: Single Responsibility Principle
 
 ## Overview
 

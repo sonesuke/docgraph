@@ -1,24 +1,22 @@
-# Architecture Decision Records
-
 <a id="ADR_SINGLE_RESPONSIBILITY"></a>
 
-## Single Responsibility Principle
+# Single Responsibility Principle
 
-### Status
+## Status
 
 Accepted
 
-### Context
+## Context
 
 As the `docgraph` codebase grows, we need a clear principle for organizing code into modules and files. Without a guiding principle, modules can become bloated with multiple responsibilities, making the code harder to understand, test, and maintain.
 
-### Decision
+## Decision
 
 We adopt the **Single Responsibility Principle (SRP)**: each module should have one, and only one, reason to change. In practice, this means each file/module is responsible for exactly one thing.
 
-### Rationale
+## Rationale
 
-#### Easier to Understand
+### Easier to Understand
 
 When reading `check.rs`, developers only need to understand the `check` command logic. No other command logic is mixed in, reducing cognitive load.
 
@@ -34,9 +32,9 @@ Each file has a clear purpose, making it obvious where to add new functionality 
 
 Each module can be tested independently with focused test cases, improving test clarity and reducing test complexity.
 
-### Consequences
+## Consequences
 
-#### Positive
+### Positive
 
 - Code is easier to understand and navigate
 - Changes have limited impact on other parts of the system
@@ -48,7 +46,7 @@ Each module can be tested independently with focused test cases, improving test 
 - More files to manage (one per responsibility)
 - May require more navigation between files when working on related features
 
-### Anti-Pattern Example
+## Anti-Pattern Example
 
 **Bad** - Multiple responsibilities in one file:
 
@@ -74,6 +72,6 @@ pub fn handle_rule(...) { /* ... */ }
 
 Each file has exactly one reason to change (changes to that specific command).
 
-### Related
+## Related
 
 - [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./layered-architecture.md#ADR_LAYERED_ARCH)

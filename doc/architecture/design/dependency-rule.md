@@ -1,6 +1,6 @@
-# Cross-Cutting Concept: Dependency Rule
-
 <a id="CC_DEPENDENCY_RULE"></a>
+
+# Cross-Cutting Concept: Dependency Rule
 
 ## Overview
 

@@ -14,4 +14,5 @@ Testing strategy:
 
 Realized by:
 
-- [CC_E2E_TESTING (Overview)](../../architecture/design/e2e-testing.md#CC_E2E_TESTING)
+- [CC_E2E_TESTING (E2E Testing Design)](../../architecture/design/e2e-testing.md#CC_E2E_TESTING)
+- [ADR_E2E_TESTING (Testing Strategy for CLI and LSP)](../../decisions/e2e-testing.md#ADR_E2E_TESTING)
