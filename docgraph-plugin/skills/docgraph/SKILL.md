@@ -89,21 +89,17 @@ docgraph type <TYPE_ID>    # Show type details and rules
 ```
 - `TYPE_ID`: Type ID to show details for (e.g., `FR`, `NFR`)
 
-### `align` - Organize and Rename Elements
-Executes the alignment workflow to ensure naming conventions, consistency, and correct file placement.
-See `commands/align.md` for the workflow steps.
+## Plugin Custom Commands
 
-```bash
-docgraph align
-```
+These commands are workflows defined specifically for this plugin to assist with verified refactoring and organization.
+
+### `align` - Organize and Rename Elements
+Executes the alignment workflow defined in `commands/align.md`.
+Ensures naming conventions, consistency, and correct file placement.
 
 ### `refine` - Refine Structure and Responsibilities
-Executes the refinement workflow to verify structure, MECE, and SRP (Single Responsibility Principle).
-See `commands/refine.md` for the workflow steps.
-
-```bash
-docgraph refine
-```
+Executes the refinement workflow defined in `commands/refine.md`.
+Verifies structure, MECE, and SRP (Single Responsibility Principle) with detailed analysis.
 
 ## Workflow Recommendations
 
