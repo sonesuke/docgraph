@@ -32,3 +32,5 @@ jobs:
       run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
     - name: Build
       run: cargo build --verbose
+    - name: Integration Test Run
+      run: cargo run -- check ./test_data
