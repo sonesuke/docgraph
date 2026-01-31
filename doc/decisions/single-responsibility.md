@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-<a id="ADR-SINGLE-RESPONSIBILITY"></a>
+<a id="ADR_SINGLE_RESPONSIBILITY"></a>
 
 ## Single Responsibility Principle
 
@@ -76,4 +76,4 @@ Each file has exactly one reason to change (changes to that specific command).
 
 ### Related
 
-- [ADR-LAYERED-ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./layered-architecture.md#ADR-LAYERED-ARCH)
+- [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./layered-architecture.md#ADR_LAYERED_ARCH)

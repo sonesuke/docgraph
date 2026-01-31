@@ -1,6 +1,6 @@
 # Test Quality Requirements
 
-<a id="NFR-TEST"></a>
+<a id="NFR_TEST"></a>
 
 ## Comprehensive Testing
 
@@ -14,4 +14,4 @@ Testing strategy:
 
 Realized by:
 
-- [CC-E2E-TESTING (Overview)](../../architecture/design/e2e-testing.md#CC-E2E-TESTING)
+- [CC_E2E_TESTING (Overview)](../../architecture/design/e2e-testing.md#CC_E2E_TESTING)

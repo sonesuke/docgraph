@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-<a id="ADR-THIN-HANDLERS"></a>
+<a id="ADR_THIN_HANDLERS"></a>
 
 ## Thin Handlers
 
@@ -157,4 +157,4 @@ pub fn handle_check(...) {
 
 ### Related
 
-- [ADR-LAYERED-ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./layered-architecture.md#ADR-LAYERED-ARCH)
+- [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./layered-architecture.md#ADR_LAYERED_ARCH)

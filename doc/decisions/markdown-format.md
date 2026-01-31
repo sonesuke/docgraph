@@ -1,7 +1,7 @@
 
 # Architecture Decision Records
 
-<a id="ADR-MARKDOWN-FORMAT"></a>
+<a id="ADR_MARKDOWN_FORMAT"></a>
 
 ## Choice of Plain Markdown and HTML Anchors
 

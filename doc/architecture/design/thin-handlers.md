@@ -1,6 +1,6 @@
 # Cross-Cutting Concept: Thin Handlers
 
-<a id="CC-THIN-HANDLERS"></a>
+<a id="CC_THIN_HANDLERS"></a>
 
 ## Overview
 
@@ -16,4 +16,4 @@ Handlers perform exactly three tasks:
 
 ## Related
 
-- [ADR-THIN-HANDLERS (Thin Handlers)](../../decisions/thin-handlers.md#ADR-THIN-HANDLERS)
+- [ADR_THIN_HANDLERS (Thin Handlers)](../../decisions/thin-handlers.md#ADR_THIN_HANDLERS)

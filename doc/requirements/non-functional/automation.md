@@ -1,6 +1,6 @@
 # Automation Requirements
 
-<a id="NFR-CI-AUTO"></a>
+<a id="NFR_CI_AUTO"></a>
 
 ## Automated Validation
 

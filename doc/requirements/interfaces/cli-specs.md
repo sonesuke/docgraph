@@ -1,19 +1,19 @@
 
 # CLI Specifications
 
-<a id="IF-CLI-LINT"></a>
+<a id="IF_CLI_LINT"></a>
 
 ## Command: `lint`
 
 The `lint` command shall parse all Markdown files in the target directory, build the graph, and report any violations of validation rules.
 
-<a id="IF-CLI-GRAPH"></a>
+<a id="IF_CLI_GRAPH"></a>
 
 ### Command: `graph`
 
 The `graph` command shall output the graph structure in JSON format.
 
-<a id="IF-CLI-LIST"></a>
+<a id="IF_CLI_LIST"></a>
 
 ### Command: `list`
 
@@ -32,7 +32,7 @@ Output format:
 ID : Description
 ```
 
-<a id="IF-CLI-TRACE"></a>
+<a id="IF_CLI_TRACE"></a>
 
 ### Command: `trace`
 
@@ -56,7 +56,7 @@ ID1 -> ID2 -> ID3
 
 (Using `<-` for `up` direction)
 
-<a id="IF-CLI-DESCRIBE"></a>
+<a id="IF_CLI_DESCRIBE"></a>
 
 ### Command: `describe`
 
@@ -82,7 +82,7 @@ source_id: source_name
 ...
 ```
 
-<a id="IF-CLI-LSP"></a>
+<a id="IF_CLI_LSP"></a>
 
 ### Command: `lsp`
 

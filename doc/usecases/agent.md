@@ -1,17 +1,17 @@
 # Agent Use Cases
 
-<a id="UC-BUILD-KNOWLEDGE"></a>
+<a id="UC_BUILD_KNOWLEDGE"></a>
 
 ## Build Knowledge Graph
 
-The [ACT-AGENT (AI Agent)](../actors/systems.md#ACT-AGENT) builds a GraphRAG knowledge base from the generated JSON graph.
+The [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT) builds a GraphRAG knowledge base from the generated JSON graph.
 
-Depends on: [ACT-AGENT (AI Agent)](../actors/systems.md#ACT-AGENT), [UC-GRAPH (Generate Graph)](./analysis.md#UC-GRAPH)
+Depends on: [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT), [UC_GRAPH (Generate Graph)](./analysis.md#UC_GRAPH)
 
-<a id="UC-SUGGEST-USAGE"></a>
+<a id="UC_SUGGEST_USAGE"></a>
 
 ## Suggest Usage
 
-The [ACT-AGENT (AI Agent)](../actors/systems.md#ACT-AGENT) suggests how to use the system based on the constructed knowledge.
+The [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT) suggests how to use the system based on the constructed knowledge.
 
-Depends on: [ACT-AGENT (AI Agent)](../actors/systems.md#ACT-AGENT), [UC-BUILD-KNOWLEDGE (Build Knowledge Graph)](#UC-BUILD-KNOWLEDGE)
+Depends on: [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT), [UC_BUILD_KNOWLEDGE (Build Knowledge Graph)](#UC_BUILD_KNOWLEDGE)
