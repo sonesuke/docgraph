@@ -25,4 +25,7 @@ description: Verify and refine element responsibilities for a specific type to e
    ```
 
 4. Refine structure
-   If overlaps are found, propose merging or splitting elements to achieve MECE.
+   If overlaps are found:
+   1. **Explain the overlap**: Clearly state what is overlapping and how (e.g., "ID_A cover X, while ID_B covers X and Y").
+   2. **Propose options**: Suggest ways to integrate them (e.g., "Option 1: Merge A into B", "Option 2: Delete A").
+   3. **Ask User for decision**: Wait for the user to select the best approach before proceeding with changes.
