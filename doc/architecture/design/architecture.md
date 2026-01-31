@@ -2,6 +2,8 @@
 
 `docgraph` is designed to be a modular tool for building and validating knowledge graphs from Markdown files.
 
+<a id="CC-ARCH-OVERVIEW"></a>
+
 ## High-Level Design
 
 The system is architected to separate the data extraction (parsing), graph modeling, and the user interface (CLI/LSP).
