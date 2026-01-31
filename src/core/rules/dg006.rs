@@ -26,11 +26,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
     }
 
     for block in blocks {
-        let prefix = block
-            .id
-            .split(['-', '_'])
-            .next()
-            .unwrap_or(&block.id);
+        let prefix = block.id.split(['-', '_']).next().unwrap_or(&block.id);
 
         if let Some(rel_config) = config.references.get(prefix) {
             let mut allowed_outgoing_types = std::collections::HashSet::new();
@@ -75,9 +71,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                                 .iter()
                                 .filter(|e| {
                                     let target_type =
-                                        e.id.split(['-', '_'])
-                                            .next()
-                                            .unwrap_or(&e.id);
+                                        e.id.split(['-', '_']).next().unwrap_or(&e.id);
                                     // Count if it matches one of the allowed types
                                     rule.targets.contains(&target_type.to_string())
                                 })
@@ -113,11 +107,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
             // if strict_relations is true, all outgoing edges must be in allowed_outgoing_types
             if config.graph.strict_relations {
                 for edge in &block.edges {
-                    let target_type = edge
-                        .id
-                        .split(['-', '_'])
-                        .next()
-                        .unwrap_or(&edge.id);
+                    let target_type = edge.id.split(['-', '_']).next().unwrap_or(&edge.id);
 
                     // Always allow documentation types
                     if config.graph.doc_types.contains(&target_type.to_string()) {
