@@ -4,7 +4,7 @@
 [graph]
 strict_node_types = true
 strict_relations  = true
-doc_types = ["ACT", "DAT", "IF", "ADR", "TERM", "FC"]
+doc_types = ["ACT", "DAT", "IF", "ADR"]
 
 [node_types]
 # Core specification types
@@ -14,11 +14,12 @@ NFR = { desc = "Non-Functional Requirement" }
 CON = { desc = "Constraint" }
 ERR = { desc = "Error Definition" }
 
+# Test types
+TEST = { desc = "Test Specification" }
+
 # Architecture types (Core Dependency Model)
-CTX = { desc = "Context View Element" }
-BB  = { desc = "Building Block" }
-RT  = { desc = "Runtime View Scenario" }
-DEP = { desc = "Deployment Element" }
+# Architecture types (Core Dependency Model)
+# CTX, BB, RT, DEP removed as per user request
 CC  = { desc = "Cross-cutting Concept" }
 
 # Documentation types (can be referenced by all core types)
@@ -26,8 +27,7 @@ ACT  = { desc = "Actor" }
 DAT  = { desc = "Data Entity" }
 IF   = { desc = "Interface Specification" }
 ADR  = { desc = "Architecture Decision Record" }
-TERM = { desc = "Terminology/Glossary" }
-FC   = { desc = "Future Consideration" }
+
 
 # Dependency Model (Derive Flow):
 # Business: ACT/IF <- UC
@@ -49,9 +49,10 @@ rules = [
 ]
 
 [references.IF]
-# Interface is derived from Use Case
+# Interface is derived from Use Case and may reference other specs or data
 rules = [
-  { dir = "from", targets = ["UC"], min = 0, desc = "Exposed interfaces should be justified by business use cases" }
+  { dir = "from", targets = ["UC"], min = 0, desc = "Exposed interfaces should be justified by business use cases" },
+  { dir = "to", targets = ["IF", "FR", "DAT", "ERR", "UC", "TEST"], min = 0, desc = "Interfaces may reference other specifications, requirements, data entities, error definitions, or related business/test contexts" }
 ]
 
 # ========== Specification Relations ==========
@@ -60,14 +61,14 @@ rules = [
 # Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
 rules = [
   { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Functional requirements are derived from business needs (UC) or constraints (CON) to clarify their existence" },
-  { dir = "to", targets = ["NFR", "ERR", "BB", "RT", "CC", "IF", "DAT"], min = 0, desc = "Functional requirements must be traceable to non-functional requirements, detailed designs (BB), or defined data entities (DAT)" }
+  { dir = "to", targets = ["NFR", "ERR", "CC", "IF", "DAT", "TEST"], min = 0, desc = "Functional requirements must be traceable to non-functional requirements, tests (TEST), or defined data entities (DAT)" }
 ]
 
 [references.NFR]
 # Non-Functional Requirement is derived from FR/Constraint and derives architecture
 rules = [
   { dir = "from", targets = ["FR", "CON"], min = 1, desc = "Non-functional requirements should be defined to meet specific functionality or overall constraints" },
-  { dir = "to", targets = ["BB", "CC"], min = 0, desc = "Non-functional requirements must be reflected in specific implementation strategies (BB) or cross-cutting concerns (CC)" }
+  { dir = "to", targets = ["CC"], min = 0, desc = "Non-functional requirements must be reflected in cross-cutting concerns (CC)" }
 ]
 
 [references.ERR]
@@ -84,29 +85,11 @@ rules = [
 
 # ========== Architecture Relations ==========
 
-[references.CTX]
-# Context View derives from Actor or refers to other high-level components for overview
-rules = [
-  { dir = "to", targets = ["ACT", "UC", "FR", "DAT", "IF", "ADR", "RT"], min = 0, desc = "Context views aggregate major elements from all layers to explain the overall system picture" }
-]
 
-[references.BB]
-# Building Block is derived from Requirements and derives scenarios/deployment
+[references.TEST]
+# Test verifies Interface or Requirement
 rules = [
-  { dir = "from", targets = ["FR", "NFR"], min = 1, desc = "Design elements (Building Blocks) must exist to satisfy at least one requirement (prevention of over-engineering)" },
-  { dir = "to", targets = ["RT", "DEP"], min = 0, desc = "Design elements are defined as runtime behaviors (RT) or deployment units (DEP)" }
-]
-
-[references.RT]
-# Runtime Scenario is derived from Building Block or Requirement
-rules = [
-  { dir = "from", targets = ["BB", "FR", "IF"], min = 1, desc = "Runtime scenarios must explain the operation of specific design components, functional requirements, or interfaces (IF)" }
-]
-
-[references.DEP]
-# Deployment is derived from Building Block, Architecture Decision, or Concept
-rules = [
-  { dir = "from", targets = ["BB", "ADR", "CC", "NFR"], min = 1, desc = "Deployment configurations require physical justification based on design (BB), decisions (ADR), or non-functional requirements (NFR)" }
+  { dir = "to", targets = ["FR", "IF", "NFR"], min = 1, desc = "Test specifications must verify at least one requirement or interface" }
 ]
 
 [references.CC]

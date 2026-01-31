@@ -1,6 +1,6 @@
-# Configuration Specification (`docgraph.toml`)
-
 <a id="IF-CONFIG"></a>
+
+# docgraph.toml Configuration
 
 The `docgraph.toml` file at the project root defines the validation rules and workspace behavior.
 
