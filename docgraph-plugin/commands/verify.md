@@ -1,14 +1,19 @@
 ---
-description: Verify and refine element responsibilities for a specific type to ensure MECE
+description: Verify and refine element responsibilities (Supports TYPE_ID or NODE_ID)
 ---
+
+Determine if the input `{{TARGET}}` is a TYPE_ID (e.g., FR, SYS, ACT, UC) or a NODE_ID (e.g., FR-001, UC-LOGIN).
+
+## Case 1: Input is a TYPE_ID
+
 1. Show type definition
    ```bash
-   docgraph type {{TYPE_ID}}
+   docgraph type {{TARGET}}
    ```
 
 2. List all elements of this type
    ```bash
-   docgraph list "{{TYPE_ID}}*"
+   docgraph list "{{TARGET}}*"
    ```
 
 3. Analyze for MECE (Mutually Exclusive, Collectively Exhaustive)
@@ -29,3 +34,25 @@ description: Verify and refine element responsibilities for a specific type to e
    1. **Explain the overlap**: Clearly state what is overlapping and how (e.g., "ID_A cover X, while ID_B covers X and Y").
    2. **Propose options**: Suggest ways to integrate them (e.g., "Option 1: Merge A into B", "Option 2: Delete A").
    3. **Ask User for decision**: Wait for the user to select the best approach before proceeding with changes.
+
+## Case 2: Input is a NODE_ID
+
+1. Show detailed information
+   ```bash
+   docgraph describe {{TARGET}}
+   ```
+
+2. Analyze Responsibilities (SRP Check)
+   Read the description and content of the node carefully.
+   - **Too many responsibilities?**: Does this single node try to do too much? (e.g., "Handle login AND process payments")
+   - **Vague definition?**: Is the scope defined clearly?
+
+3. Verify Realizability
+   Check the constituent elements (outgoing edges/dependencies).
+   - **Sufficient components?**: Do the linked child nodes/dependencies sufficiently realize the responsibilities of this node?
+   - **Missing dependencies?**: Are there missing links to necessary components?
+
+4. Refine Node
+   If issues are found:
+   - **Split Node**: If it has too many responsibilities, propose splitting it into multiple smaller nodes.
+   - **Add Dependencies**: If realizability is low, propose adding missing dependencies.
