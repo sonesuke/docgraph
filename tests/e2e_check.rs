@@ -1,6 +1,26 @@
 mod common;
 
 use assert_cmd::Command;
+use std::path::Path;
+
+fn create_doc_missing_heading(dir: &Path, id: &str) -> std::path::PathBuf {
+    let content = format!("<a id=\"{}\"></a>\n", id);
+    common::create_test_doc(dir, "test.md", u0026content)
+}
+
+fn create_docs_with_duplicate_id(
+    dir: u0026Path,
+    id: u0026str,
+) -> (std::path::PathBuf, std::path::PathBuf) {
+    let content1 = format!("<a id=\"{}\"></a>\n\n# First\n", id);
+    let content2 = format!("<a id=\"{}\"></a>\n\n# Second\n", id);
+
+    let path1 = common::create_test_doc(dir, "doc1.md", u0026content1);
+    let path2 = common::create_test_doc(dir, "doc2.md", u0026content2);
+
+    (path1, path2)
+}
+
 use predicates::prelude::*;
 
 #[test]
@@ -33,7 +53,7 @@ fn check_valid_doc_succeeds() {
 fn check_missing_heading_fails() {
     let tmp = common::setup_temp_dir();
     common::create_config(tmp.path(), common::default_config());
-    common::create_doc_missing_heading(tmp.path(), "TEST-01");
+    create_doc_missing_heading(tmp.path(), "TEST-01");
 
     Command::cargo_bin("docgraph")
         .unwrap()
@@ -49,7 +69,7 @@ fn check_missing_heading_fails() {
 fn check_duplicate_id_fails() {
     let tmp = common::setup_temp_dir();
     common::create_config(tmp.path(), common::default_config());
-    common::create_docs_with_duplicate_id(tmp.path(), "TEST-01");
+    create_docs_with_duplicate_id(tmp.path(), "TEST-01");
 
     Command::cargo_bin("docgraph")
         .unwrap()
@@ -83,11 +103,10 @@ fn check_json_output() {
 }
 
 #[test]
-#[test]
 fn check_with_rule_filter() {
     let tmp = common::setup_temp_dir();
     common::create_config(tmp.path(), common::default_config());
-    common::create_doc_missing_heading(tmp.path(), "TEST-01");
+    create_doc_missing_heading(tmp.path(), "TEST-01");
 
     // Run only DG001
     Command::cargo_bin("docgraph")
