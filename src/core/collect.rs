@@ -25,3 +25,26 @@ pub fn collect_workspace_all(
     }
     (all_blocks, all_refs)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::File;
+    use std::io::Write;
+    use tempfile::tempdir;
+
+    #[test]
+    fn test_collect_workspace_all() {
+        let dir = tempdir().unwrap();
+        let file_path = dir.path().join("test.md");
+        let mut file = File::create(&file_path).unwrap();
+        writeln!(file, "<a id=\"ID-1\"></a>\n# Heading\n[Ref](#ID-2)").unwrap();
+
+        let (blocks, refs) = collect_workspace_all(dir.path(), &[]);
+
+        assert_eq!(blocks.len(), 1);
+        assert_eq!(blocks[0].id, "ID-1");
+        assert_eq!(refs.len(), 1);
+        assert_eq!(refs[0].target_id, "ID-2");
+    }
+}

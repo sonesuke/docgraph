@@ -59,7 +59,7 @@ pub fn goto_definition(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::types::{SpecBlock, EdgeUse};
+    use crate::core::types::{EdgeUse, SpecBlock};
 
     #[test]
     fn test_goto_definition() {
@@ -86,7 +86,7 @@ mod tests {
                     ..Default::default()
                 }],
                 ..Default::default()
-            }
+            },
         ];
         let refs = vec![];
 
@@ -94,7 +94,10 @@ mod tests {
         let params = GotoDefinitionParams {
             text_document_position_params: TextDocumentPositionParams {
                 text_document: TextDocumentIdentifier { uri },
-                position: Position { line: 1, character: 6 }, // Inside the edge range match (line 2 is index 1)
+                position: Position {
+                    line: 1,
+                    character: 6,
+                }, // Inside the edge range match (line 2 is index 1)
             },
             work_done_progress_params: Default::default(),
             partial_result_params: Default::default(),
@@ -102,8 +105,8 @@ mod tests {
 
         let result = goto_definition(&blocks, &refs, params).unwrap();
         if let Some(GotoDefinitionResponse::Scalar(loc)) = result {
-             assert_eq!(loc.uri, Url::from_file_path(target_pos).unwrap());
-             assert_eq!(loc.range.start.line, 9);
+            assert_eq!(loc.uri, Url::from_file_path(target_pos).unwrap());
+            assert_eq!(loc.range.start.line, 9);
         } else {
             panic!("Expected definition response");
         }

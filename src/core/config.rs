@@ -117,7 +117,7 @@ mod tests {
         let dir = tempdir().unwrap();
         let subdir = dir.path().join("subdir");
         std::fs::create_dir(&subdir).unwrap();
-        
+
         let config_path = dir.path().join("docgraph.toml");
         let mut file = File::create(&config_path).unwrap();
         writeln!(file, "[graph]\nstrict_relations = true").unwrap();
@@ -131,7 +131,7 @@ mod tests {
         let dir = tempdir().unwrap();
         let config_path = dir.path().join("docgraph.toml");
         std::fs::write(&config_path, "invalid toml content [[").unwrap();
-        
+
         // Should return error
         let result = Config::load(dir.path());
         assert!(result.is_err());
@@ -148,9 +148,9 @@ mod tests {
         // The code `start_dir = if path.is_dir() { ... } else { path.parent() ... }`
         // checks if we can find config starting from that file's directory.
         // We simulate running `docgraph check ./subdir/file.md`
-        let file_path = dir.path().join("file.md"); 
+        let file_path = dir.path().join("file.md");
         let config = Config::load(&file_path).unwrap();
-        
+
         assert!(config.graph.strict_node_types);
     }
 
@@ -159,7 +159,7 @@ mod tests {
         // Test fallback when path has no parent (e.g. root)
         // We can't easily write to root, so we expect Config::default() or whatever is in CWD.
         // If there is no docgraph.toml in CWD, we get default (empty).
-        
+
         #[cfg(unix)]
         let root = Path::new("/");
         #[cfg(windows)]
@@ -173,10 +173,10 @@ mod tests {
         // If we want to be sure it's the project config:
         let cwd_config = Path::new("docgraph.toml");
         if cwd_config.exists() {
-             // It loaded the CWD config
-             assert!(true); 
+            // It loaded the CWD config
+            // We just verify that we are in a valid state
         } else {
-             assert_eq!(config.graph.strict_node_types, false);
+            assert!(!config.graph.strict_node_types);
         }
     }
 }

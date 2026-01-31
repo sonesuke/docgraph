@@ -143,3 +143,85 @@ impl Rule for DG004 {
         self
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rumdl_lib::config::MarkdownFlavor;
+
+    fn index_content(content: &str, path: &Path) -> FileIndex {
+        let rule = DG004;
+        let rules: Vec<Box<dyn rumdl_lib::rule::Rule>> = vec![Box::new(rule)];
+        let (_, index) = rumdl_lib::lint_and_index(
+            content,
+            &rules,
+            false,
+            MarkdownFlavor::Standard,
+            Some(path.to_path_buf()),
+            None,
+        );
+        index
+    }
+
+    #[test]
+    fn test_dg004_link_text() {
+        use tempfile::tempdir;
+        let dir = tempdir().unwrap();
+
+        let p1 = dir.path().join("defs.md");
+        let p2 = dir.path().join("links.md");
+
+        // Define ID-1 with Title "Start"
+        let c1 = "<a id=\"ID-1\"></a>\n# Start\n";
+        std::fs::write(&p1, c1).unwrap();
+
+        // Link to ID-1 with correct and incorrect text
+        let c2 = "Correct: [ID-1 (Start)](#ID-1)\nIncorrect: [Click here](#ID-1)";
+        std::fs::write(&p2, c2).unwrap();
+
+        // Index both
+        let idx1 = index_content(c1, &p1);
+        let idx2 = index_content(c2, &p2);
+
+        let mut ws = WorkspaceIndex::new();
+        ws.insert_file(p1.clone(), idx1);
+        ws.insert_file(p2.clone(), idx2.clone());
+
+        let rule = DG004;
+        let warnings = rule.cross_file_check(&p2, &idx2, &ws).unwrap();
+
+        // Should have 1 warning for "Click here"
+        assert_eq!(warnings.len(), 1);
+        assert!(
+            warnings[0]
+                .message
+                .contains("Link text for 'ID-1' should be 'ID-1 (Start)'")
+        );
+    }
+
+    #[test]
+    fn test_dg004_cleaned_title() {
+        use tempfile::tempdir;
+        let dir = tempdir().unwrap();
+        let p1 = dir.path().join("complex.md");
+
+        // Title has ID inside it often: "ID-2 (Complex Title)"
+        let c1 = "## ID-2 (Complex Title) <a id=\"ID-2\"></a>";
+        std::fs::write(&p1, c1).unwrap();
+
+        let c2 = "[ID-2 (Complex Title)](#ID-2)"; // Correct
+        let p2 = dir.path().join("test.md");
+        std::fs::write(&p2, c2).unwrap();
+
+        let idx1 = index_content(c1, &p1);
+        let idx2 = index_content(c2, &p2);
+
+        let mut ws = WorkspaceIndex::new();
+        ws.insert_file(p1.clone(), idx1);
+        ws.insert_file(p2.clone(), idx2.clone());
+
+        let rule = DG004;
+        let warnings = rule.cross_file_check(&p2, &idx2, &ws).unwrap();
+        assert!(warnings.is_empty());
+    }
+}

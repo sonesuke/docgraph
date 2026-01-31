@@ -88,20 +88,20 @@ pub fn references(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::types::{SpecBlock, EdgeUse};
+    use crate::core::types::{EdgeUse, SpecBlock};
 
     #[test]
     fn test_references() {
         let path = std::env::current_dir().unwrap().join("test.md");
         let blocks = vec![
-             SpecBlock {
+            SpecBlock {
                 id: "FR-01".to_string(),
                 file_path: path.clone(),
                 line_start: 10,
                 line_end: 12,
                 ..Default::default()
-             },
-             SpecBlock {
+            },
+            SpecBlock {
                 id: "UC-01".to_string(),
                 file_path: path.clone(),
                 line_start: 1,
@@ -114,7 +114,7 @@ mod tests {
                     ..Default::default()
                 }],
                 ..Default::default()
-             }
+            },
         ];
         let refs = vec![];
 
@@ -122,17 +122,22 @@ mod tests {
         let params = ReferenceParams {
             text_document_position: TextDocumentPositionParams {
                 text_document: TextDocumentIdentifier { uri },
-                position: Position { line: 9, character: 0 }, // At definition of FR-01
+                position: Position {
+                    line: 9,
+                    character: 0,
+                }, // At definition of FR-01
             },
             work_done_progress_params: Default::default(),
             partial_result_params: Default::default(),
-            context: ReferenceContext { include_declaration: true },
+            context: ReferenceContext {
+                include_declaration: true,
+            },
         };
 
         let result = references(&blocks, &refs, params).unwrap();
         if let Some(locs) = result {
-             assert_eq!(locs.len(), 1);
-             assert_eq!(locs[0].range.start.line, 1); // Edge at line 2 (index 1)
+            assert_eq!(locs.len(), 1);
+            assert_eq!(locs[0].range.start.line, 1); // Edge at line 2 (index 1)
         } else {
             panic!("Expected references locations");
         }

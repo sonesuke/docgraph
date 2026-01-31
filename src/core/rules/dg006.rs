@@ -134,11 +134,10 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
 }
 
 #[cfg(test)]
-#[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::config::{Config, RuleConfig, ReferenceConfig};
-    use crate::core::types::{SpecBlock, EdgeUse};
+    use crate::core::config::{Config, ReferenceConfig, RuleConfig};
+    use crate::core::types::{EdgeUse, SpecBlock};
     use std::path::PathBuf;
 
     fn create_block(id: &str, edges: Vec<&str>) -> SpecBlock {
@@ -148,13 +147,16 @@ mod tests {
             file_path: PathBuf::from("test.md"),
             line_start: 1,
             line_end: 1,
-            edges: edges.into_iter().map(|e| EdgeUse {
-                id: e.to_string(),
-                name: None,
-                line: 1,
-                col_start: 1,
-                col_end: 1,
-            }).collect(),
+            edges: edges
+                .into_iter()
+                .map(|e| EdgeUse {
+                    id: e.to_string(),
+                    name: None,
+                    line: 1,
+                    col_start: 1,
+                    col_end: 1,
+                })
+                .collect(),
         }
     }
 
@@ -162,7 +164,7 @@ mod tests {
     fn test_dg006_strict_relations_invalid() {
         let mut config = Config::default();
         config.graph.strict_relations = true;
-        
+
         let mut ref_config = ReferenceConfig::default();
         ref_config.rules.push(RuleConfig {
             dir: "to".to_string(),
@@ -171,13 +173,13 @@ mod tests {
             max: None,
             desc: None,
         });
-        
+
         config.references.insert("REQ".to_string(), ref_config);
 
         // REQ -> UNK (Not allowed)
         let blocks = vec![create_block("REQ-01", vec!["UNK-01"])];
         let diags = check_strict_relations(&blocks, &config);
-        
+
         assert_eq!(diags.len(), 1);
         assert!(diags[0].message.contains("not allowed to reference"));
     }
@@ -186,7 +188,7 @@ mod tests {
     fn test_dg006_strict_relations_valid() {
         let mut config = Config::default();
         config.graph.strict_relations = true;
-        
+
         let mut ref_config = ReferenceConfig::default();
         ref_config.rules.push(RuleConfig {
             dir: "to".to_string(),
@@ -195,13 +197,13 @@ mod tests {
             max: None,
             desc: None,
         });
-        
+
         config.references.insert("REQ".to_string(), ref_config);
 
         // REQ -> SYS (Allowed)
         let blocks = vec![create_block("REQ-01", vec!["SYS-01"])];
         let diags = check_strict_relations(&blocks, &config);
-        
+
         assert!(diags.is_empty());
     }
 
@@ -209,7 +211,7 @@ mod tests {
     fn test_dg006_min_incoming() {
         let mut config = Config::default();
         config.graph.strict_relations = false;
-        
+
         let mut ref_config = ReferenceConfig::default();
         ref_config.rules.push(RuleConfig {
             dir: "from".to_string(),
@@ -218,7 +220,7 @@ mod tests {
             max: None,
             desc: None,
         });
-        
+
         // SYS nodes must have at least 1 incoming from REQ
         config.references.insert("SYS".to_string(), ref_config);
 
@@ -226,7 +228,11 @@ mod tests {
         let blocks_fail = vec![create_block("SYS-01", vec![])]; // No REQ points to it
         let diags_fail = check_strict_relations(&blocks_fail, &config);
         assert_eq!(diags_fail.len(), 1);
-        assert!(diags_fail[0].message.contains("requires at least 1 incoming relation"));
+        assert!(
+            diags_fail[0]
+                .message
+                .contains("requires at least 1 incoming relation")
+        );
 
         // Case 2: SYS has 1 incoming (Ok)
         let blocks_ok = vec![
@@ -241,7 +247,7 @@ mod tests {
     fn test_dg006_invalid_direction_and_desc() {
         let mut config = Config::default();
         let mut ref_config = ReferenceConfig::default();
-        
+
         // Rule with invalid direction and a description
         ref_config.rules.push(RuleConfig {
             dir: "invalid".to_string(),
@@ -259,13 +265,13 @@ mod tests {
             max: None,
             desc: Some("Important Business Rule".to_string()),
         });
-        
+
         config.references.insert("REQ".to_string(), ref_config);
 
         // REQ -> [] (Fail 'to' rule)
         let blocks = vec![create_block("REQ-01", vec![])];
         let diags = check_strict_relations(&blocks, &config);
-        
+
         // Check "invalid" direction is ignored (no panic, no extra error)
         // Check "to" rule failed and included description
         assert_eq!(diags.len(), 1);

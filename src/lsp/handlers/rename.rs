@@ -4,7 +4,7 @@ use tower_lsp::lsp_types::*;
 pub fn rename(
     blocks: &[crate::core::types::SpecBlock],
     refs: &[crate::core::types::RefUse],
-    params: RenameParams
+    params: RenameParams,
 ) -> Result<Option<WorkspaceEdit>> {
     let uri = params.text_document_position.text_document.uri;
     let position = params.text_document_position.position;
@@ -100,7 +100,7 @@ pub fn rename(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::types::{SpecBlock};
+    use crate::core::types::SpecBlock;
     use std::io::Write;
     use tempfile::NamedTempFile;
 
@@ -111,22 +111,23 @@ mod tests {
         writeln!(temp_file, "## FR-01").unwrap();
         let path = temp_file.path().to_path_buf();
 
-        let blocks = vec![
-             SpecBlock {
-                id: "FR-01".to_string(),
-                file_path: path.clone(),
-                line_start: 1, // matches content
-                line_end: 1,
-                ..Default::default()
-             }
-        ];
+        let blocks = vec![SpecBlock {
+            id: "FR-01".to_string(),
+            file_path: path.clone(),
+            line_start: 1, // matches content
+            line_end: 1,
+            ..Default::default()
+        }];
         let refs = vec![];
 
         let uri = Url::from_file_path(&path).unwrap();
         let params = RenameParams {
             text_document_position: TextDocumentPositionParams {
                 text_document: TextDocumentIdentifier { uri },
-                position: Position { line: 0, character: 0 },
+                position: Position {
+                    line: 0,
+                    character: 0,
+                },
             },
             new_name: "FR-NEW".to_string(),
             work_done_progress_params: Default::default(),
@@ -134,12 +135,12 @@ mod tests {
 
         let result = rename(&blocks, &refs, params).unwrap();
         if let Some(edit) = result {
-             let changes = edit.changes.unwrap();
-             assert!(changes.len() > 0);
-             let edits = changes.values().next().unwrap();
-             assert_eq!(edits[0].new_text, "FR-NEW");
-             // "## FR-01" -> "FR-01" is at index 3
-             assert_eq!(edits[0].range.start.character, 3);
+            let changes = edit.changes.unwrap();
+            assert!(!changes.is_empty());
+            let edits = changes.values().next().unwrap();
+            assert_eq!(edits[0].new_text, "FR-NEW");
+            // "## FR-01" -> "FR-01" is at index 3
+            assert_eq!(edits[0].range.start.character, 3);
         } else {
             panic!("Expected rename edits");
         }

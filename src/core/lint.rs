@@ -222,14 +222,11 @@ pub fn check_workspace(
 
 // Legacy tests removed (migrated to DG002/DG003 integration tests)
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::File;
-    use std::io::Write;
-    use tempfile::tempdir;
     use crate::core::config::Config;
+    use tempfile::tempdir;
 
     #[test]
     fn test_check_workspace_basic() {
@@ -245,7 +242,11 @@ Text instead of heading"#;
         let diagnostics = check_workspace(dir.path(), false, None, true, &config);
 
         // Expect DG001 error
-        assert!(diagnostics.iter().any(|d| d.code == "DG001" && d.severity == crate::core::types::Severity::Error));
+        assert!(
+            diagnostics
+                .iter()
+                .any(|d| d.code == "DG001" && d.severity == crate::core::types::Severity::Error)
+        );
     }
 
     #[test]
@@ -318,7 +319,7 @@ Text instead of heading"#;
         let dir = tempdir().unwrap();
         let f1 = dir.path().join("test.md");
         // Create file with fixable violation (e.g., missing heading for anchor, but DG001 is unfixable)
-        // We can use a rumdl rule that is fixable. 
+        // We can use a rumdl rule that is fixable.
         // MD047 (single trailing newline) is usually fixable.
         let content = "No newline at end";
         std::fs::write(&f1, content).unwrap();
@@ -336,17 +337,29 @@ Text instead of heading"#;
     fn test_check_workspace_with_rule_filter() {
         let dir = tempdir().unwrap();
         let f1 = dir.path().join("test.md");
-        let content = "<span>test</span>"; 
+        let content = "<span>test</span>";
         std::fs::write(&f1, content).unwrap();
 
         let config = Config::default();
-        
+
         // Filter ONLY MD033
-        let diagnostics = check_workspace(dir.path(), false, Some(vec!["MD033".to_string()]), false, &config);
+        let diagnostics = check_workspace(
+            dir.path(),
+            false,
+            Some(vec!["MD033".to_string()]),
+            false,
+            &config,
+        );
         assert!(diagnostics.iter().any(|d| d.code == "MD033"));
 
         // Filter ONLY MD001
-        let diagnostics_empty = check_workspace(dir.path(), false, Some(vec!["MD001".to_string()]), false, &config);
+        let diagnostics_empty = check_workspace(
+            dir.path(),
+            false,
+            Some(vec!["MD001".to_string()]),
+            false,
+            &config,
+        );
         assert!(!diagnostics_empty.iter().any(|d| d.code == "MD033"));
     }
 
@@ -363,7 +376,7 @@ Text instead of heading"#;
 
             // Make directory read-only to prevent writing the FIXED file?
             // Actually, we write to the FILE.
-            // So make the FILE read-only? 
+            // So make the FILE read-only?
             // fs::write will try to open with write permissions.
             let mut perms = std::fs::metadata(&f1).unwrap().permissions();
             perms.set_mode(0o400); // Read only
@@ -375,7 +388,11 @@ Text instead of heading"#;
             let diags = check_workspace(dir.path(), true, None, false, &config);
 
             // Expect DG000 error for write failure
-            assert!(diags.iter().any(|d| d.code == "DG000" && d.message.contains("Failed to write")));
+            assert!(
+                diags
+                    .iter()
+                    .any(|d| d.code == "DG000" && d.message.contains("Failed to write"))
+            );
         }
     }
 }

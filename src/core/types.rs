@@ -38,8 +38,7 @@ pub struct Diagnostic {
     pub range: Range,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Severity {
     Error,
     Warning,

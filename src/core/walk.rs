@@ -49,3 +49,44 @@ pub fn find_markdown_files(root: &Path, ignore_patterns: &[String]) -> Vec<PathB
     }
     files
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::File;
+    use tempfile::tempdir;
+
+    #[test]
+    fn test_find_markdown_files() {
+        let dir = tempdir().unwrap();
+        let f1 = dir.path().join("a.md");
+        let f2 = dir.path().join("b.txt");
+        let subdir = dir.path().join("sub");
+        std::fs::create_dir(&subdir).unwrap();
+        let f3 = subdir.join("c.md");
+
+        File::create(&f1).unwrap();
+        File::create(&f2).unwrap();
+        File::create(&f3).unwrap();
+
+        let files = find_markdown_files(dir.path(), &[]);
+        assert_eq!(files.len(), 2);
+        let filenames: Vec<_> = files.iter().map(|p| p.file_name().unwrap()).collect();
+        assert!(filenames.contains(&std::ffi::OsStr::new("a.md")));
+        assert!(filenames.contains(&std::ffi::OsStr::new("c.md")));
+    }
+
+    #[test]
+    fn test_find_markdown_files_ignore() {
+        let dir = tempdir().unwrap();
+        let f1 = dir.path().join("a.md");
+        let f2 = dir.path().join("ignored.md");
+
+        File::create(&f1).unwrap();
+        File::create(&f2).unwrap();
+
+        let files = find_markdown_files(dir.path(), &["ignored.md".to_string()]);
+        assert_eq!(files.len(), 1);
+        assert_eq!(files[0].file_name().unwrap(), "a.md");
+    }
+}

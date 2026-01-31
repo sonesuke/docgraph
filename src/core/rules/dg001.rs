@@ -68,3 +68,64 @@ impl Rule for DG001 {
         self
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rumdl_lib::config::MarkdownFlavor;
+
+    fn run_rule(content: &str) -> Vec<rumdl_lib::rule::LintWarning> {
+        let rule = DG001;
+        let rules: Vec<Box<dyn rumdl_lib::rule::Rule>> = vec![Box::new(rule)];
+        let (result, _) =
+            rumdl_lib::lint_and_index(content, &rules, false, MarkdownFlavor::Standard, None, None);
+        result.unwrap_or_default()
+    }
+
+    #[test]
+    fn test_dg001_valid() {
+        let content = r#"
+<a id="TEST-01"></a>
+# Heading
+"#;
+        let warnings = run_rule(content);
+        assert!(warnings.is_empty());
+    }
+
+    #[test]
+    fn test_dg001_invalid_no_heading() {
+        let content = r#"
+<a id="TEST-02"></a>
+Some text
+"#;
+        let warnings = run_rule(content);
+        assert_eq!(warnings.len(), 1);
+        assert!(warnings[0].message.contains("not followed by a heading"));
+    }
+
+    #[test]
+    fn test_dg001_valid_with_newlines() {
+        let content = r#"
+<a id="TEST-03"></a>
+
+
+# Heading
+"#;
+        let warnings = run_rule(content);
+        assert!(warnings.is_empty());
+    }
+
+    #[test]
+    fn test_dg001_invalid_eof() {
+        let content = r#"<a id="TEST-04"></a>"#;
+        let warnings = run_rule(content);
+        assert_eq!(warnings.len(), 1);
+    }
+
+    #[test]
+    fn test_dg001_metadata() {
+        let rule = DG001;
+        assert_eq!(rule.name(), "DG001");
+        assert!(!rule.description().is_empty());
+    }
+}

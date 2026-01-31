@@ -82,7 +82,6 @@ mod tests {
             line_start: 1,
             line_end: 5,
             edges: vec![],
-            ..Default::default()
         }];
         let refs = vec![];
 
@@ -90,19 +89,22 @@ mod tests {
         let params = HoverParams {
             text_document_position_params: TextDocumentPositionParams {
                 text_document: TextDocumentIdentifier { uri },
-                position: Position { line: 0, character: 0 },
+                position: Position {
+                    line: 0,
+                    character: 0,
+                },
             },
             work_done_progress_params: Default::default(),
         };
 
         let result = hover(&blocks, &refs, params).unwrap();
         if let Some(h) = result {
-             match h.contents {
-                 HoverContents::Scalar(MarkedString::String(s)) => {
-                     assert!(s.contains("**Test Req** (FR-01)"));
-                 }
-                 _ => panic!("Expected string content"),
-             }
+            match h.contents {
+                HoverContents::Scalar(MarkedString::String(s)) => {
+                    assert!(s.contains("**Test Req** (FR-01)"));
+                }
+                _ => panic!("Expected string content"),
+            }
         } else {
             panic!("Expected hover response");
         }

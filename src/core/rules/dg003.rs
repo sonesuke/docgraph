@@ -236,7 +236,8 @@ mod tests {
     fn index_content(content: &str, path: &Path) -> FileIndex {
         let rule_dg003 = DG003;
         let rule_dg002 = DG002; // DG002 contributes anchors to index
-        let rules: Vec<Box<dyn rumdl_lib::rule::Rule>> = vec![Box::new(rule_dg003), Box::new(rule_dg002)];
+        let rules: Vec<Box<dyn rumdl_lib::rule::Rule>> =
+            vec![Box::new(rule_dg003), Box::new(rule_dg002)];
         let (_, index) = rumdl_lib::lint_and_index(
             content,
             &rules,
@@ -252,7 +253,7 @@ mod tests {
     fn test_dg003_valid_local_link() {
         let dir = tempdir().unwrap();
         let path = dir.path().join("test.md");
-        
+
         let content = r#"<a id="ID-1"></a>
 Link to [myself](#ID-1)"#;
         std::fs::write(&path, content).unwrap();
@@ -275,7 +276,7 @@ Link to [myself](#ID-1)"#;
 
         let c1 = r#"Link to [other](file2.md#ID-2)"#;
         let c2 = r#"<a id="ID-2"></a>"#;
-        
+
         std::fs::write(&p1, c1).unwrap();
         std::fs::write(&p2, c2).unwrap();
 
@@ -290,12 +291,12 @@ Link to [myself](#ID-1)"#;
         let warnings = rule.cross_file_check(&p1, &idx1, &ws).unwrap();
         assert!(warnings.is_empty());
     }
-    
+
     #[test]
     fn test_dg003_broken_link() {
         let dir = tempdir().unwrap();
         let path = dir.path().join("test.md");
-        
+
         // Write content to disk because DG003 reads it
         let content = r#"Link to [nowhere](#MISSING)"#;
         std::fs::write(&path, content).unwrap();
@@ -318,7 +319,7 @@ Link to [myself](#ID-1)"#;
 
         let c1 = r#"Link to [implicit](#ID-REMOTE)"#;
         let c2 = r#"<a id="ID-REMOTE"></a>"#;
-        
+
         std::fs::write(&p1, c1).unwrap();
         std::fs::write(&p2, c2).unwrap();
 
@@ -331,7 +332,7 @@ Link to [myself](#ID-1)"#;
 
         let rule = DG003;
         let warnings = rule.cross_file_check(&p1, &idx1, &ws).unwrap();
-        
+
         assert_eq!(warnings.len(), 1);
         assert!(warnings[0].message.contains("defined in another file"));
         assert!(warnings[0].fix.is_some());
@@ -387,7 +388,7 @@ Link to [myself](#ID-1)"#;
 
         let rule = DG003;
         let warnings = rule.cross_file_check(&p1, &idx1, &ws).unwrap();
-        
+
         // Should be 1 warning about being found in multiple files
         assert_eq!(warnings.len(), 1);
         assert!(warnings[0].message.contains("found in multiple files"));
@@ -402,7 +403,7 @@ Link to [myself](#ID-1)"#;
             let dir = tempdir().unwrap();
             let p1 = dir.path().join("unreadable.md");
             std::fs::write(&p1, "content").unwrap();
-            
+
             let mut perms = std::fs::metadata(&p1).unwrap().permissions();
             perms.set_mode(0o000);
             std::fs::set_permissions(&p1, perms).unwrap();
