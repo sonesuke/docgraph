@@ -206,7 +206,8 @@ pub fn check_workspace(
 
     // Pass 3: Run custom docgraph workspace-level checks (DG005, DG006)
     // Collect docgraph's own SpecBlock data
-    let (spec_blocks, _refs) = crate::core::collect::collect_workspace_all(path, &config.graph.ignore);
+    let (spec_blocks, _refs) =
+        crate::core::collect::collect_workspace_all(path, &config.graph.ignore);
 
     // DG005: Strict Node Types
     let dg005_diags = crate::core::rules::dg005::check_strict_node_types(&spec_blocks, config);
