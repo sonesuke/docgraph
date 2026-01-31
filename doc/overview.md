@@ -23,7 +23,7 @@ Docgraph is a specialized linter and graph generator for product documentation m
 | **Specifications**| CLI behavior and interfaces. | [IF-CLI-LINT (Command: `lint`)](./specs/cli_specs.md#IF-CLI-LINT), [IF-LSP (Language Server)](./specs/lsp_specs.md#IF-LSP) |
 | **Architecture**  | Design decisions and rationale. | [ADR-MARKDOWN-FORMAT (Choice of Plain Markdown and HTML Anchors)](./decisions/markdown_format.md#ADR-MARKDOWN-FORMAT) |
 | **Quality** | Integration tests and validation scenarios. | [RT-INT-LINT (Lint Integration Test)](./tests/integration_metrics.md#RT-INT-LINT) |
-| **Development** | Onboarding guide and architecture for developers. | [Developer Guide](./devel/README.md) |
+| **Development** | Onboarding guide and architecture for developers. | [Developer Guide](./devel/guide.md) |
 
 ### Getting Started
 
