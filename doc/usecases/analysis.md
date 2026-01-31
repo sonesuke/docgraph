@@ -14,6 +14,10 @@ The [ACT_USER (User)](../actors/users.md#ACT_USER) generates a JSON representati
 
 Depends on: [ACT_USER (User)](../actors/users.md#ACT_USER), [UC_WRITE (Write Specifications)](./authoring.md#UC_WRITE)
 
+**Derives:**
+
+- [FR_CLI_GRAPH (Graph Generation)](../requirements/functional/cli.md#FR_CLI_GRAPH)
+
 <a id="UC_SEARCH"></a>
 
 ## Search Spec Blocks
@@ -26,6 +30,10 @@ The [ACT_USER (User)](../actors/users.md#ACT_USER) searches for spec blocks by I
 2. User reviews the list of matching IDs and their descriptions.
 
 Depends on: [ACT_USER (User)](../actors/users.md#ACT_USER), [UC_WRITE (Write Specifications)](./authoring.md#UC_WRITE)
+
+**Derives:**
+
+- [FR_CLI_LIST (List Specifications)](../requirements/functional/cli.md#FR_CLI_LIST)
 
 <a id="UC_TRACE"></a>
 
@@ -40,6 +48,9 @@ The [ACT_USER (User)](../actors/users.md#ACT_USER) visualizes paths between two 
 3. User analyzes the displayed paths to understand dependencies or verified coverage.
 
 Depends on: [ACT_USER (User)](../actors/users.md#ACT_USER), [UC_WRITE (Write Specifications)](./authoring.md#UC_WRITE)
+**Derives:**
+
+- [FR_CLI_TRACE (Trace Relationships)](../requirements/functional/cli.md#FR_CLI_TRACE)
 
 <a id="UC_DESCRIBE"></a>
 
@@ -53,3 +64,7 @@ The [ACT_USER (User)](../actors/users.md#ACT_USER) inspects the detailed relatio
 2. User reviews the bidirectional relationship information (outgoing references and incoming dependencies).
 
 Depends on: [ACT_USER (User)](../actors/users.md#ACT_USER), [UC_WRITE (Write Specifications)](./authoring.md#UC_WRITE)
+
+**Derives:**
+
+- [FR_CLI_DESCRIBE (Describe Node)](../requirements/functional/cli.md#FR_CLI_DESCRIBE)

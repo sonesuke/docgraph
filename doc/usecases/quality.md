@@ -20,4 +20,9 @@ Depends on: [ACT_USER (User)](../actors/users.md#ACT_USER), [UC_WRITE (Write Spe
 
 The [ACT_CI (CI System)](../actors/systems.md#ACT_CI) automatically verifies the document graph on every push.
 
+**Derives:**
+
+- [IF_CLI_LINT (Command: `lint`)](../requirements/interfaces/cli-specs.md#IF_CLI_LINT)
+- [FR_RELATION_RULES (Relation Rules)](../requirements/functional/verification.md#FR_RELATION_RULES)
+
 Depends on: [ACT_CI (CI System)](../actors/systems.md#ACT_CI), [UC_WRITE (Write Specifications)](./authoring.md#UC_WRITE), [NFR_CI_AUTO (Automated Validation)](../requirements/non-functional/automation.md#NFR_CI_AUTO)
