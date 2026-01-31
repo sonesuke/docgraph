@@ -1,18 +1,16 @@
-# Architecture Decision Records
-
 <a id="ADR_THIN_HANDLERS"></a>
 
-## Thin Handlers
+# Thin Handlers
 
-### Status
+## Status
 
 Accepted
 
-### Context
+## Context
 
 In a layered architecture with Core and Handler layers, we need to decide how much logic should reside in handlers versus the Core. Putting too much logic in handlers leads to duplication across interfaces (CLI, LSP) and makes testing harder.
 
-### Decision
+## Decision
 
 We adopt the **Thin Handlers** principle: handlers should contain no business logic. They serve only as adapters between the user interface and the Core layer.
 
@@ -22,9 +20,9 @@ Handlers perform exactly three tasks:
 2. **Core invocation**: Call Core logic functions
 3. **Output transformation**: Convert Core types back to UI-specific types
 
-### Rationale
+## Rationale
 
-#### Easy Testing
+### Easy Testing
 
 Handlers are thin enough that integration tests are sufficient. Complex logic is tested in Core unit tests, which are faster and more reliable.
 
@@ -36,9 +34,9 @@ All business logic lives in Core, making it easy to find and modify. Developers 
 
 The same Core logic can be called from CLI, LSP, or any future interface without duplication. Adding a new interface requires only writing a thin adapter layer.
 
-### Consequences
+## Consequences
 
-#### Positive
+### Positive
 
 - Business logic is centralized and easy to test
 - No code duplication across interfaces
@@ -50,9 +48,9 @@ The same Core logic can be called from CLI, LSP, or any future interface without
 - Requires discipline to avoid adding logic to handlers
 - May feel verbose for simple operations
 
-### Examples
+## Examples
 
-#### CLI Handler
+### CLI Handler
 
 ```rust
 // src/cli/handlers/check.rs
@@ -107,9 +105,9 @@ pub async fn handle_hover(
 }
 ```
 
-### Anti-Patterns
+## Anti-Patterns
 
-#### Business Logic in Handler
+### Business Logic in Handler
 
 **Bad**:
 
@@ -155,6 +153,6 @@ pub fn handle_check(...) {
 }
 ```
 
-### Related
+## Related
 
 - [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./layered-architecture.md#ADR_LAYERED_ARCH)

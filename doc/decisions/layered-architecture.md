@@ -1,18 +1,16 @@
-# Architecture Decision Records
-
 <a id="ADR_LAYERED_ARCH"></a>
 
-## Layered Architecture: Core, CLI Handlers, LSP Handlers
+# Layered Architecture: Core, CLI Handlers, LSP Handlers
 
-### Status
+## Status
 
 Accepted
 
-### Context
+## Context
 
 `docgraph` is a tool for building and validating knowledge graphs from Markdown files. It needs to support multiple interfaces (CLI, LSP) while sharing the same core logic, avoiding code duplication, and maintaining high maintainability.
 
-### Decision
+## Decision
 
 We adopt a 3-layer architecture:
 
@@ -28,9 +26,9 @@ We adopt a 3-layer architecture:
    - Handles LSP protocol request processing
    - Calls Core logic and formats LSP responses
 
-### Rationale
+## Rationale
 
-#### 1. Separation of Concerns
+### 1. Separation of Concerns
 
 - **Core**: Focuses on domain logic (parsing, validation, graph building)
 - **Handlers**: Focuses on bridging user interfaces
@@ -76,9 +74,9 @@ This provides:
 - **Change Isolation**: UI changes don't affect business logic (changing CLI output format only modifies `src/cli/handlers/`)
 - **Core Stability**: Core validation logic remains stable across interface changes
 
-### Consequences
+## Consequences
 
-#### Positive
+### Positive
 
 - **Maintainability**: Each layer's responsibility is clear, change impact is limited
 - **Testability**: Core logic is independent of I/O and can be unit tested; handlers are thin and sufficient for integration testing
@@ -90,7 +88,7 @@ This provides:
 - Small changes may require modifications to multiple files
 - New developers may need time to understand the file structure
 
-### Example: `check` Command Flow
+## Example: `check` Command Flow
 
 The following diagram illustrates how the layered architecture works in practice:
 
@@ -123,6 +121,6 @@ This flow demonstrates:
 2. **Core Independence**: Core has no knowledge of CLI
 3. **Reusability**: The same `lint::check_workspace` could be called from LSP or any other interface
 
-### Related
+## Related
 
 - [ADR_MARKDOWN_FORMAT (Choice of Plain Markdown and HTML Anchors)](file:///Users/sonesuke/Desktop/docgraph/doc/decisions/markdown-format.md#ADR_MARKDOWN_FORMAT)

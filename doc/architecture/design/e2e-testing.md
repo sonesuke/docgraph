@@ -1,157 +1,47 @@
-# Cross-Cutting Concept: E2E Testing
-
 <a id="CC_E2E_TESTING"></a>
+
+# E2E Testing Design
 
 ## Overview
 
-E2E (End-to-End) testing in `docgraph` verifies CLI behavior by executing the actual compiled binary, complementing unit tests with integration-level validation.
+This document outlines the design for End-to-End testing of the Docgraph CLI and LSP server.
 
-## The Rule
+## Directory Structure
 
-```text
-Testing Strategy:
-- CLI: E2E tests (assert_cmd + predicates + tempfile)
-- LSP: Unit tests with mock data
-- Core: Unit tests
-- Coverage: Measured with cargo llvm-cov
-```
-
-## Test Structure
-
-### File Organization
+Tests are organized under the `tests/` directory:
 
 ```text
 tests/
-├── e2e_<command>.rs  # One file per CLI command
-└── common/
-    └── mod.rs        # Shared test fixtures
+  cli.rs        # CLI test entry point
+  cli/          # CLI test modules
+    common/     # Shared helpers
+    check.rs
+    graph.rs
+    ...
+  lsp.rs        # LSP test entry point
+  lsp/          # LSP test modules
+    support/    # LSP test harness (LspClient)
+    diagnostics.rs
+    navigation.rs
+    ...
 ```
 
-### Test Pattern
+## CLI Testing
 
-```rust
-use assert_cmd::Command;
-use predicates::prelude::*;
-use tempfile::TempDir;
+We use `assert_cmd` to test the CLI binary.
 
-#[test]
-fn command_success_case() {
-    let tmp = TempDir::new().unwrap();
+- Each test sets up a temporary directory (`tempfile`).
+- Creates necessary configuration and markdown files.
+- Runs the `docgraph` binary with arguments.
+- Asserts success/failure and output content.
 
-    Command::cargo_bin("docgraph")
-        .unwrap()
-        .arg("command")
-        .arg(tmp.path())
-        .assert()
-        .success()
-        .stdout(predicate::str::contains("expected output"));
-}
+## LSP Testing
 
-#[test]
-fn command_failure_case() {
-    Command::cargo_bin("docgraph")
-        .unwrap()
-        .arg("command")
-        .arg("invalid")
-        .assert()
-        .failure()
-        .stderr(predicate::str::contains("Error:"));
-}
-```
+We test the LSP server by spawning it as a child process and communicating via stdio.
 
-## Test Categories
-
-For each CLI command, test:
-
-1. **Success cases**: Valid inputs, expected outputs
-2. **Failure cases**: Invalid inputs, error messages
-3. **File I/O**: Reading/writing files, directory handling
-4. **Edge cases**: Empty inputs, missing files, etc.
-
-## Coverage Measurement
-
-```bash
-# Run all tests with coverage
-cargo llvm-cov --tests
-
-# Generate HTML report
-cargo llvm-cov --tests --html
-
-# Generate LCOV for CI
-cargo llvm-cov --tests --lcov --output-path lcov.info
-```
-
-## Relationship to Unit Tests
-
-| Test Type | Purpose | Target |
-|-----------|---------|--------|
-| **Unit Tests** | Core business logic | Core layer |
-| **E2E Tests (CLI)** | CLI behavior, I/O | CLI handlers |
-| **Unit Tests (LSP)** | LSP handler logic | LSP handlers |
-
-E2E tests complement, not replace, unit tests.
-
-### LSP Testing
-
-LSP handlers use **unit tests**, not E2E tests:
-
-**Rationale:**
-
-- LSP E2E testing is complex (requires client simulation, JSON-RPC)
-- LSP handlers are thin wrappers (similar to CLI handlers)
-- Core logic is already unit tested
-- Unit tests with mock data are sufficient
-
-**Coverage Strategy:**
-
-- Delegation-only files (backend.rs, call_hierarchy.rs): No tests needed
-- Handler files: Unit tests with mock SpecBlock/RefUse data
-- Focus on edge cases and error handling
-
-## Guidelines
-
-### DO
-
-- ✅ Test actual binary execution
-- ✅ Verify error messages shown to users
-- ✅ Test file I/O and directory handling
-- ✅ Use `tempfile` for isolated test environments
-- ✅ Assert on stdout, stderr, and exit codes
-
-### DON'T
-
-- ❌ Duplicate core logic tests in E2E tests
-- ❌ Test implementation details
-- ❌ Share state between E2E tests
-- ❌ Hardcode file paths (use `tempfile`)
-
-## Example: Complete E2E Test
-
-```rust
-use assert_cmd::Command;
-use predicates::prelude::*;
-use tempfile::TempDir;
-use std::fs;
-
-#[test]
-fn check_reports_missing_heading() {
-    // Arrange: Create test document
-    let tmp = TempDir::new().unwrap();
-    let doc = tmp.path().join("test.md");
-    fs::write(&doc, "<a id=\"TEST-01\"></a>\n").unwrap();
-
-    // Act: Run docgraph check
-    let mut cmd = Command::cargo_bin("docgraph").unwrap();
-    cmd.arg("check").arg(tmp.path());
-
-    // Assert: Verify error output
-    cmd.assert()
-        .failure()
-        .stderr(predicate::str::contains("DG001"))
-        .stderr(predicate::str::contains("is not followed by a heading"));
-}
-```
-
-## Related
-
-- [ADR_E2E_TESTING (E2E Testing Strategy: assert_cmd with cargo llvm-cov)](../../decisions/e2e-testing.md#ADR_E2E_TESTING)
+- **Harness**: `tests/lsp/support/lsp_client.rs` implements a minimal LSP client.
+  - Handles message framing (Content-Length).
+  - Sends Requests and Notifications.
+  - Waits for expected Notifications (like `publishDiagnostics`).
+- **Scenarios**: Each test file covers a specific feature set (e.g., `completion.rs`, `rename.rs`).
+- **Isolation**: Every test runs in a fresh temporary directory with its own `rootUri`.

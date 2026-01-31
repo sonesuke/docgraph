@@ -84,13 +84,29 @@ pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock
                     if let Some(id_match) = cap.get(3) {
                         let target_id = id_match.as_str().to_string();
                         let display_name = cap.get(1).map(|m| m.as_str().to_string());
+
+                        // 1. Edge for the ID in the URL (#ID)
                         edges.push(EdgeUse {
-                            id: target_id,
-                            name: display_name,
+                            id: target_id.clone(),
+                            name: display_name.clone(),
                             line: line_idx + 1, // 1-based
                             col_start: id_match.start() + 1,
                             col_end: id_match.end() + 1,
                         });
+
+                        // 2. Edge for the ID in the Text ([ID])
+                        if let Some(text_match) = cap.get(1)
+                            && let Some(idx) = text_match.as_str().find(&target_id)
+                        {
+                            let start = text_match.start() + idx;
+                            edges.push(EdgeUse {
+                                id: target_id,
+                                name: display_name,
+                                line: line_idx + 1,
+                                col_start: start + 1,
+                                col_end: start + 1 + id_match.as_str().len(),
+                            });
+                        }
                     }
                 }
             }
@@ -123,16 +139,29 @@ pub fn extract_markdown_refs(content: &str, file_path: &Path) -> Vec<RefUse> {
         for cap in link_re.captures_iter(line) {
             if let Some(id_match) = cap.get(3) {
                 let target_id = id_match.as_str().to_string();
-                let col_start = id_match.start() + 1; // 1-based
-                let col_end = id_match.end() + 1;
 
+                // 1. Ref for the ID in the URL (#ID)
                 refs.push(RefUse {
-                    target_id,
+                    target_id: target_id.clone(),
                     file_path: file_path.to_path_buf(),
                     line: line_num,
-                    col_start,
-                    col_end,
+                    col_start: id_match.start() + 1,
+                    col_end: id_match.end() + 1,
                 });
+
+                // 2. Ref for the ID in the Text ([ID])
+                if let Some(text_match) = cap.get(1)
+                    && let Some(idx) = text_match.as_str().find(&target_id)
+                {
+                    let start = text_match.start() + idx;
+                    refs.push(RefUse {
+                        target_id,
+                        file_path: file_path.to_path_buf(),
+                        line: line_num,
+                        col_start: start + 1,
+                        col_end: start + 1 + id_match.as_str().len(),
+                    });
+                }
             }
         }
     }
@@ -250,5 +279,23 @@ Another valid ref: [REF-003](#REF-003)
             !target_ids.contains(&"REF-002".to_string()),
             "Should not extract standalone refs from code blocks"
         );
+    }
+    #[test]
+    fn test_extract_refs_from_link_text() {
+        let content = r#"
+Reference to [REQ-001](#REQ-001) in text.
+Mismatch text [Some Request](#REQ-002) here.
+"#;
+        let path = PathBuf::from("test.md");
+        let refs = extract_markdown_refs(content, &path);
+
+        // REQ-001: Should match twice (text and URL)
+        // [REQ-001] starts at col 14. Text "REQ-001" starts at 15. URL "REQ-001" starts at 24.
+        let req1_refs: Vec<&RefUse> = refs.iter().filter(|r| r.target_id == "REQ-001").collect();
+        assert_eq!(req1_refs.len(), 2);
+
+        // REQ-002: Should match once (URL only)
+        let req2_refs: Vec<&RefUse> = refs.iter().filter(|r| r.target_id == "REQ-002").collect();
+        assert_eq!(req2_refs.len(), 1);
     }
 }

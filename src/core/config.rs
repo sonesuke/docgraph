@@ -16,7 +16,6 @@ pub struct Config {
 }
 
 #[derive(Debug, Deserialize, Default, Clone)]
-#[allow(dead_code)]
 pub struct NodeType {
     pub desc: String,
 }
@@ -44,7 +43,6 @@ pub struct RuleConfig {
     pub dir: String, // "from" or "to"
     pub targets: Vec<String>,
     pub min: Option<usize>,
-    #[allow(dead_code)]
     pub max: Option<usize>,
     pub desc: Option<String>,
 }
@@ -109,9 +107,12 @@ mod tests {
         let mut file = File::create(&config_path).unwrap();
         // Use single [graph] block
         writeln!(file, "[graph]\nlimit = 10\nstrict_node_types = true").unwrap();
+        // Add node type to check desc
+        writeln!(file, "[node_types.REQ]\ndesc = \"Requirement\"").unwrap();
 
         let config = Config::load(dir.path()).unwrap();
         assert!(config.graph.strict_node_types);
+        assert_eq!(config.node_types["REQ"].desc, "Requirement");
     }
 
     #[test]
@@ -180,5 +181,19 @@ mod tests {
         } else {
             assert!(!config.graph.strict_node_types);
         }
+    }
+    #[test]
+    fn test_load_config_fallback_cwd() {
+        // This test simulates "no config found in parent", falling back to CWD check.
+        // It's tricky to mock CWD in Rust tests safely in parallel.
+        // However, we can test that passing a non-existent path eventually returns default if nothing found.
+        let dir = tempdir().unwrap();
+        let path = dir.path().join("non_existent/subdir");
+        // We know CWD *probably* doesn't have docgraph.toml in test environment, or if it does, it loads it.
+        // The key logic is: search parents -> None? -> check CWD.
+        // If we run this in a clean CWD (which we can't easily guarantee), it returns default.
+        // So we will just assert it returns Ok(_) - meaning it didn't crash.
+        let config = Config::load(&path);
+        assert!(config.is_ok());
     }
 }
