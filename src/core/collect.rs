@@ -17,9 +17,7 @@ pub fn collect_workspace_all(root: &Path) -> (Vec<SpecBlock>, Vec<RefUse>) {
                 all_blocks.extend(blocks);
                 all_refs.extend(refs);
             }
-            Err(e) => {
-                eprintln!("Failed to read file {:?}: {}", file_path, e);
-            }
+            Err(_e) => {} // Silence read errors in core
         }
     }
     (all_blocks, all_refs)

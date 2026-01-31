@@ -76,7 +76,18 @@ pub fn check_workspace(
                     if let Some(_result) = fix_result.ok().filter(|r| r.rules_fixed > 0) {
                         let write_result = fs::write(file_path, &working_content);
                         if let Err(e) = write_result {
-                            eprintln!("Failed to write fixed file {:?}: {}", file_path, e);
+                            diagnostics.push(Diagnostic {
+                                severity: crate::core::types::Severity::Error,
+                                code: "DG000".to_string(),
+                                message: format!("Failed to write fixed file: {}", e),
+                                path: file_path.to_path_buf(),
+                                range: crate::core::types::Range {
+                                    start_line: 1,
+                                    start_col: 1,
+                                    end_line: 1,
+                                    end_col: 1,
+                                },
+                            });
                         }
                     }
                 }

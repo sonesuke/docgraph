@@ -19,7 +19,7 @@ pub fn find_markdown_files(root: &Path) -> Vec<PathBuf> {
                     files.push(path.to_path_buf());
                 }
             }
-            Err(err) => eprintln!("Error walking directory: {}", err),
+            Err(_err) => {} // Silence traversal errors in core
         }
     }
     files
