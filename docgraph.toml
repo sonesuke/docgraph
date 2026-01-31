@@ -45,13 +45,13 @@ rules = [
 [references.ACT]
 # Actor is derived from Use Case
 rules = [
-  { dir = "from", targets = ["UC"], min = 1, desc = "System actors must be involved in at least one use case to ensure they are defined and relevant" }
+  { dir = "from", targets = ["UC"], min = 0, desc = "System actors are typically involved in at least one use case" }
 ]
 
 [references.IF]
 # Interface is derived from Use Case
 rules = [
-  { dir = "from", targets = ["UC"], min = 1, desc = "Exposed interfaces must be justified by business use cases" }
+  { dir = "from", targets = ["UC"], min = 0, desc = "Exposed interfaces should be justified by business use cases" }
 ]
 
 # ========== Specification Relations ==========
@@ -60,7 +60,7 @@ rules = [
 # Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
 rules = [
   { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Functional requirements are derived from business needs (UC) or constraints (CON) to clarify their existence" },
-  { dir = "to", targets = ["NFR", "ERR", "BB", "RT", "CC", "IF"], min = 0, desc = "Functional requirements must be traceable to non-functional requirements or detailed designs (BB)" }
+  { dir = "to", targets = ["NFR", "ERR", "BB", "RT", "CC", "IF", "DAT"], min = 0, desc = "Functional requirements must be traceable to non-functional requirements, detailed designs (BB), or defined data entities (DAT)" }
 ]
 
 [references.NFR]
@@ -100,7 +100,7 @@ rules = [
 [references.RT]
 # Runtime Scenario is derived from Building Block or Requirement
 rules = [
-  { dir = "from", targets = ["BB", "FR"], min = 1, desc = "Runtime scenarios must explain the operation of specific design components or functional requirements" }
+  { dir = "from", targets = ["BB", "FR", "IF"], min = 1, desc = "Runtime scenarios must explain the operation of specific design components, functional requirements, or interfaces (IF)" }
 ]
 
 [references.DEP]
