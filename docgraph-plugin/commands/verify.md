@@ -17,5 +17,11 @@ description: Verify and refine element responsibilities for a specific type to e
    - Are there overlaps in responsibilities?
    - Are there gaps in coverage?
 
+   If overlaps are found, list them in pairs or groups like this:
+   ```
+   ID_A, ID_B
+   ID_C, ID_D
+   ```
+
 4. Refine structure
    If overlaps are found, propose merging or splitting elements to achieve MECE.
