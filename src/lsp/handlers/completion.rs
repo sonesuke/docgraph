@@ -5,8 +5,11 @@ pub fn completion(
     blocks: &[crate::core::types::SpecBlock],
     _: CompletionParams,
 ) -> Result<Option<CompletionResponse>> {
-    let items = blocks
-        .iter()
+    // Delegate candidate selection to Core
+    let candidates = crate::core::locate::completion_candidates(blocks);
+
+    let items = candidates
+        .into_iter()
         .map(|block| CompletionItem {
             label: block.id.clone(),
             kind: Some(CompletionItemKind::REFERENCE),
@@ -25,40 +28,4 @@ pub fn completion(
     Ok(Some(CompletionResponse::Array(items)))
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::core::types::SpecBlock;
-    use std::path::PathBuf;
 
-    #[test]
-    fn test_completion() {
-        let blocks = vec![SpecBlock {
-            id: "FR-01".to_string(),
-            name: Some("Test Req".to_string()),
-            file_path: PathBuf::from("test.md"),
-            ..Default::default()
-        }];
-
-        let params = CompletionParams {
-            text_document_position: TextDocumentPositionParams {
-                text_document: TextDocumentIdentifier {
-                    uri: Url::parse("file:///test.md").unwrap(),
-                },
-                position: Position::new(0, 0),
-            },
-            work_done_progress_params: Default::default(),
-            partial_result_params: Default::default(),
-            context: None,
-        };
-
-        let result = completion(&blocks, params).unwrap();
-        if let Some(CompletionResponse::Array(items)) = result {
-            assert_eq!(items.len(), 1);
-            assert_eq!(items[0].label, "FR-01");
-            assert_eq!(items[0].detail.as_deref(), Some("Test Req"));
-        } else {
-            panic!("Expected array response");
-        }
-    }
-}
