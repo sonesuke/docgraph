@@ -14,7 +14,8 @@ description: Verify and refine element responsibilities for a specific type to e
 3. Analyze for MECE (Mutually Exclusive, Collectively Exhaustive)
    Verify if the listed elements accurately reflect the type definition shown in step 1.
    Check if the responsibilities among the elements with the same type are MECE.
-   - Are there overlaps in responsibilities?
+   - Identify potential overlaps based on IDs and Titles.
+   - For identified candidates, check detailed content to confirm overlap (use `docgraph describe {{ID}}`).
    - Are there gaps in coverage?
 
    If overlaps are found, list them in pairs or groups like this:
