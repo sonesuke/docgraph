@@ -1,16 +1,6 @@
-<a id="FR_CLAUDE_PLUGIN"></a>
-
 # Functional Requirements: Claude Plugin
 
 The Docgraph Claude plugin enables seamless integration with Claude Desktop, allowing the AI agent to interact with the documentation graph.
-
-**Derives:**
-
-- [IF_CLAUDE_CODE (Interface: Claude Code Plugin)](../interfaces/claude-plugin.md#IF_CLAUDE_CODE)
-
-**Realized by:**
-
-- [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
 
 <a id="FR_CLAUDE_MARKETPLACE"></a>
 
@@ -20,7 +10,6 @@ The plugin SHALL support distribution via the Claude marketplace mechanism. This
 
 **Realized by:**
 
-- [marketplace.json (Marketplace Configuration)](../../../.claude-plugin/marketplace.json)
 - [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
 
 <a id="FR_CLAUDE_INSTALL"></a>
@@ -31,7 +20,6 @@ The plugin SHALL be installable via the Claude Desktop `/plugin` commands. Speci
 
 **Realized by:**
 
-- [plugin.json (Plugin Definition)](../../../docgraph-plugin/.claude-plugin/plugin.json)
 - [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
 
 **Derives:**

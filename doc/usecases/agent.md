@@ -1,7 +1,3 @@
-<a id="UC_AGENT"></a>
-
-# Agent Use Cases
-
 <a id="UC_BUILD_KNOWLEDGE"></a>
 
 ## Build Knowledge Graph

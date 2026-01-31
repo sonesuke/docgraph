@@ -88,3 +88,30 @@ docgraph type              # List all node types with descriptions
 docgraph type <TYPE_ID>    # Show type details and rules
 ```
 - `TYPE_ID`: Type ID to show details for (e.g., `FR`, `NFR`)
+
+## Plugin Custom Commands
+
+These commands are workflows defined specifically for this plugin to assist with verified refactoring and organization.
+
+### `/docgraph-plugin:align` - Organize and Rename Elements
+Executes the alignment workflow defined in `commands/align.md`.
+Ensures naming conventions, consistency, and correct file placement.
+
+### `/docgraph-plugin:refine` - Refine Structure and Responsibilities
+Executes the refinement workflow defined in `commands/refine.md`.
+Verifies structure, MECE, and SRP (Single Responsibility Principle) with detailed analysis.
+
+## Workflow Recommendations
+
+### Post-Edit Verification
+After modifying documents, always run a consistency check:
+
+1. Run `check` to verify consistency.
+   ```bash
+   docgraph check
+   ```
+
+2. If issues are reported, try `fmt` (or `check --fix`) to automatically resolve them.
+   ```bash
+   docgraph fmt
+   ```

@@ -2,7 +2,7 @@
 
 The `docgraph` VS Code extension acts as a bridge between the editor and the `docgraph` language server.
 
-<a id="FR_VSC_001"></a>
+<a id="FR_VSC_LSP_CLIENT"></a>
 
 ## LSP Client Integration
 
@@ -22,7 +22,7 @@ The extension SHALL implement a Language Server Protocol (LSP) client that estab
 
 - [IF_LSP (Language Server Protocol (LSP) Support)](../interfaces/lsp-specs.md#IF_LSP)
 
-<a id="FR_VSC_002_RENAMED"></a>
+<a id="FR_VSC_BINARY_PATH"></a>
 
 ## Binary Path Configuration
 
@@ -32,7 +32,7 @@ The extension SHALL provide a setting (`docgraph.binaryPath`) allowing the user 
 
 - [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
 
-<a id="FR_VSC_003"></a>
+<a id="FR_VSC_MARKDOWN_ACTIVATION"></a>
 
 ## Markdown Activation
 
@@ -46,7 +46,7 @@ The extension SHALL activate automatically when a workspace contains Markdown fi
 
 - [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
 
-<a id="FR_VSC_004"></a>
+<a id="FR_VSC_SERVER_LIFECYCLE"></a>
 
 ## Server Lifecycle Commands
 
