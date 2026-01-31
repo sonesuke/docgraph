@@ -34,9 +34,10 @@ pub fn check_workspace(
     all_rules.push(Box::new(crate::core::rules::dg001::DG001));
     all_rules.push(Box::new(crate::core::rules::dg002::DG002));
     all_rules.push(Box::new(crate::core::rules::dg003::DG003));
-    all_rules.push(Box::new(crate::core::rules::dg004::DG004));
+    // DG004 is now a custom Pass 3 check
+    // all_rules.push(Box::new(crate::core::rules::dg004::DG004));
 
-    let rules: Vec<Box<dyn rumdl_lib::rule::Rule>> = if let Some(names) = rule_filter {
+    let rules: Vec<Box<dyn rumdl_lib::rule::Rule>> = if let Some(ref names) = rule_filter {
         // Run only specific rules
         let allowed_names: std::collections::HashSet<_> =
             names.iter().map(|s| s.as_str()).collect();
@@ -142,7 +143,8 @@ pub fn check_workspace(
         }
     }
 
-    // Pass 2: Run cross-file checks for rules that support it (DG002, DG003, DG004)
+    // Pass 2: Run cross-file checks for rules that support it (DG002, DG003)
+    // DG004 is removed from here and moved to Pass 3
     for file_path in &files {
         let file_index = match workspace_index.get_file(file_path) {
             Some(idx) => idx,
@@ -204,7 +206,7 @@ pub fn check_workspace(
         }
     }
 
-    // Pass 3: Run custom docgraph workspace-level checks (DG005, DG006)
+    // Pass 3: Run custom docgraph workspace-level checks (DG005, DG006, DG004)
     // Collect docgraph's own SpecBlock data
     let (spec_blocks, _refs) =
         crate::core::collect::collect_workspace_all(path, &config.graph.ignore);
@@ -216,6 +218,19 @@ pub fn check_workspace(
     // DG006: Strict Relations
     let dg006_diags = crate::core::rules::dg006::check_strict_relations(&spec_blocks, config);
     diagnostics.extend(dg006_diags);
+
+    // DG004: Strict Link Text (Moved from Pass 2 Rule)
+    // Only run if rule_filter includes DG004 or rule_filter is None (run all)
+    let should_run_dg004 = if let Some(filter) = rule_filter {
+        filter.iter().any(|r| r == "DG004")
+    } else {
+        true
+    };
+
+    if should_run_dg004 {
+        let dg004_diags = crate::core::rules::dg004::check_link_text(&files, &spec_blocks);
+        diagnostics.extend(dg004_diags);
+    }
 
     diagnostics
 }
