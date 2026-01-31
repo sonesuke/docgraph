@@ -1,0 +1,8 @@
+{
+    "name": "docgraph-plugin",
+    "description": "Docgraph plugin for Claude",
+    "version": "0.1.0",
+    "author": {
+        "name": "Sonesuke"
+    }
+}
