@@ -60,7 +60,7 @@ docgraph check .
 
 ## Configuration (`docgraph.toml`)
 
-`docgraph` is highly configurable. You can define custom node prefixes and strict relationship rules to enforce your documentation architecture. Refer to the **[Configuration Model](./doc/model/config_model.md)** for details.
+`docgraph` is highly configurable. You can define custom node prefixes and strict relationship rules to enforce your documentation architecture. Refer to the **[Configuration Specification](./doc/specs/config_specs.md)** for details.
 
 ```toml
 [node_types]
@@ -76,6 +76,6 @@ rules = [
 ---
 ## Contributing
 
-Contributions are welcome! If you're interested in helping improve `docgraph`, please check out our **[Developer Guide](./doc/devel/README.md)** for information on environment setup, architecture, and testing standards.
+Contributions are welcome! If you're interested in helping improve `docgraph`, please check out our **[Developer Guide](./doc/devel/guide.md)** for information on environment setup, architecture, and testing standards.
 
 Detailed technical documentation and use cases can be found in the **[doc/](./doc/overview.md)** directory.
