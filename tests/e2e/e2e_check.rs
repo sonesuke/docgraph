@@ -1,5 +1,3 @@
-
-
 use assert_cmd::Command;
 use std::path::Path;
 
@@ -8,10 +6,7 @@ fn create_doc_missing_heading(dir: &Path, id: &str) -> std::path::PathBuf {
     crate::common::create_test_doc(dir, "test.md", &content)
 }
 
-fn create_docs_with_duplicate_id(
-    dir: &Path,
-    id: &str,
-) -> (std::path::PathBuf, std::path::PathBuf) {
+fn create_docs_with_duplicate_id(dir: &Path, id: &str) -> (std::path::PathBuf, std::path::PathBuf) {
     let content1 = format!("<a id=\"{}\"></a>\n\n# First\n", id);
     let content2 = format!("<a id=\"{}\"></a>\n\n# Second\n", id);
 
