@@ -28,7 +28,7 @@ cargo build
 You can run the CLI directly using `cargo run`:
 
 ```bash
-cargo run -- check ./test_data
+cargo run -- check ./doc
 ```
 
 ## Project Structure
