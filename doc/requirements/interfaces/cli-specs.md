@@ -82,6 +82,41 @@ source_id: source_name
 ...
 ```
 
+<a id="IF_CLI_TYPE"></a>
+
+### Command: `type`
+
+The `type` command shall display node type information from the configuration file.
+
+```bash
+docgraph type             # List all node types with descriptions
+docgraph type <type-id>   # Show type details and rules
+```
+
+- Without arguments: Lists all defined node types with their descriptions.
+- With `<type-id>`: Shows the type's description and reference rules.
+
+Output format (list):
+
+```text
+Node Types:
+
+  FR - Functional Requirement
+  NFR - Non-Functional Requirement
+  ...
+```
+
+Output format (details):
+
+```text
+Type: FR
+Description: Functional Requirement
+
+Rules:
+  from [UC, CON] min=1 max=-: Functional requirements are derived from business needs
+  to [MOD] min=1 max=-: Each functional requirement must be realized by at least one module
+```
+
 <a id="IF_CLI_LSP"></a>
 
 ### Command: `lsp`

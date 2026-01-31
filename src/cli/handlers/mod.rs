@@ -5,3 +5,4 @@ pub mod graph;
 pub mod list;
 pub mod rule;
 pub mod trace;
+pub mod type_cmd;

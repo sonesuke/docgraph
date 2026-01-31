@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 #[derive(Parser)]
 #[command(name = "docgraph")]
-#[command(version, about = "A linter and graph generator for MyST document graphs", long_about = None)]
+#[command(version, about = "A linter and graph generator for Markdown document graphs", long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
@@ -84,6 +84,12 @@ pub enum Commands {
         /// Path to search for markdown files (defaults to current directory)
         #[arg(default_value = ".")]
         path: PathBuf,
+    },
+    /// Show node type information from configuration
+    Type {
+        /// Type ID to show details for (optional)
+        #[arg(index = 1)]
+        type_id: Option<String>,
     },
     /// Start the language server
     Lsp,
