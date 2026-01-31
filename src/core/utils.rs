@@ -10,7 +10,7 @@ pub fn strip_markdown_code(content: &str) -> String {
 
     for line in content.lines() {
         let trimmed = line.trim();
-        
+
         // Handle code fences
         if trimmed.starts_with("```") || trimmed.starts_with("~~~") {
             let fence_char = if trimmed.starts_with('`') { '`' } else { '~' };
@@ -31,8 +31,8 @@ pub fn strip_markdown_code(content: &str) -> String {
             result.push_str(&" ".repeat(line.len()));
         } else {
             // Outside code fence, handle inline code
-            
-            // We need to be careful with column alignment. 
+
+            // We need to be careful with column alignment.
             // We replace matched parts with equal number of spaces.
             let mut clean_line = line.to_string();
             for cap in inline_re.captures_iter(line) {

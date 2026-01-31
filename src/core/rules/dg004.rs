@@ -76,66 +76,54 @@ impl Rule for DG004 {
             // Get original text and ID using the ranges from cleaned content
             let text_range = caps.get(1).unwrap().range();
             let id_range = caps.get(3).unwrap().range();
-            
+
             let current_text = &content[text_range.clone()];
             let target_id = &content[id_range];
 
             if let Some(title) = id_to_title.get(target_id) {
-                    // Remove all occurrences of target_id from the title string
-                    let clean_title = title.replace(target_id, "");
-                    // Remove empty bracket pairs that remain after ID removal
-                    let clean_title = clean_title
-                        .replace("[]", "")
-                        .replace("()", "")
-                        .replace("{}", "");
-                    // Remove remaining dangling separators and extra whitespace
-                    let clean_title = clean_title.trim();
-                    let clean_title = clean_title.trim_start_matches(|c: char| {
-                        c == ' '
-                            || c == ':'
-                            || c == '-'
-                            || c == '('
-                            || c == '['
-                            || c == ']'
-                            || c == ')'
+                // Remove all occurrences of target_id from the title string
+                let clean_title = title.replace(target_id, "");
+                // Remove empty bracket pairs that remain after ID removal
+                let clean_title = clean_title
+                    .replace("[]", "")
+                    .replace("()", "")
+                    .replace("{}", "");
+                // Remove remaining dangling separators and extra whitespace
+                let clean_title = clean_title.trim();
+                let clean_title = clean_title.trim_start_matches(|c: char| {
+                    c == ' ' || c == ':' || c == '-' || c == '(' || c == '[' || c == ']' || c == ')'
+                });
+                let clean_title = clean_title.trim_end_matches(|c: char| {
+                    c == ' ' || c == ':' || c == '-' || c == ')' || c == ']' || c == '(' || c == '['
+                });
+                let clean_title = clean_title.trim().to_string();
+
+                let expected_text = if clean_title.is_empty() {
+                    target_id.to_string()
+                } else {
+                    format!("{} ({})", target_id, clean_title)
+                };
+
+                if current_text != expected_text {
+                    let (start_line, start_col) = get_pos(text_range.start);
+                    let (end_line, end_col) = get_pos(text_range.end);
+
+                    warnings.push(LintWarning {
+                        message: format!(
+                            "Link text for '{}' should be '{}' but found '{}'",
+                            target_id, expected_text, current_text
+                        ),
+                        line: start_line,
+                        column: start_col,
+                        end_line,
+                        end_column: end_col,
+                        severity: Severity::Error,
+                        fix: None,
+                        rule_name: Some("DG004".to_string()),
                     });
-                    let clean_title = clean_title.trim_end_matches(|c: char| {
-                        c == ' '
-                            || c == ':'
-                            || c == '-'
-                            || c == ')'
-                            || c == ']'
-                            || c == '('
-                            || c == '['
-                    });
-                    let clean_title = clean_title.trim().to_string();
-
-                    let expected_text = if clean_title.is_empty() {
-                        target_id.to_string()
-                    } else {
-                        format!("{} ({})", target_id, clean_title)
-                    };
-
-                    if current_text != expected_text {
-                        let (start_line, start_col) = get_pos(text_range.start);
-                        let (end_line, end_col) = get_pos(text_range.end);
-
-                        warnings.push(LintWarning {
-                            message: format!(
-                                "Link text for '{}' should be '{}' but found '{}'",
-                                target_id, expected_text, current_text
-                            ),
-                            line: start_line,
-                            column: start_col,
-                            end_line,
-                            end_column: end_col,
-                            severity: Severity::Error,
-                            fix: None,
-                            rule_name: Some("DG004".to_string()),
-                        });
-                    }
                 }
             }
+        }
 
         Ok(warnings)
     }
