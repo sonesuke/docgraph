@@ -4,7 +4,7 @@
 [graph]
 strict_node_types = true
 strict_relations  = true
-doc_types = ["ACT", "DAT", "IF", "ADR"]
+doc_types = ["ACT", "DAT", "IF", "ADR", "CON"]
 
 [node_types]
 # Core specification types
@@ -12,7 +12,6 @@ UC  = { desc = "Use Case" }
 FR  = { desc = "Functional Requirement" }
 NFR = { desc = "Non-Functional Requirement" }
 CON = { desc = "Constraint" }
-ERR = { desc = "Error Definition" }
 
 
 # Architecture types (Core Dependency Model)
@@ -50,7 +49,7 @@ rules = [
 # Interface is derived from Use Case and may reference other specs or data
 rules = [
   { dir = "from", targets = ["UC"], min = 0, desc = "Exposed interfaces should be justified by business use cases" },
-  { dir = "to", targets = ["IF", "FR", "DAT", "ERR", "UC"], min = 0, desc = "Interfaces may reference other specifications, requirements, data entities, error definitions, or related business contexts" }
+  { dir = "to", targets = ["IF", "FR", "DAT", "UC"], min = 0, desc = "Interfaces may reference other specifications, requirements, data entities, or related business contexts" }
 ]
 
 # ========== Specification Relations ==========
@@ -59,7 +58,7 @@ rules = [
 # Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
 rules = [
   { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Functional requirements are derived from business needs (UC) or constraints (CON) to clarify their existence" },
-  { dir = "to", targets = ["NFR", "ERR", "CC", "IF", "DAT"], min = 0, desc = "Functional requirements must be traceable to non-functional requirements or defined data entities (DAT)" }
+  { dir = "to", targets = ["NFR", "CC", "IF", "DAT"], min = 0, desc = "Functional requirements must be traceable to non-functional requirements or defined data entities (DAT)" }
 ]
 
 [references.NFR]
@@ -79,7 +78,6 @@ rules = [
 # Constraint derives Functional/Non-Functional Requirements
 rules = [
   { dir = "to", targets = ["FR", "NFR"], min = 1, desc = "Constraints must be embodied as specific functional or quality requirements for the system" }
-]
 
 # ========== Architecture Relations ==========
 
