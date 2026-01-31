@@ -1,4 +1,4 @@
-mod common;
+
 
 use assert_cmd::Command;
 use predicates::prelude::*;
@@ -16,9 +16,9 @@ fn describe_help_works() {
 
 #[test]
 fn describe_existing_node() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
-    common::create_valid_doc(tmp.path(), "TEST-01", "Test Document");
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
+    crate::common::create_valid_doc(tmp.path(), "TEST-01", "Test Document");
 
     Command::cargo_bin("docgraph")
         .unwrap()
@@ -33,14 +33,14 @@ fn describe_existing_node() {
 
 #[test]
 fn describe_with_references() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
-    common::create_test_doc(
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
+    crate::common::create_test_doc(
         tmp.path(),
         "source.md",
         "<a id=\"TEST-01\"></a>\n\n# Source\n\nReferences [TEST-02](./target.md#TEST-02)\n",
     );
-    common::create_test_doc(
+    crate::common::create_test_doc(
         tmp.path(),
         "target.md",
         "<a id=\"TEST-02\"></a>\n\n# Target\n",
@@ -59,8 +59,8 @@ fn describe_with_references() {
 
 #[test]
 fn describe_nonexistent_node() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
 
     Command::cargo_bin("docgraph")
         .unwrap()

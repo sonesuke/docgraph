@@ -1,4 +1,4 @@
-mod common;
+
 
 use assert_cmd::Command;
 use predicates::prelude::*;
@@ -18,14 +18,14 @@ fn trace_help_works() {
 
 #[test]
 fn trace_direct_path() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
-    common::create_test_doc(
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
+    crate::common::create_test_doc(
         tmp.path(),
         "a.md",
         "<a id=\"TEST-A\"></a>\n\n# A\n\n[TEST-B](./b.md#TEST-B)\n",
     );
-    common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
+    crate::common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
 
     Command::cargo_bin("docgraph")
         .unwrap()
@@ -41,14 +41,14 @@ fn trace_direct_path() {
 
 #[test]
 fn trace_with_direction_down() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
-    common::create_test_doc(
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
+    crate::common::create_test_doc(
         tmp.path(),
         "a.md",
         "<a id=\"TEST-A\"></a>\n\n# A\n\n[TEST-B](./b.md#TEST-B)\n",
     );
-    common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
+    crate::common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
 
     Command::cargo_bin("docgraph")
         .unwrap()
@@ -64,14 +64,14 @@ fn trace_with_direction_down() {
 
 #[test]
 fn trace_with_direction_up() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
-    common::create_test_doc(
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
+    crate::common::create_test_doc(
         tmp.path(),
         "a.md",
         "<a id=\"TEST-A\"></a>\n\n# A\n\n[TEST-B](./b.md#TEST-B)\n",
     );
-    common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
+    crate::common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
 
     Command::cargo_bin("docgraph")
         .unwrap()
@@ -87,10 +87,10 @@ fn trace_with_direction_up() {
 
 #[test]
 fn trace_no_path_found() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
-    common::create_valid_doc(tmp.path(), "TEST-A", "A");
-    common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
+    crate::common::create_valid_doc(tmp.path(), "TEST-A", "A");
+    crate::common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
 
     Command::cargo_bin("docgraph")
         .unwrap()
@@ -105,7 +105,7 @@ fn trace_no_path_found() {
 
 #[test]
 fn trace_invalid_direction() {
-    let tmp = common::setup_temp_dir();
+    let tmp = crate::common::setup_temp_dir();
 
     Command::cargo_bin("docgraph")
         .unwrap()

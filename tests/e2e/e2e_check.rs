@@ -1,22 +1,22 @@
-mod common;
+
 
 use assert_cmd::Command;
 use std::path::Path;
 
 fn create_doc_missing_heading(dir: &Path, id: &str) -> std::path::PathBuf {
     let content = format!("<a id=\"{}\"></a>\n", id);
-    common::create_test_doc(dir, "test.md", u0026content)
+    crate::common::create_test_doc(dir, "test.md", &content)
 }
 
 fn create_docs_with_duplicate_id(
-    dir: u0026Path,
-    id: u0026str,
+    dir: &Path,
+    id: &str,
 ) -> (std::path::PathBuf, std::path::PathBuf) {
     let content1 = format!("<a id=\"{}\"></a>\n\n# First\n", id);
     let content2 = format!("<a id=\"{}\"></a>\n\n# Second\n", id);
 
-    let path1 = common::create_test_doc(dir, "doc1.md", u0026content1);
-    let path2 = common::create_test_doc(dir, "doc2.md", u0026content2);
+    let path1 = crate::common::create_test_doc(dir, "doc1.md", &content1);
+    let path2 = crate::common::create_test_doc(dir, "doc2.md", &content2);
 
     (path1, path2)
 }
@@ -36,9 +36,9 @@ fn check_help_works() {
 
 #[test]
 fn check_valid_doc_succeeds() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
-    common::create_valid_doc(tmp.path(), "TEST-01", "Test Document");
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
+    crate::common::create_valid_doc(tmp.path(), "TEST-01", "Test Document");
 
     Command::cargo_bin("docgraph")
         .unwrap()
@@ -51,8 +51,8 @@ fn check_valid_doc_succeeds() {
 
 #[test]
 fn check_missing_heading_fails() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
     create_doc_missing_heading(tmp.path(), "TEST-01");
 
     Command::cargo_bin("docgraph")
@@ -67,8 +67,8 @@ fn check_missing_heading_fails() {
 
 #[test]
 fn check_duplicate_id_fails() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
     create_docs_with_duplicate_id(tmp.path(), "TEST-01");
 
     Command::cargo_bin("docgraph")
@@ -83,9 +83,9 @@ fn check_duplicate_id_fails() {
 
 #[test]
 fn check_json_output() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
-    common::create_valid_doc(tmp.path(), "TEST-01", "Test");
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
+    crate::common::create_valid_doc(tmp.path(), "TEST-01", "Test");
 
     let output = Command::cargo_bin("docgraph")
         .unwrap()
@@ -104,8 +104,8 @@ fn check_json_output() {
 
 #[test]
 fn check_with_rule_filter() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
     create_doc_missing_heading(tmp.path(), "TEST-01");
 
     // Run only DG001
@@ -122,7 +122,7 @@ fn check_with_rule_filter() {
 
 #[test]
 fn check_empty_directory() {
-    let tmp = common::setup_temp_dir();
+    let tmp = crate::common::setup_temp_dir();
 
     Command::cargo_bin("docgraph")
         .unwrap()
@@ -145,9 +145,9 @@ fn check_nonexistent_path_fails() {
 
 #[test]
 fn check_with_config_file() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(tmp.path(), common::default_config());
-    common::create_valid_doc(tmp.path(), "TEST-01", "Test");
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(tmp.path(), crate::common::default_config());
+    crate::common::create_valid_doc(tmp.path(), "TEST-01", "Test");
 
     Command::cargo_bin("docgraph")
         .unwrap()
@@ -159,8 +159,8 @@ fn check_with_config_file() {
 
 #[test]
 fn check_strict_node_types() {
-    let tmp = common::setup_temp_dir();
-    common::create_config(
+    let tmp = crate::common::setup_temp_dir();
+    crate::common::create_config(
         tmp.path(),
         r#"
 [graph]
@@ -172,7 +172,7 @@ TEST = { desc = "Test node" }
     );
 
     // Valid node type
-    common::create_valid_doc(tmp.path(), "TEST-01", "Test");
+    crate::common::create_valid_doc(tmp.path(), "TEST-01", "Test");
 
     Command::cargo_bin("docgraph")
         .unwrap()
@@ -182,7 +182,7 @@ TEST = { desc = "Test node" }
         .success();
 
     // Invalid node type
-    common::create_test_doc(
+    crate::common::create_test_doc(
         tmp.path(),
         "invalid.md",
         "<a id=\"INVALID-01\"></a>\n\n# Invalid\n",
