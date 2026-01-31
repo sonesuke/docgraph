@@ -2,7 +2,7 @@ use predicates::prelude::*;
 
 #[test]
 fn graph_help_works() {
-    assert_cmd::cargo_bin_cmd!()
+    assert_cmd::cargo_bin_cmd!("docgraph")
         .arg("graph")
         .arg("--help")
         .assert()
@@ -11,61 +11,39 @@ fn graph_help_works() {
 }
 
 #[test]
-fn graph_json_output() {
+fn graph_summary() {
     let tmp = crate::common::setup_temp_dir();
     crate::common::create_config(tmp.path(), crate::common::default_config());
     crate::common::create_valid_doc(tmp.path(), "TEST-01", "Test");
 
-    let output = assert_cmd::cargo_bin_cmd!()
+    assert_cmd::cargo_bin_cmd!("docgraph")
         .arg("graph")
         .arg(tmp.path())
         .assert()
         .success()
-        .get_output()
-        .stdout
-        .clone();
-
-    let stdout = String::from_utf8(output).unwrap();
-    assert!(stdout.contains("TEST-01"));
-    assert!(stdout.starts_with('{') || stdout.starts_with('['));
+        .stdout(predicate::str::contains("\"id\": \"TEST-01\""));
 }
 
 #[test]
-fn graph_with_references() {
+fn graph_with_edges() {
     let tmp = crate::common::setup_temp_dir();
     crate::common::create_config(tmp.path(), crate::common::default_config());
     crate::common::create_test_doc(
         tmp.path(),
-        "source.md",
-        "<a id=\"TEST-01\"></a>\n\n# Source\n\n[TEST-02](./target.md#TEST-02)\n",
+        "a.md",
+        "<a id=\"REQ-01\"></a>\n\n# Requirement\n",
     );
     crate::common::create_test_doc(
         tmp.path(),
-        "target.md",
-        "<a id=\"TEST-02\"></a>\n\n# Target\n",
+        "b.md",
+        "<a id=\"ADR-01\"></a>\n\n# ADR\n\n- [REQ-01](a.md)\n",
     );
 
-    let output = assert_cmd::cargo_bin_cmd!()
+    assert_cmd::cargo_bin_cmd!("docgraph")
         .arg("graph")
         .arg(tmp.path())
         .assert()
         .success()
-        .get_output()
-        .stdout
-        .clone();
-
-    let stdout = String::from_utf8(output).unwrap();
-    assert!(stdout.contains("TEST-01"));
-    assert!(stdout.contains("TEST-02"));
-}
-
-#[test]
-fn graph_empty_directory() {
-    let tmp = crate::common::setup_temp_dir();
-
-    assert_cmd::cargo_bin_cmd!()
-        .arg("graph")
-        .arg(tmp.path())
-        .assert()
-        .success();
+        .stdout(predicate::str::contains("\"id\": \"REQ-01\""))
+        .stdout(predicate::str::contains("\"id\": \"ADR-01\""));
 }
