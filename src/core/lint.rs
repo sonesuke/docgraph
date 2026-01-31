@@ -307,6 +307,12 @@ Text instead of heading"#;
             "Line length exceeds 80 characters"
         ));
 
+        // MD041 (First line heading) should be skipped
+        assert!(should_skip_rumdl_warning(
+            "MD041",
+            "First line in file should be a top level heading"
+        ));
+
         // Other random rules should NOT be skipped
         assert!(!should_skip_rumdl_warning(
             "MD001",
@@ -385,6 +391,7 @@ Text instead of heading"#;
             let config = Config::default();
             // We need rules that trigger a fix. MD047 adds a newline.
             // Rumdl default rules include MD047.
+            // use_docgraph_filter=false ensures standard rules run
             let diags = check_workspace(dir.path(), true, None, false, &config);
 
             // Expect DG000 error for write failure
