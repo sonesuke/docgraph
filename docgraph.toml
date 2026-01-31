@@ -33,6 +33,7 @@ ADR  = { desc = "Architecture Decision Record" }
 
 # ========== Business Relations ==========
 
+[references.UC]
 # Use Case derives Actor, Interface, and Requirements
 rules = [
   { dir = "to", targets = ["ACT"], min = 1, desc = "Use cases must involve at least one Actor" },
