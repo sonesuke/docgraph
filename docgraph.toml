@@ -5,6 +5,7 @@
 strict_node_types = true
 strict_relations  = true
 doc_types = ["ACT", "DAT", "IF", "ADR", "CON"]
+ignore = ["README.md", "SECURITY.md"]
 
 [node_types]
 # Core specification types

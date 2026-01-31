@@ -61,4 +61,4 @@ jobs:
             target/llvm-cov/html/
 
       - name: Integration Test Run
-        run: cargo run -- check ./test_data
+        run: cargo run -- check ./doc
