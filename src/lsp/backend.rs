@@ -149,23 +149,32 @@ impl LanguageServer for Backend {
         &self,
         params: GotoDefinitionParams,
     ) -> Result<Option<GotoDefinitionResponse>> {
-        handlers::goto_definition(self, params).await
+        let blocks = self.blocks.lock().await;
+        let refs = self.standalone_refs.lock().await;
+        handlers::goto_definition(&blocks, &refs, params)
     }
 
     async fn hover(&self, params: HoverParams) -> Result<Option<Hover>> {
-        handlers::hover(self, params).await
+        let blocks = self.blocks.lock().await;
+        let refs = self.standalone_refs.lock().await;
+        handlers::hover(&blocks, &refs, params)
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
-        handlers::completion(self, params).await
+        let blocks = self.blocks.lock().await;
+        handlers::completion(&blocks, params)
     }
 
     async fn references(&self, params: ReferenceParams) -> Result<Option<Vec<Location>>> {
-        handlers::references(self, params).await
+        let blocks = self.blocks.lock().await;
+        let refs = self.standalone_refs.lock().await;
+        handlers::references(&blocks, &refs, params)
     }
 
     async fn rename(&self, params: RenameParams) -> Result<Option<WorkspaceEdit>> {
-        handlers::rename(self, params).await
+        let blocks = self.blocks.lock().await;
+        let refs = self.standalone_refs.lock().await;
+        handlers::rename(&blocks, &refs, params)
     }
 
     async fn prepare_call_hierarchy(

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub struct SpecBlock {
     pub id: String,
     pub name: Option<String>,
@@ -11,7 +11,7 @@ pub struct SpecBlock {
     pub line_end: usize,   // 1-based
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub struct EdgeUse {
     pub id: String,
     pub name: Option<String>,
@@ -20,7 +20,7 @@ pub struct EdgeUse {
     pub col_end: usize,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub struct RefUse {
     pub target_id: String,
     pub file_path: PathBuf,
