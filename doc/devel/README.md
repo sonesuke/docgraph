@@ -37,7 +37,6 @@ The project is split into several main areas:
   - **`cli/`**: CLI command definitions and output formatting.
   - **`lsp/`**: Language Server Protocol implementation.
 - **`doc/`**: Documentation (this is where you are!).
-- **`vscode-extension/`**: The VS Code extension that interacts with the LSP.
 
 ## Coding Standards
 
