@@ -57,4 +57,5 @@ The project is split into several main areas:
 For a deeper understanding of the system architecture, see:
 
 - [Layered Architecture](../design/layered-architecture.md)
+- [Module View](./module.md)
 - [Testing & Coverage](./testing.md)
