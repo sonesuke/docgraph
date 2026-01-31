@@ -17,8 +17,7 @@ fn try_rule(rule: Option<String>) -> anyhow::Result<ExitCode> {
     all_rules.push(Box::new(rules::dg001::DG001));
     all_rules.push(Box::new(rules::dg002::DG002));
     all_rules.push(Box::new(rules::dg003::DG003));
-    all_rules.push(Box::new(rules::dg004::DG004));
-    // TODO: Add DG005 and DG006 when they implement the Rule trait
+    // TODO: Add DG005, DG006, DG004 when they implement the Rule trait or support custom listing
 
     if let Some(rule_query) = rule {
         let rule_query = rule_query.to_ascii_uppercase();
