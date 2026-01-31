@@ -1,0 +1,18 @@
+[graph]
+strict_node_types = true
+strict_relations  = true
+doc_types = ["REQ", "TC"]
+
+[node_types]
+REQ = { desc = "Requirement" }
+TC  = { desc = "Test Case" }
+
+[references.REQ]
+rules = [
+  { dir = "from", targets = ["TC"], min = 1, desc = "Requirements must be tested" }
+]
+
+[references.TC]
+rules = [
+  { dir = "to", targets = ["REQ"], min = 1, desc = "Test cases must verify a requirement" }
+]
