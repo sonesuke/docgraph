@@ -8,7 +8,7 @@ A lint tool to build and verify directed graphs embedded in standard Markdown fi
 
 ## Overview
 
-`docgraph` treats Markdown documents as nodes in a graph. By using HTML anchors (`<a id="EXAMPLE-ID-1"></a>`) and standard Markdown links, you can define relationships (edges) between documents to ensure traceability across your entire documentation set—from requirements and use cases down to implementation details.
+`docgraph` treats Markdown documents as nodes in a graph. By using HTML anchors (`<a id="..."></a>`) and standard Markdown links, you can define relationships (edges) between documents to ensure traceability across your entire documentation set—from requirements and use cases down to implementation details.
 
 For a comprehensive guide on concepts, architecture, and current specifications, please refer to the **[Documentation Overview](./doc/overview.md)**.
 

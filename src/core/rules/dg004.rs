@@ -69,12 +69,18 @@ impl Rule for DG004 {
             (line_idx + 1, offset - line_start + 1)
         };
 
-        for caps in link_re.captures_iter(&content) {
-            if let (Some(text_cap), Some(id_cap)) = (caps.get(1), caps.get(3)) {
-                let current_text = text_cap.as_str();
-                let target_id = id_cap.as_str();
+        // Strip code blocks and inline code to avoid false positives (discovery only)
+        let clean_content = crate::core::utils::strip_markdown_code(&content);
 
-                if let Some(title) = id_to_title.get(target_id) {
+        for caps in link_re.captures_iter(&clean_content) {
+            // Get original text and ID using the ranges from cleaned content
+            let text_range = caps.get(1).unwrap().range();
+            let id_range = caps.get(3).unwrap().range();
+            
+            let current_text = &content[text_range.clone()];
+            let target_id = &content[id_range];
+
+            if let Some(title) = id_to_title.get(target_id) {
                     // Remove all occurrences of target_id from the title string
                     let clean_title = title.replace(target_id, "");
                     // Remove empty bracket pairs that remain after ID removal
@@ -111,8 +117,8 @@ impl Rule for DG004 {
                     };
 
                     if current_text != expected_text {
-                        let (start_line, start_col) = get_pos(text_cap.start());
-                        let (end_line, end_col) = get_pos(text_cap.end());
+                        let (start_line, start_col) = get_pos(text_range.start);
+                        let (end_line, end_col) = get_pos(text_range.end);
 
                         warnings.push(LintWarning {
                             message: format!(
@@ -130,7 +136,6 @@ impl Rule for DG004 {
                     }
                 }
             }
-        }
 
         Ok(warnings)
     }

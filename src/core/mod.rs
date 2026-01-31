@@ -5,4 +5,5 @@ pub mod lint;
 pub mod parse;
 pub mod rules;
 pub mod types;
+pub mod utils;
 pub mod walk;
