@@ -26,6 +26,8 @@ Errors such as duplicate IDs or broken references are reported immediately as ed
 ### Relationship Analysis
 
 - **Call Hierarchy ([IF_LSP_HIERARCHY (Feature: Call Hierarchy)](#IF_LSP_HIERARCHY))**: Explore incoming and outgoing relationship chains in a tree view, allowing for deep traceability analysis within the editor.
+- **Document Symbol ([IF_LSP_DOC_SYMBOL (Feature: Document Symbol)](#IF_LSP_DOC_SYMBOL))**: List all spec blocks in the current document for easy navigation (Outline view).
+- **Workspace Symbol ([IF_LSP_WS_SYMBOL (Feature: Workspace Symbol)](#IF_LSP_WS_SYMBOL))**: Search for spec blocks across the entire workspace by their ID or name.
 
 <a id="IF_LSP_GOTO"></a>
 
@@ -73,3 +75,17 @@ Errors such as duplicate IDs or broken references are reported immediately as ed
 - **Behavior**:
   - **Incoming Calls**: Shows which SpecBlocks reference the current block.
   - **Outgoing Calls**: Shows which SpecBlocks are referenced by the current block.
+
+<a id="IF_LSP_DOC_SYMBOL"></a>
+
+#### Feature: Document Symbol
+
+- **Capability**: `documentSymbolProvider`
+- **Behavior**: Returns a list of all SpecBlocks defined in the current document. This populates the "Outline" view in most editors.
+
+<a id="IF_LSP_WS_SYMBOL"></a>
+
+#### Feature: Workspace Symbol
+
+- **Capability**: `workspaceSymbolProvider`
+- **Behavior**: Allows searching for SpecBlocks across the entire workspace by matching their ID or human-readable name.
