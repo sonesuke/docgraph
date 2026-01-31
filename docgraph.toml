@@ -34,7 +34,7 @@ ADR  = { desc = "Architecture Decision Record" }
 [references.UC]
 # Use Case derives Actor, Interface, and Requirements
 rules = [
-  { dir = "to", targets = ["ACT", "IF", "FR", "UC"], min = 0, desc = "Use cases serve as the foundation for actor behavior, interfaces, and functional requirements" }
+  { dir = "to", targets = ["ACT", "IF", "FR", "UC", "NFR"], min = 0, desc = "Use cases serve as the foundation for actor behavior, interfaces, and functional requirements" }
 ]
 
 [references.ACT]
@@ -47,7 +47,7 @@ rules = [
 # Interface is derived from Use Case and may reference other specs or data
 rules = [
   { dir = "from", targets = ["UC"], min = 0, desc = "Exposed interfaces should be justified by business use cases" },
-  { dir = "to", targets = ["IF", "FR", "DAT", "UC"], min = 0, desc = "Interfaces may reference other specifications, requirements, data entities, or related business contexts" }
+  { dir = "to", targets = ["IF", "FR", "DAT", "UC", "NFR"], min = 0, desc = "Interfaces may reference other specifications, requirements, data entities, or related business contexts" }
 ]
 
 # ========== Specification Relations ==========
