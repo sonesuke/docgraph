@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-<a id="ADR-E2E-TESTING"></a>
+<a id="ADR_E2E_TESTING"></a>
 
 ## E2E Testing Strategy: assert_cmd with cargo llvm-cov
 

@@ -1,6 +1,6 @@
 # Cross-Cutting Concept: Error Handling Boundaries
 
-<a id="CC-ERROR-HANDLING"></a>
+<a id="CC_ERROR_HANDLING"></a>
 
 ## Overview
 
@@ -67,4 +67,4 @@ Errors automatically convert across boundaries:
 
 ## Related
 
-- [ADR-ERROR-HANDLING (Error Handling Strategy: thiserror for Core, anyhow for Binaries)](../../decisions/error-handling.md#ADR-ERROR-HANDLING)
+- [ADR_ERROR_HANDLING (Error Handling Strategy: thiserror for Core, anyhow for Binaries)](../../decisions/error-handling.md#ADR_ERROR_HANDLING)

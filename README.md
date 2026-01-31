@@ -30,7 +30,7 @@ cargo install --path .
 In any Markdown file, define an ID followed by a heading:
 
 ```markdown
-<a id="REQ-001"></a>
+<a id="REQ_001"></a>
 ## User Authentication Requirement
 The system must support email-based login.
 ```
@@ -39,9 +39,9 @@ The system must support email-based login.
 Reference another ID within the same or another file using standard Markdown links:
 
 ```markdown
-<a id="TC-001"></a>
+<a id="TC_001"></a>
 ## Login Test Case
-Verify that the user can log in ([REQ-001](#REQ-001)).
+Verify that the user can log in ([REQ_001](#REQ_001)).
 ```
 
 ### 3. Run Validation

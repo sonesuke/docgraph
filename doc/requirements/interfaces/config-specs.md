@@ -1,4 +1,4 @@
-<a id="IF-CONFIG"></a>
+<a id="IF_CONFIG"></a>
 
 # docgraph.toml Configuration
 
@@ -23,7 +23,7 @@ rules = [
 
 ---
 
-<a id="IF-GRAPH-CONFIG"></a>
+<a id="IF_GRAPH_CONFIG"></a>
 
 ## 1. Global Graph Behavior (`[graph]`)
 
@@ -35,7 +35,7 @@ rules = [
 
 ---
 
-<a id="IF-NODE-TYPE"></a>
+<a id="IF_NODE_TYPE"></a>
 
 ## 2. Defining Node Types (`[node_types]`)
 
@@ -53,7 +53,7 @@ FR   = { desc = "Functional Requirement" }
 
 ---
 
-<a id="IF-REF-RULES"></a>
+<a id="IF_REF_RULES"></a>
 
 ## 3. Relationship Rules (`[references]`)
 

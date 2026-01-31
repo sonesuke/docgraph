@@ -1,6 +1,6 @@
 # Quality Constraints
 
-<a id="CON-QUALITY"></a>
+<a id="CON_QUALITY"></a>
 
 ## Test Coverage
 
@@ -11,4 +11,4 @@ The system must maintain high test coverage to ensure reliability:
 
 This ensures:
 
-- [NFR-TEST (Comprehensive Testing)](../requirements/non-functional/test-quality.md#NFR-TEST)
+- [NFR_TEST (Comprehensive Testing)](../requirements/non-functional/test-quality.md#NFR_TEST)

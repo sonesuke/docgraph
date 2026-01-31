@@ -1,6 +1,6 @@
 # Cross-Cutting Concept: Dependency Rule
 
-<a id="CC-DEPENDENCY-RULE"></a>
+<a id="CC_DEPENDENCY_RULE"></a>
 
 ## Overview
 
@@ -42,4 +42,4 @@ But Core never imports from handlers.
 
 ## Related
 
-- [ADR-LAYERED-ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](../../decisions/layered-architecture.md#ADR-LAYERED-ARCH)
+- [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](../../decisions/layered-architecture.md#ADR_LAYERED_ARCH)

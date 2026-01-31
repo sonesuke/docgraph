@@ -1,6 +1,6 @@
 # Cross-Cutting Concept: E2E Testing
 
-<a id="CC-E2E-TESTING"></a>
+<a id="CC_E2E_TESTING"></a>
 
 ## Overview
 
@@ -154,4 +154,4 @@ fn check_reports_missing_heading() {
 
 ## Related
 
-- [ADR-E2E-TESTING (E2E Testing Strategy: assert_cmd with cargo llvm-cov)](../../decisions/e2e-testing.md#ADR-E2E-TESTING)
+- [ADR_E2E_TESTING (E2E Testing Strategy: assert_cmd with cargo llvm-cov)](../../decisions/e2e-testing.md#ADR_E2E_TESTING)

@@ -1,12 +1,12 @@
 # Human Users
 
-<a id="ACT-USER"></a>
+<a id="ACT_USER"></a>
 
 ## User
 
 A human user who interacts with the Docgraph CLI or VS Code extension.
 
-<a id="ACT-DEV"></a>
+<a id="ACT_DEV"></a>
 
 ## Developer
 

@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-<a id="ADR-ERROR-HANDLING"></a>
+<a id="ADR_ERROR_HANDLING"></a>
 
 ## Error Handling Strategy: thiserror for Core, anyhow for Binaries
 
@@ -215,4 +215,4 @@ fn to_jsonrpc_error(err: anyhow::Error) -> jsonrpc::Error {
 
 ### Related
 
-- [ADR-LAYERED-ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./layered-architecture.md#ADR-LAYERED-ARCH)
+- [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./layered-architecture.md#ADR_LAYERED_ARCH)

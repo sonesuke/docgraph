@@ -1,6 +1,6 @@
 # Cross-Cutting Concept: Layered Architecture
 
-<a id="CC-LAYERED-ARCH"></a>
+<a id="CC_LAYERED_ARCH"></a>
 
 ## Overview
 
@@ -82,4 +82,4 @@ LSP Request → Handler → Core Logic → Handler → LSP Response
 
 ## Related
 
-- [ADR-LAYERED-ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](file:///Users/sonesuke/Desktop/docgraph/doc/decisions/layered-architecture.md#ADR-LAYERED-ARCH)
+- [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](file:///Users/sonesuke/Desktop/docgraph/doc/decisions/layered-architecture.md#ADR_LAYERED_ARCH)

@@ -1,6 +1,6 @@
 # Cross-Cutting Concept: Single Responsibility Principle
 
-<a id="CC-SINGLE-RESPONSIBILITY"></a>
+<a id="CC_SINGLE_RESPONSIBILITY"></a>
 
 ## Overview
 
@@ -40,4 +40,4 @@ Each rule validates exactly one aspect:
 
 ## Related
 
-- [ADR-SINGLE-RESPONSIBILITY (Single Responsibility Principle)](../../decisions/single-responsibility.md#ADR-SINGLE-RESPONSIBILITY)
+- [ADR_SINGLE_RESPONSIBILITY (Single Responsibility Principle)](../../decisions/single-responsibility.md#ADR_SINGLE_RESPONSIBILITY)

@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-<a id="ADR-LAYERED-ARCH"></a>
+<a id="ADR_LAYERED_ARCH"></a>
 
 ## Layered Architecture: Core, CLI Handlers, LSP Handlers
 
@@ -50,7 +50,7 @@ Example of independent Core testing:
 ```rust
 #[test]
 fn test_parse_spec_block() {
-    let content = r#"<a id="TEST-01"></a>
+    let content = r#"<a id="TEST_01"></a>
 # Test Heading"#;
     let blocks = parse::extract_spec_blocks(content);
     assert_eq!(blocks.len(), 1);
@@ -125,4 +125,4 @@ This flow demonstrates:
 
 ### Related
 
-- [ADR-MARKDOWN-FORMAT (Choice of Plain Markdown and HTML Anchors)](file:///Users/sonesuke/Desktop/docgraph/doc/decisions/markdown-format.md#ADR-MARKDOWN-FORMAT)
+- [ADR_MARKDOWN_FORMAT (Choice of Plain Markdown and HTML Anchors)](file:///Users/sonesuke/Desktop/docgraph/doc/decisions/markdown-format.md#ADR_MARKDOWN_FORMAT)

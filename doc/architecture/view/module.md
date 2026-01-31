@@ -30,7 +30,7 @@ graph TD
     COLL --> LINT
 ```
 
-<a id="MOD-CORE"></a>
+<a id="MOD_CORE"></a>
 
 ## Core Modules
 
@@ -41,7 +41,7 @@ The `core` module contains the fundamental logic for analyzing documentation gra
 - **`collect`**: Orchestrates the scanning of directories and aggregation of spec blocks.
 - **`lint`**: Implements the validation engine and individual rules (DG001-DG006).
 
-<a id="MOD-CLI"></a>
+<a id="MOD_CLI"></a>
 
 ## CLI Modules
 
@@ -50,7 +50,7 @@ The `cli` module handles user interaction via the terminal.
 - **`handlers`**: Contains the logic for each CLI command (`check`, `list`, `describe`, `graph`, `trace`, `rule`).
 - **`output`**: Manages the formatting of results (Text, JSON).
 
-<a id="MOD-LSP"></a>
+<a id="MOD_LSP"></a>
 
 ## LSP Modules
 
@@ -58,7 +58,7 @@ The `lsp` module provides the Language Server Protocol implementation.
 
 - **`handlers`**: Implements LSP capabilities such as `textDocument/definition`, `textDocument/references`, and `textDocument/hover`.
 
-<a id="MOD-VSEX"></a>
+<a id="MOD_VSEX"></a>
 
 ## VS Code Extension
 

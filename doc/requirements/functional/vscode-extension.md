@@ -2,7 +2,7 @@
 
 The `docgraph` VS Code extension acts as a bridge between the editor and the `docgraph` language server.
 
-<a id="FR-VSC-001"></a>
+<a id="FR_VSC_001"></a>
 
 ## LSP Client Integration
 
@@ -10,19 +10,19 @@ The extension SHALL implement a Language Server Protocol (LSP) client that estab
 
 **Derives:**
 
-- [NFR-VSC-002 (Cross-platform Portability)](../non-functional/vscode-extension.md#NFR-VSC-002)
-- [NFR-VSC-003 (Lightweight Packaging)](../non-functional/vscode-extension.md#NFR-VSC-003)
+- [NFR_VSC_002 (Cross-platform Portability)](../non-functional/vscode-extension.md#NFR_VSC_002)
+- [NFR_VSC_003 (Lightweight Packaging)](../non-functional/vscode-extension.md#NFR_VSC_003)
 
 **Realized by:**
 
-- [MOD-VSEX (VS Code Extension)](../../architecture/view/module.md#MOD-VSEX)
-- [MOD-LSP (LSP Modules)](../../architecture/view/module.md#MOD-LSP)
+- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
+- [MOD_LSP (LSP Modules)](../../architecture/view/module.md#MOD_LSP)
 
 **Depends on:**
 
-- [IF-LSP (Language Server Protocol (LSP) Support)](../interfaces/lsp-specs.md#IF-LSP)
+- [IF_LSP (Language Server Protocol (LSP) Support)](../interfaces/lsp-specs.md#IF_LSP)
 
-<a id="FR-VSC-002"></a>
+<a id="FR_VSC_002"></a>
 
 ## Binary Path Configuration
 
@@ -30,9 +30,9 @@ The extension SHALL provide a setting (`docgraph.binaryPath`) allowing the user 
 
 **Realized by:**
 
-- [MOD-VSEX (VS Code Extension)](../../architecture/view/module.md#MOD-VSEX)
+- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
 
-<a id="FR-VSC-003"></a>
+<a id="FR_VSC_003"></a>
 
 ## Markdown Activation
 
@@ -40,13 +40,13 @@ The extension SHALL activate automatically when a workspace contains Markdown fi
 
 **Derives:**
 
-- [NFR-VSC-001 (Fast Activation)](../non-functional/vscode-extension.md#NFR-VSC-001)
+- [NFR_VSC_001 (Fast Activation)](../non-functional/vscode-extension.md#NFR_VSC_001)
 
 **Realized by:**
 
-- [MOD-VSEX (VS Code Extension)](../../architecture/view/module.md#MOD-VSEX)
+- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
 
-<a id="FR-VSC-004"></a>
+<a id="FR_VSC_004"></a>
 
 ## Server Lifecycle Commands
 
@@ -54,4 +54,4 @@ The extension SHALL provide a command to restart the `docgraph` language server 
 
 **Realized by:**
 
-- [MOD-VSEX (VS Code Extension)](../../architecture/view/module.md#MOD-VSEX)
+- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
