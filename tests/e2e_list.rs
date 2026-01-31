@@ -11,7 +11,9 @@ fn list_help_works() {
         .arg("--help")
         .assert()
         .success()
-        .stdout(predicate::str::contains("List spec blocks matching a query"));
+        .stdout(predicate::str::contains(
+            "List spec blocks matching a query",
+        ));
 }
 
 #[test]
@@ -19,8 +21,12 @@ fn list_all_nodes() {
     let tmp = common::setup_temp_dir();
     common::create_config(tmp.path(), common::default_config());
     common::create_valid_doc(tmp.path(), "TEST-01", "First");
-    common::create_test_doc(tmp.path(), "doc2.md", "<a id=\"TEST-02\"></a>\n\n# Second\n");
-    
+    common::create_test_doc(
+        tmp.path(),
+        "doc2.md",
+        "<a id=\"TEST-02\"></a>\n\n# Second\n",
+    );
+
     Command::cargo_bin("docgraph")
         .unwrap()
         .arg("list")
@@ -37,8 +43,12 @@ fn list_with_pattern() {
     let tmp = common::setup_temp_dir();
     common::create_config(tmp.path(), common::default_config());
     common::create_valid_doc(tmp.path(), "TEST-01", "Test");
-    common::create_test_doc(tmp.path(), "req.md", "<a id=\"REQ-01\"></a>\n\n# Requirement\n");
-    
+    common::create_test_doc(
+        tmp.path(),
+        "req.md",
+        "<a id=\"REQ-01\"></a>\n\n# Requirement\n",
+    );
+
     Command::cargo_bin("docgraph")
         .unwrap()
         .arg("list")
@@ -53,7 +63,7 @@ fn list_with_pattern() {
 #[test]
 fn list_empty_directory() {
     let tmp = common::setup_temp_dir();
-    
+
     Command::cargo_bin("docgraph")
         .unwrap()
         .arg("list")

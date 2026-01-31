@@ -19,7 +19,7 @@ fn describe_existing_node() {
     let tmp = common::setup_temp_dir();
     common::create_config(tmp.path(), common::default_config());
     common::create_valid_doc(tmp.path(), "TEST-01", "Test Document");
-    
+
     Command::cargo_bin("docgraph")
         .unwrap()
         .arg("describe")
@@ -40,8 +40,12 @@ fn describe_with_references() {
         "source.md",
         "<a id=\"TEST-01\"></a>\n\n# Source\n\nReferences [TEST-02](./target.md#TEST-02)\n",
     );
-    common::create_test_doc(tmp.path(), "target.md", "<a id=\"TEST-02\"></a>\n\n# Target\n");
-    
+    common::create_test_doc(
+        tmp.path(),
+        "target.md",
+        "<a id=\"TEST-02\"></a>\n\n# Target\n",
+    );
+
     Command::cargo_bin("docgraph")
         .unwrap()
         .arg("describe")
@@ -57,7 +61,7 @@ fn describe_with_references() {
 fn describe_nonexistent_node() {
     let tmp = common::setup_temp_dir();
     common::create_config(tmp.path(), common::default_config());
-    
+
     Command::cargo_bin("docgraph")
         .unwrap()
         .arg("describe")

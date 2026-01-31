@@ -11,7 +11,9 @@ fn trace_help_works() {
         .arg("--help")
         .assert()
         .success()
-        .stdout(predicate::str::contains("Trace relationships between spec blocks"));
+        .stdout(predicate::str::contains(
+            "Trace relationships between spec blocks",
+        ));
 }
 
 #[test]
@@ -24,7 +26,7 @@ fn trace_direct_path() {
         "<a id=\"TEST-A\"></a>\n\n# A\n\n[TEST-B](./b.md#TEST-B)\n",
     );
     common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
-    
+
     Command::cargo_bin("docgraph")
         .unwrap()
         .arg("trace")
@@ -47,7 +49,7 @@ fn trace_with_direction_down() {
         "<a id=\"TEST-A\"></a>\n\n# A\n\n[TEST-B](./b.md#TEST-B)\n",
     );
     common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
-    
+
     Command::cargo_bin("docgraph")
         .unwrap()
         .arg("trace")
@@ -70,7 +72,7 @@ fn trace_with_direction_up() {
         "<a id=\"TEST-A\"></a>\n\n# A\n\n[TEST-B](./b.md#TEST-B)\n",
     );
     common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
-    
+
     Command::cargo_bin("docgraph")
         .unwrap()
         .arg("trace")
@@ -89,7 +91,7 @@ fn trace_no_path_found() {
     common::create_config(tmp.path(), common::default_config());
     common::create_valid_doc(tmp.path(), "TEST-A", "A");
     common::create_test_doc(tmp.path(), "b.md", "<a id=\"TEST-B\"></a>\n\n# B\n");
-    
+
     Command::cargo_bin("docgraph")
         .unwrap()
         .arg("trace")
@@ -104,7 +106,7 @@ fn trace_no_path_found() {
 #[test]
 fn trace_invalid_direction() {
     let tmp = common::setup_temp_dir();
-    
+
     Command::cargo_bin("docgraph")
         .unwrap()
         .arg("trace")

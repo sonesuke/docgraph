@@ -11,7 +11,9 @@ fn rule_help_works() {
         .arg("--help")
         .assert()
         .success()
-        .stdout(predicate::str::contains("Show information about available rules"));
+        .stdout(predicate::str::contains(
+            "Show information about available rules",
+        ));
 }
 
 #[test]

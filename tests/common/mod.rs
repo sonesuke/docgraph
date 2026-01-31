@@ -27,13 +27,16 @@ pub fn create_doc_missing_heading(dir: &Path, id: &str) -> std::path::PathBuf {
 }
 
 /// Create a document with duplicate ID (DG002 violation)
-pub fn create_docs_with_duplicate_id(dir: &Path, id: &str) -> (std::path::PathBuf, std::path::PathBuf) {
+pub fn create_docs_with_duplicate_id(
+    dir: &Path,
+    id: &str,
+) -> (std::path::PathBuf, std::path::PathBuf) {
     let content1 = format!("<a id=\"{}\"></a>\n\n# First\n", id);
     let content2 = format!("<a id=\"{}\"></a>\n\n# Second\n", id);
-    
+
     let path1 = create_test_doc(dir, "doc1.md", &content1);
     let path2 = create_test_doc(dir, "doc2.md", &content2);
-    
+
     (path1, path2)
 }
 
