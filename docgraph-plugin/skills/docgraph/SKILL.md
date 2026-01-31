@@ -93,11 +93,11 @@ docgraph type <TYPE_ID>    # Show type details and rules
 
 These commands are workflows defined specifically for this plugin to assist with verified refactoring and organization.
 
-### `align` - Organize and Rename Elements
+### `/docgraph-plugin:align` - Organize and Rename Elements
 Executes the alignment workflow defined in `commands/align.md`.
 Ensures naming conventions, consistency, and correct file placement.
 
-### `refine` - Refine Structure and Responsibilities
+### `/docgraph-plugin:refine` - Refine Structure and Responsibilities
 Executes the refinement workflow defined in `commands/refine.md`.
 Verifies structure, MECE, and SRP (Single Responsibility Principle) with detailed analysis.
 
