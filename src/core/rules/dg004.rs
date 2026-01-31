@@ -114,21 +114,7 @@ pub fn check_link_text(files: &[PathBuf], blocks: &[SpecBlock]) -> Vec<Diagnosti
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rumdl_lib::config::MarkdownFlavor;
-
-    fn index_content(content: &str, path: &Path) -> FileIndex {
-        let rule = DG004;
-        let rules: Vec<Box<dyn rumdl_lib::rule::Rule>> = vec![Box::new(rule)];
-        let (_, index) = rumdl_lib::lint_and_index(
-            content,
-            &rules,
-            false,
-            MarkdownFlavor::Standard,
-            Some(path.to_path_buf()),
-            None,
-        );
-        index
-    }
+    use crate::core::parse::extract_anchor_headings;
 
     #[test]
     fn test_dg004_link_text() {
@@ -146,16 +132,17 @@ mod tests {
         let c2 = "Correct: [ID-1 (Start)](#ID-1)\nIncorrect: [Click here](#ID-1)";
         std::fs::write(&p2, c2).unwrap();
 
-        // Index both
-        let idx1 = index_content(c1, &p1);
-        let idx2 = index_content(c2, &p2);
+        // Extract blocks to simulate Pass 3 collection
+        let blocks1 = extract_anchor_headings(c1, &p1);
+        let blocks2 = extract_anchor_headings(c2, &p2); // No blocks here but checking logical consistency
+        
+        let mut all_blocks = Vec::new();
+        all_blocks.extend(blocks1);
+        all_blocks.extend(blocks2);
 
-        let mut ws = WorkspaceIndex::new();
-        ws.insert_file(p1.clone(), idx1);
-        ws.insert_file(p2.clone(), idx2.clone());
-
-        let rule = DG004;
-        let warnings = rule.cross_file_check(&p2, &idx2, &ws).unwrap();
+        // Run checking
+        let files = vec![p2.clone()];
+        let warnings = check_link_text(&files, &all_blocks);
 
         // Should have 1 warning for "Click here"
         assert_eq!(warnings.len(), 1);
@@ -171,24 +158,25 @@ mod tests {
         use tempfile::tempdir;
         let dir = tempdir().unwrap();
         let p1 = dir.path().join("complex.md");
+        let p2 = dir.path().join("test.md");
 
         // Title has ID inside it often: "ID-2 (Complex Title)"
         let c1 = "## ID-2 (Complex Title) <a id=\"ID-2\"></a>";
         std::fs::write(&p1, c1).unwrap();
 
         let c2 = "[ID-2 (Complex Title)](#ID-2)"; // Correct
-        let p2 = dir.path().join("test.md");
         std::fs::write(&p2, c2).unwrap();
 
-        let idx1 = index_content(c1, &p1);
-        let idx2 = index_content(c2, &p2);
+        let blocks1 = extract_anchor_headings(c1, &p1);
+        let blocks2 = extract_anchor_headings(c2, &p2);
+        
+        let mut all_blocks = Vec::new();
+        all_blocks.extend(blocks1);
+        all_blocks.extend(blocks2);
 
-        let mut ws = WorkspaceIndex::new();
-        ws.insert_file(p1.clone(), idx1);
-        ws.insert_file(p2.clone(), idx2.clone());
-
-        let rule = DG004;
-        let warnings = rule.cross_file_check(&p2, &idx2, &ws).unwrap();
+        let files = vec![p2.clone()];
+        let warnings = check_link_text(&files, &all_blocks);
+        
         assert!(warnings.is_empty());
     }
 }
