@@ -3,12 +3,7 @@ use crate::core::{collect, config};
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-pub fn handle_trace(
-    from: String,
-    to: String,
-    path: PathBuf,
-    direction: String,
-) -> ExitCode {
+pub fn handle_trace(from: String, to: String, path: PathBuf, direction: String) -> ExitCode {
     let config = config::Config::load(&path).unwrap_or_default();
     let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore);
     let target_regex_str = glob_to_regex(&to);

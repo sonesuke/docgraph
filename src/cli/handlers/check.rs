@@ -3,12 +3,7 @@ use crate::core::{config, lint, types};
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-pub fn handle_check(
-    path: PathBuf,
-    json: bool,
-    fix: bool,
-    rule: Option<Vec<String>>,
-) -> ExitCode {
+pub fn handle_check(path: PathBuf, json: bool, fix: bool, rule: Option<Vec<String>>) -> ExitCode {
     let config = config::Config::load(&path).unwrap_or_else(|e| {
         eprintln!("Warning: Failed to load docgraph.toml: {}", e);
         config::Config::default()
