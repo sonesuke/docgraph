@@ -95,17 +95,17 @@ pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock
                         });
 
                         // 2. Edge for the ID in the Text ([ID])
-                        if let Some(text_match) = cap.get(1) {
-                            if let Some(idx) = text_match.as_str().find(&target_id) {
-                                let start = text_match.start() + idx;
-                                edges.push(EdgeUse {
-                                    id: target_id,
-                                    name: display_name,
-                                    line: line_idx + 1,
-                                    col_start: start + 1,
-                                    col_end: start + 1 + id_match.as_str().len(),
-                                });
-                            }
+                        if let Some(text_match) = cap.get(1)
+                            && let Some(idx) = text_match.as_str().find(&target_id)
+                        {
+                            let start = text_match.start() + idx;
+                            edges.push(EdgeUse {
+                                id: target_id,
+                                name: display_name,
+                                line: line_idx + 1,
+                                col_start: start + 1,
+                                col_end: start + 1 + id_match.as_str().len(),
+                            });
                         }
                     }
                 }
@@ -150,17 +150,17 @@ pub fn extract_markdown_refs(content: &str, file_path: &Path) -> Vec<RefUse> {
                 });
 
                 // 2. Ref for the ID in the Text ([ID])
-                if let Some(text_match) = cap.get(1) {
-                    if let Some(idx) = text_match.as_str().find(&target_id) {
-                        let start = text_match.start() + idx;
-                        refs.push(RefUse {
-                            target_id,
-                            file_path: file_path.to_path_buf(),
-                            line: line_num,
-                            col_start: start + 1,
-                            col_end: start + 1 + id_match.as_str().len(),
-                        });
-                    }
+                if let Some(text_match) = cap.get(1)
+                    && let Some(idx) = text_match.as_str().find(&target_id)
+                {
+                    let start = text_match.start() + idx;
+                    refs.push(RefUse {
+                        target_id,
+                        file_path: file_path.to_path_buf(),
+                        line: line_num,
+                        col_start: start + 1,
+                        col_end: start + 1 + id_match.as_str().len(),
+                    });
                 }
             }
         }

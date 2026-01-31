@@ -60,7 +60,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                                 });
                             }
                         }
-                        
+
                         // Check max count
                         if let Some(max) = rule.max {
                             let count = sources.iter().filter(|t| rule.targets.contains(t)).count();
@@ -94,58 +94,60 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                             .edges
                             .iter()
                             .filter(|e| {
-                                let target_type =
-                                    e.id.split(['-', '_']).next().unwrap_or(&e.id);
+                                let target_type = e.id.split(['-', '_']).next().unwrap_or(&e.id);
                                 // Count if it matches one of the allowed types
                                 rule.targets.contains(&target_type.to_string())
                             })
                             .count();
 
                         // Check min count
-                        if let Some(min) = rule.min && count < min {
-                                let mut message = format!(
-                                    "Node '{}' (type {}) requires at least {} outgoing relation(s) to {:?}, but found {}.",
-                                    block.id, prefix, min, rule.targets, count
-                                );
-                                if let Some(desc) = &rule.desc {
-                                    message.push_str(&format!(" (Description: {})", desc));
-                                }
-                                diagnostics.push(Diagnostic {
-                                    severity: Severity::Error,
-                                    code: "DG006".to_string(),
-                                    message,
-                                    path: block.file_path.clone(),
-                                    range: Range {
-                                        start_line: block.line_start,
-                                        start_col: 1,
-                                        end_line: block.line_start,
-                                        end_col: 1,
-                                    },
-                                });
+                        if let Some(min) = rule.min
+                            && count < min
+                        {
+                            let mut message = format!(
+                                "Node '{}' (type {}) requires at least {} outgoing relation(s) to {:?}, but found {}.",
+                                block.id, prefix, min, rule.targets, count
+                            );
+                            if let Some(desc) = &rule.desc {
+                                message.push_str(&format!(" (Description: {})", desc));
                             }
+                            diagnostics.push(Diagnostic {
+                                severity: Severity::Error,
+                                code: "DG006".to_string(),
+                                message,
+                                path: block.file_path.clone(),
+                                range: Range {
+                                    start_line: block.line_start,
+                                    start_col: 1,
+                                    end_line: block.line_start,
+                                    end_col: 1,
+                                },
+                            });
+                        }
 
                         // Check max count
-                        if let Some(max) = rule.max && count > max {
-                                let mut message = format!(
-                                    "Node '{}' (type {}) requires at most {} outgoing relation(s) to {:?}, but found {}.",
-                                    block.id, prefix, max, rule.targets, count
-                                );
-                                if let Some(desc) = &rule.desc {
-                                    message.push_str(&format!(" (Description: {})", desc));
-                                }
-                                diagnostics.push(Diagnostic {
-                                    severity: Severity::Error,
-                                    code: "DG006".to_string(),
-                                    message,
-                                    path: block.file_path.clone(),
-                                    range: Range {
-                                        start_line: block.line_start,
-                                        start_col: 1,
-                                        end_line: block.line_start,
-                                        end_col: 1,
-                                    },
-                                });
-
+                        if let Some(max) = rule.max
+                            && count > max
+                        {
+                            let mut message = format!(
+                                "Node '{}' (type {}) requires at most {} outgoing relation(s) to {:?}, but found {}.",
+                                block.id, prefix, max, rule.targets, count
+                            );
+                            if let Some(desc) = &rule.desc {
+                                message.push_str(&format!(" (Description: {})", desc));
+                            }
+                            diagnostics.push(Diagnostic {
+                                severity: Severity::Error,
+                                code: "DG006".to_string(),
+                                message,
+                                path: block.file_path.clone(),
+                                range: Range {
+                                    start_line: block.line_start,
+                                    start_col: 1,
+                                    end_line: block.line_start,
+                                    end_col: 1,
+                                },
+                            });
                         }
                     }
                     _ => {}

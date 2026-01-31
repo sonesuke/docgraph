@@ -11,8 +11,6 @@ pub fn rename(
     let line = position.line as usize + 1;
     let col = position.character as usize + 1;
 
-
-
     if let Ok(path) = uri.to_file_path() {
         let path = path.canonicalize().unwrap_or(path);
 
@@ -26,33 +24,30 @@ pub fn rename(
                 std::collections::HashMap::new();
 
             for loc in locations {
-                match Url::from_file_path(&loc.file_path) {
-                    Ok(u) => {
-                        let edit = TextEdit {
-                            range: Range {
-                                start: Position {
-                                    line: loc.range_start_line as u32 - 1,
-                                    character: loc.range_start_col as u32 - 1,
-                                },
-                                end: Position {
-                                    line: loc.range_end_line as u32 - 1,
-                                    character: loc.range_end_col as u32 - 1,
-                                },
+                if let Ok(u) = Url::from_file_path(&loc.file_path) {
+                    let edit = TextEdit {
+                        range: Range {
+                            start: Position {
+                                line: loc.range_start_line as u32 - 1,
+                                character: loc.range_start_col as u32 - 1,
                             },
-                            new_text: params.new_name.clone(),
-                        };
+                            end: Position {
+                                line: loc.range_end_line as u32 - 1,
+                                character: loc.range_end_col as u32 - 1,
+                            },
+                        },
+                        new_text: params.new_name.clone(),
+                    };
 
-                        let edits = changes.entry(u.clone()).or_default();
-                        
-                        // Simple deduplication: allow if exact range doesn't exist
-                        // Note: ideally we should check for overlap, but exact duplicate is the likely cause here.
-                        let is_duplicate = edits.iter().any(|e| e.range == edit.range);
-                        
-                        if !is_duplicate {
-                            edits.push(edit);
-                        }
-                    },
-                    Err(_) => {}
+                    let edits = changes.entry(u.clone()).or_default();
+
+                    // Simple deduplication: allow if exact range doesn't exist
+                    // Note: ideally we should check for overlap, but exact duplicate is the likely cause here.
+                    let is_duplicate = edits.iter().any(|e| e.range == edit.range);
+
+                    if !is_duplicate {
+                        edits.push(edit);
+                    }
                 }
             }
 
@@ -64,5 +59,3 @@ pub fn rename(
     }
     Ok(None)
 }
-
-

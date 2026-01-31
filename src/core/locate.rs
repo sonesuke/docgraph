@@ -44,18 +44,16 @@ pub fn locate_id_at_position(
     for block in blocks.iter() {
         if block.file_path == path && block.line_start == line {
             // Read file line to check exact column match
-            if let Ok(content) = std::fs::read_to_string(&block.file_path) {
-                if let Some(line_content) = content.lines().nth(line - 1) {
-                    if let Some(caps) = anchor_re.captures(line_content) {
-                        if let Some(id_match) = caps.get(1) {
-                            let start = id_match.start() + 1;
-                            let end = id_match.end() + 1;
-                            // Strict check: cursor must be within the ID string
-                            if block.id == id_match.as_str() && col >= start && col <= end {
-                                target_id = Some(block.id.clone());
-                            }
-                        }
-                    }
+            if let Ok(content) = std::fs::read_to_string(&block.file_path)
+                && let Some(line_content) = content.lines().nth(line - 1)
+                && let Some(caps) = anchor_re.captures(line_content)
+                && let Some(id_match) = caps.get(1)
+            {
+                let start = id_match.start() + 1;
+                let end = id_match.end() + 1;
+                // Strict check: cursor must be within the ID string
+                if block.id == id_match.as_str() && col >= start && col <= end {
+                    target_id = Some(block.id.clone());
                 }
             }
             break;
@@ -105,32 +103,32 @@ pub fn find_references_msg(
 
     // 1. Definition
     for block in blocks.iter() {
-        if block.id == target_id {
-            if let Ok(content) = std::fs::read_to_string(&block.file_path) {
-                let lines: Vec<&str> = content.lines().collect();
-                if block.line_start <= lines.len() {
-                    let line_content = lines[block.line_start - 1];
-                    // Find position of the ID within the anchor tag
-                    if let Some(caps) = def_re.captures(line_content) {
-                        if let Some(m) = caps.get(1) {
-                            results.push(LocateResult {
-                                file_path: block.file_path.clone(),
-                                range_start_line: block.line_start,
-                                range_start_col: m.start() + 1,
-                                range_end_line: block.line_start,
-                                range_end_col: m.end() + 1,
-                            });
-                        }
-                    } else if let Some(pos) = line_content.find(target_id) {
-                        // Fallback
-                        results.push(LocateResult {
-                            file_path: block.file_path.clone(),
-                            range_start_line: block.line_start,
-                            range_start_col: pos + 1,
-                            range_end_line: block.line_start,
-                            range_end_col: pos + 1 + target_id.len(),
-                        });
-                    }
+        if block.id == target_id
+            && let Ok(content) = std::fs::read_to_string(&block.file_path)
+        {
+            let lines: Vec<&str> = content.lines().collect();
+            if block.line_start <= lines.len() {
+                let line_content = lines[block.line_start - 1];
+                // Find position of the ID within the anchor tag
+                if let Some(caps) = def_re.captures(line_content)
+                    && let Some(m) = caps.get(1)
+                {
+                    results.push(LocateResult {
+                        file_path: block.file_path.clone(),
+                        range_start_line: block.line_start,
+                        range_start_col: m.start() + 1,
+                        range_end_line: block.line_start,
+                        range_end_col: m.end() + 1,
+                    });
+                } else if let Some(pos) = line_content.find(target_id) {
+                    // Fallback
+                    results.push(LocateResult {
+                        file_path: block.file_path.clone(),
+                        range_start_line: block.line_start,
+                        range_start_col: pos + 1,
+                        range_end_line: block.line_start,
+                        range_end_col: pos + 1 + target_id.len(),
+                    });
                 }
             }
         }
@@ -168,10 +166,7 @@ pub fn find_references_msg(
 }
 
 /// Find the definition location of the target ID.
-pub fn find_definition(
-    blocks: &[SpecBlock],
-    target_id: &str,
-) -> Option<LocateResult> {
+pub fn find_definition(blocks: &[SpecBlock], target_id: &str) -> Option<LocateResult> {
     let id_pattern = regex::escape(target_id);
     let def_re = Regex::new(&format!(r#"id=["']({})["']"#, id_pattern)).unwrap();
 
@@ -193,7 +188,7 @@ pub fn find_definition(
                             });
                         }
                     } else if let Some(pos) = line_content.find(target_id) {
-                         // Fallback
+                        // Fallback
                         return Some(LocateResult {
                             file_path: block.file_path.clone(),
                             range_start_line: block.line_start,
@@ -204,13 +199,13 @@ pub fn find_definition(
                     }
                 }
             }
-             // Fallback if file read fails or line not found (shouldn't happen for valid blocks)
-             return Some(LocateResult {
+            // Fallback if file read fails or line not found (shouldn't happen for valid blocks)
+            return Some(LocateResult {
                 file_path: block.file_path.clone(),
                 range_start_line: block.line_start,
                 range_start_col: 1,
                 range_end_line: block.line_start,
-                range_end_col: 1, 
+                range_end_col: 1,
             });
         }
     }
@@ -223,15 +218,12 @@ pub fn completion_candidates(blocks: &[SpecBlock]) -> Vec<&SpecBlock> {
 }
 
 /// Find all outgoing edges from the target ID.
-pub fn find_outgoing_edges(
-    blocks: &[SpecBlock],
-    target_id: &str,
-) -> Vec<LocateResult> {
+pub fn find_outgoing_edges(blocks: &[SpecBlock], target_id: &str) -> Vec<LocateResult> {
     let mut results = Vec::new();
     if let Some(block) = blocks.iter().find(|b| b.id == target_id) {
         for edge in &block.edges {
-             // We want to point to the edge usage in the source file, which is what we have in edge.line/col
-             results.push(LocateResult {
+            // We want to point to the edge usage in the source file, which is what we have in edge.line/col
+            results.push(LocateResult {
                 file_path: block.file_path.clone(),
                 range_start_line: edge.line,
                 range_start_col: edge.col_start,
@@ -247,7 +239,6 @@ pub fn find_outgoing_edges(
     }
     results
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -365,7 +356,7 @@ mod tests {
         // <a id="DEF_1"></a>
         // 01234567890123
         // id match is "DEF_1". start=7 (0-based) -> 8 (1-based). end=12 -> 13.
-        
+
         let result = find_definition(&blocks, "DEF_1");
         assert!(result.is_some());
         let res = result.unwrap();
@@ -377,23 +368,35 @@ mod tests {
     #[test]
     fn test_completion_candidates() {
         let blocks = vec![
-            SpecBlock { id: "A".to_string(), ..Default::default() },
-            SpecBlock { id: "B".to_string(), ..Default::default() },
+            SpecBlock {
+                id: "A".to_string(),
+                ..Default::default()
+            },
+            SpecBlock {
+                id: "B".to_string(),
+                ..Default::default()
+            },
         ];
         let candidates = completion_candidates(&blocks);
         assert_eq!(candidates.len(), 2);
     }
-    
+
     #[test]
     fn test_locate_target_id_method() {
-        let block = SpecBlock { id: "BLK".to_string(), ..Default::default() };
+        let block = SpecBlock {
+            id: "BLK".to_string(),
+            ..Default::default()
+        };
         let t1 = LocateTarget::Definition(block);
         assert_eq!(t1.id(), "BLK");
 
         let t2 = LocateTarget::Edge("EDGE".to_string());
         assert_eq!(t2.id(), "EDGE");
 
-        let r = RefUse { target_id: "REF".to_string(), ..Default::default() };
+        let r = RefUse {
+            target_id: "REF".to_string(),
+            ..Default::default()
+        };
         let t3 = LocateTarget::Reference(r);
         assert_eq!(t3.id(), "REF");
     }

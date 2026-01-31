@@ -55,7 +55,9 @@ mod tests {
         // Line 1: UC-01
         // Line 10: FR-01
         writeln!(temp_file, "<a id=\"UC-01\"></a>").unwrap();
-        for _ in 0..8 { writeln!(temp_file, "").unwrap(); } // filler
+        for _ in 0..8 {
+            writeln!(temp_file, "").unwrap();
+        } // filler
         writeln!(temp_file, "<a id=\"FR-01\"></a>").unwrap();
         let path = temp_file.path().to_path_buf();
 
@@ -90,9 +92,9 @@ mod tests {
             text_document_position: TextDocumentPositionParams {
                 text_document: TextDocumentIdentifier { uri },
                 position: Position {
-                    line: 9, // 10 - 1
+                    line: 9,      // 10 - 1
                     character: 7, // 8 - 1
-                }, 
+                },
             },
             work_done_progress_params: Default::default(),
             partial_result_params: Default::default(),
@@ -106,19 +108,19 @@ mod tests {
             // Should find:
             // 1. Edge in UC-01 (line 2)
             // 2. Definition itself (FR-01, line 10) - strictly speaking find_references_msg includes definition now
-            
+
             // `find_references_msg` includes Definition, Edges, Refs.
             // Edge is at line 2.
             // Definition is at line 10.
-            
+
             // Wait, my mock Edge says line 2. But the file content I wrote doesn't have an edge there.
             // core::locate logic for *referencing* (finding location) doesn't verify edge text on disk, it trusts SpecBlock edge locations.
             // BUT `locate_id_at_position` (the input) DOES verify disk content to find "what ID am I on?".
-            
+
             // So provided I click on FR-01 definition correctly, it should find references.
             assert!(locs.len() >= 1);
             // Check for the edge
-            assert!(locs.iter().any(|l| l.range.start.line == 1)); 
+            assert!(locs.iter().any(|l| l.range.start.line == 1));
         } else {
             panic!("Expected references locations");
         }
@@ -130,13 +132,15 @@ mod tests {
         // Line 1: <a id="UC-01"></a>
         // Line 2: Link to [FR-01]
         writeln!(temp_file, "<a id=\"UC-01\"></a>").unwrap();
-        writeln!(temp_file, "Link to [FR-01]").unwrap(); 
+        writeln!(temp_file, "Link to [FR-01]").unwrap();
         // 0123456789
         // FR-01 starts at col 9 (index 9, 1-based 10).
         // Let's adjust mock edge data to match.
-        
+
         // ... filler ...
-        for _ in 0..7 { writeln!(temp_file, "").unwrap(); }
+        for _ in 0..7 {
+            writeln!(temp_file, "").unwrap();
+        }
         writeln!(temp_file, "<a id=\"FR-01\"></a>").unwrap();
         let path = temp_file.path().to_path_buf();
 
@@ -170,9 +174,9 @@ mod tests {
             text_document_position: TextDocumentPositionParams {
                 text_document: TextDocumentIdentifier { uri },
                 position: Position {
-                    line: 1, // Line 2
+                    line: 1,       // Line 2
                     character: 10, // Inside [FR-01]
-                }, 
+                },
             },
             work_done_progress_params: Default::default(),
             partial_result_params: Default::default(),
@@ -184,11 +188,11 @@ mod tests {
         // locate_id_at_position connects Edge location logic using "block.edges" iteration.
         // It DOES NOT verify disk content for Edges (Step 2 in locate_id_at_position), only Block Definitions (Step 1).
         // It trusts the EdgeUse struct for step 2.
-        
+
         // Step 2 code:
         // for edge in &block.edges {
         //    if edge.line == line && col >= edge.col_start && col <= edge.col_end {
-        
+
         let result = references(&blocks, &refs, params).unwrap();
         assert!(result.is_some());
         let locs = result.unwrap();
@@ -200,7 +204,7 @@ mod tests {
         let mut temp_file1 = NamedTempFile::new().unwrap();
         writeln!(temp_file1, "<a id=\"FR-01\"></a>").unwrap();
         let path = temp_file1.path().to_path_buf();
-        
+
         let mut temp_file2 = NamedTempFile::new().unwrap();
         writeln!(temp_file2, "Ref to [FR-01]").unwrap();
         let path2 = temp_file2.path().to_path_buf();
@@ -243,9 +247,12 @@ mod tests {
         let result = references(&blocks, &refs, params).unwrap();
         assert!(result.is_some());
         let locs = result.unwrap();
-        assert!(locs.len() >= 1); 
+        assert!(locs.len() >= 1);
         // Should find the standalone ref in path2
-        assert!(locs.iter().any(|l| l.uri.to_file_path() == Ok(path2.clone())));
+        assert!(
+            locs.iter()
+                .any(|l| l.uri.to_file_path() == Ok(path2.clone()))
+        );
     }
 
     #[test]

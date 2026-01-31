@@ -13,31 +13,29 @@ pub fn hover(
 
     if let Ok(path) = uri.to_file_path() {
         // Delegate to Core Logic
-        if let Some(target_id) = crate::core::locate::locate_id_at_position(blocks, refs, &path, line, col)
-             && let Some(target_block) = blocks.iter().find(|b| b.id == target_id)
+        if let Some(target_id) =
+            crate::core::locate::locate_id_at_position(blocks, refs, &path, line, col)
+            && let Some(target_block) = blocks.iter().find(|b| b.id == target_id)
         {
-                let title = target_block.name.as_deref().unwrap_or(&target_id);
-                let mut markdown = format!("**{}** ({})", title, target_id);
+            let title = target_block.name.as_deref().unwrap_or(&target_id);
+            let mut markdown = format!("**{}** ({})", title, target_id);
 
-                let incoming = blocks
-                    .iter()
-                    .filter(|b| b.edges.iter().any(|e| e.id == target_id))
-                    .count();
-                let outgoing = target_block.edges.len();
+            let incoming = blocks
+                .iter()
+                .filter(|b| b.edges.iter().any(|e| e.id == target_id))
+                .count();
+            let outgoing = target_block.edges.len();
 
-                markdown.push_str(&format!(
-                    "\n\nIncoming: {} | Outgoing: {}",
-                    incoming, outgoing
-                ));
+            markdown.push_str(&format!(
+                "\n\nIncoming: {} | Outgoing: {}",
+                incoming, outgoing
+            ));
 
-                return Ok(Some(Hover {
-                    contents: HoverContents::Scalar(MarkedString::String(markdown)),
-                    range: None,
-                }));
-
+            return Ok(Some(Hover {
+                contents: HoverContents::Scalar(MarkedString::String(markdown)),
+                range: None,
+            }));
         }
     }
     Ok(None)
 }
-
-

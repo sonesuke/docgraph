@@ -1,10 +1,10 @@
 #![allow(dead_code)]
+use serde_json::{Value, json};
 use std::io::{BufRead, BufReader, Read, Write};
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicI64, Ordering};
 use tokio::sync::mpsc;
-use serde_json::{json, Value};
-use tokio::time::{timeout, Duration};
+use tokio::time::{Duration, timeout};
 
 pub struct LspClient {
     child: Child,
@@ -37,14 +37,18 @@ impl LspClient {
                 // Read Content-Length
                 let mut size = None;
                 let mut buffer = String::new();
-                
+
                 // Read headers
                 while reader.read_line(&mut buffer).unwrap() > 0 {
                     if buffer == "\r\n" {
                         break;
                     }
                     if buffer.starts_with("Content-Length: ") {
-                        if let Ok(len) = buffer.trim_start_matches("Content-Length: ").trim().parse::<usize>() {
+                        if let Ok(len) = buffer
+                            .trim_start_matches("Content-Length: ")
+                            .trim()
+                            .parse::<usize>()
+                        {
                             size = Some(len);
                         }
                     }
@@ -68,7 +72,7 @@ impl LspClient {
                     // Wait, verify logic.
                     // If buffer is empty at start of loop body (after read_line), we check return value.
                     // Actually let's refine this loop slightly effectively.
-                     break; 
+                    break;
                 }
             }
         });
@@ -101,35 +105,35 @@ impl LspClient {
         // The implementation below consumes messages. If it's a notification, we might lose it if we don't store it.
         // Wait... user suggestion said: "LspClient は前の骨格（Content-Lengthフレーミング＋pending response＋notif queue）でOK"
         // I should probably start a background tokio task to route messages, but `send_request` needs to be easy.
-        
+
         // Let's implement a loop here that buffers notifications if they are not the response.
         // Wait, self.receiver only has one consumer (this test code).
         // Since we are inside `send_request`, we can loop `self.receiver`, if it is a notification, we buffer it (where?), if response matches, return.
         // BUT `buffer` ownership is tricky if we are mutable.
-        
+
         // SIMPLIFICATION:
         // We will assume that `send_request` waits for response.
         // If we receive a notification while waiting, we can put it into an internal queue?
         // Ah, `self` is `&mut`.
-        
+
         // Actually, for the tests, we often "wait for notification" OR "send request".
         // But if `publishDiagnostics` arrives exactly while we await `hover` response, we must not drop it.
         // So we need a shared `notification_queue`.
-        
-        // Refactoring: 
+
+        // Refactoring:
         // We really want `next_response(id)` and `next_notification()`.
         // To make this robust without rigorous background tasks in the Test struct itself (which is async):
         // We can just Peek? No mpsc is not peekable.
-        
+
         // Let's rely on the simple pattern:
         // Reads from `receiver` loop.
         // If msg.id == id -> Return.
         // If msg has no id (notification) -> Push to internal `pending_notifications`.
         // If msg has other id -> Panic (or buffer? usually means error in test logic).
-        
+
         loop {
             // Check pending notifications first? No, we are looking for response.
-            
+
             // Read from channel
             let msg = match timeout(Duration::from_secs(5), self.receiver.recv()).await {
                 Ok(Some(m)) => m,
@@ -142,7 +146,10 @@ impl LspClient {
                     return Ok(msg);
                 } else {
                     // Response for other ID? unexpected in sequential tests
-                    eprintln!("Received response for ID {} while waiting for {}", res_id, id);
+                    eprintln!(
+                        "Received response for ID {} while waiting for {}",
+                        res_id, id
+                    );
                 }
             } else {
                 // It is a notification (no id)
@@ -177,33 +184,39 @@ impl LspClient {
         if !self.pending_notifications.is_empty() {
             return Some(self.pending_notifications.remove(0));
         }
-        
+
         // Then read from channel
-         match timeout(Duration::from_secs(5), self.receiver.recv()).await {
+        match timeout(Duration::from_secs(5), self.receiver.recv()).await {
             Ok(Some(msg)) => {
                 if msg.get("id").is_none() {
                     Some(msg)
                 } else {
-                     // Unexpected response?
-                     eprintln!("Unexpected response in next_notification: {:?}", msg);
-                     None // or Loop?
+                    // Unexpected response?
+                    eprintln!("Unexpected response in next_notification: {:?}", msg);
+                    None // or Loop?
                 }
-            },
-            _ => None
+            }
+            _ => None,
         }
     }
 
-    pub async fn wait_notification(&mut self, method: &str, dur: Duration) -> anyhow::Result<Value> {
+    pub async fn wait_notification(
+        &mut self,
+        method: &str,
+        dur: Duration,
+    ) -> anyhow::Result<Value> {
         let start = std::time::Instant::now();
         loop {
             if start.elapsed() > dur {
                 anyhow::bail!("Timeout waiting for notification: {}", method);
             }
-            
+
             // Check if present in pending BEFORE reading new
-            if let Some(idx) = self.pending_notifications.iter().position(|val| {
-                val.get("method").and_then(|m| m.as_str()) == Some(method)
-            }) {
+            if let Some(idx) = self
+                .pending_notifications
+                .iter()
+                .position(|val| val.get("method").and_then(|m| m.as_str()) == Some(method))
+            {
                 return Ok(self.pending_notifications.remove(idx));
             }
 
@@ -212,12 +225,12 @@ impl LspClient {
             match timeout(tick, self.receiver.recv()).await {
                 Ok(Some(msg)) => {
                     if msg.get("id").is_some() {
-                         // Uh oh, response arriving uninvited. Buffer it? 
-                         // Implementation simplified: we won't handle uninvited responses here well.
-                         eprintln!("Warning: Received uninvited response");
-                         continue; 
+                        // Uh oh, response arriving uninvited. Buffer it?
+                        // Implementation simplified: we won't handle uninvited responses here well.
+                        eprintln!("Warning: Received uninvited response");
+                        continue;
                     }
-                    
+
                     if msg.get("method").and_then(|m| m.as_str()) == Some(method) {
                         return Ok(msg);
                     } else {

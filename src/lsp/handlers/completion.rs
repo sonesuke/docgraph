@@ -27,5 +27,3 @@ pub fn completion(
         .collect();
     Ok(Some(CompletionResponse::Array(items)))
 }
-
-
