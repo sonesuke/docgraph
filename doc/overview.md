@@ -22,7 +22,7 @@ Docgraph is a specialized linter and graph generator for product documentation m
 | **Constraints** | System-wide limitations and technology choices. | [CON-PERF (High Performance)](./constraints/development.md#CON-PERF), [CON-SOLO (Solo Development)](./constraints/development.md#CON-SOLO), [CON-EXT (Extensibility)](./constraints/development.md#CON-EXT) |
 | **Specifications**| CLI behavior and interfaces. | [IF-CLI-LINT (Command: `lint`)](./requirements/interfaces/cli_specs.md#IF-CLI-LINT), [IF-LSP (Language Server Protocol (LSP) Support)](./requirements/interfaces/lsp_specs.md#IF-LSP), [IF-CONFIG (docgraph.toml Configuration)](./requirements/interfaces/config_specs.md#IF-CONFIG) |
 | **Architecture**  | Design decisions and rationale. | [ADR-MARKDOWN-FORMAT (Choice of Plain Markdown and HTML Anchors)](./decisions/markdown_format.md#ADR-MARKDOWN-FORMAT) |
-| **Development** | Onboarding guide and architecture for developers. | [Developer Guide](./architecture/guide.md) |
+| **Development** | Onboarding guide and architecture for developers. | [Developer Guide](./architecture/view/guide.md) |
 
 ### Getting Started
 

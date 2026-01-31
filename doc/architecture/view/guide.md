@@ -56,5 +56,5 @@ The project is split into several main areas:
 
 For deeper insights, check out:
 
-- [Architecture Overview](./architecture.md)
+- [Architecture Overview](../design/architecture.md)
 - [Testing & Coverage](./testing.md)
