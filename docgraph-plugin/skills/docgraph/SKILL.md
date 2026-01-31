@@ -88,3 +88,34 @@ docgraph type              # List all node types with descriptions
 docgraph type <TYPE_ID>    # Show type details and rules
 ```
 - `TYPE_ID`: Type ID to show details for (e.g., `FR`, `NFR`)
+
+### `align` - Organize and Rename Elements
+Executes the alignment workflow to ensure naming conventions, consistency, and correct file placement.
+See `commands/align.md` for the workflow steps.
+
+```bash
+docgraph align
+```
+
+### `refine` - Refine Structure and Responsibilities
+Executes the refinement workflow to verify structure, MECE, and SRP (Single Responsibility Principle).
+See `commands/refine.md` for the workflow steps.
+
+```bash
+docgraph refine
+```
+
+## Workflow Recommendations
+
+### Post-Edit Verification
+After modifying documents, always run a consistency check:
+
+1. Run `check` to verify consistency.
+   ```bash
+   docgraph check
+   ```
+
+2. If issues are reported, try `fmt` (or `check --fix`) to automatically resolve them.
+   ```bash
+   docgraph fmt
+   ```
