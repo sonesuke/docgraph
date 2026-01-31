@@ -45,13 +45,13 @@ rules = [
 [references.ACT]
 # Actor is derived from Use Case
 rules = [
-  { dir = "from", targets = ["UC"], min = 1 }
+  { dir = "from", targets = ["UC"], min = 1, desc = "System actors must be involved in at least one use case to ensure they are defined and relevant" }
 ]
 
 [references.IF]
 # Interface is derived from Use Case
 rules = [
-  { dir = "from", targets = ["UC"], min = 1 }
+  { dir = "from", targets = ["UC"], min = 1, desc = "Exposed interfaces must be justified by business use cases" }
 ]
 
 # ========== Specification Relations ==========
