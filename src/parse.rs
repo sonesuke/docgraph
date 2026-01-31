@@ -96,6 +96,8 @@ pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock
                             id: target_id,
                             name: display_name,
                             line: line_idx + 1, // 1-based
+                            col_start: id_match.start() + 1,
+                            col_end: id_match.end() + 1,
                         });
                     }
                 }
@@ -142,13 +144,15 @@ pub fn extract_markdown_refs(content: &str, file_path: &Path) -> Vec<RefUse> {
         for cap in link_re.captures_iter(line) {
             if let Some(id_match) = cap.get(3) {
                 let target_id = id_match.as_str().to_string();
-                let col = id_match.start() + 1; // 1-based
+                let col_start = id_match.start() + 1; // 1-based
+                let col_end = id_match.end() + 1;
 
                 refs.push(RefUse {
                     target_id,
                     file_path: file_path.to_path_buf(),
                     line: line_num,
-                    col,
+                    col_start,
+                    col_end,
                 });
             }
         }
