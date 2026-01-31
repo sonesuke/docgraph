@@ -14,6 +14,7 @@ We only support the latest version of docgraph. We recommend always keeping your
 If you find a security vulnerability, please report it privately to the project maintainers. Do not open a public issue.
 
 You can report vulnerabilities by:
+
 1. Opening a draft security advisory on GitHub.
 2. Contacting the maintainers directly via their preferred contact method (if available).
 
@@ -22,6 +23,7 @@ We aim to acknowledge receipt within 48 hours and provide a resolution plan shor
 ## Commitment to Dependency Security
 
 We use automated tools to monitor our dependencies for known vulnerabilities:
+
 - **Dependabot**: Automatically scans for outdated or vulnerable crates.
 - **Cargo Audit**: Integrated into our CI pipeline to block merges that introduce known security risks.
 
