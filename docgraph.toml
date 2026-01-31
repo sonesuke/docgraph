@@ -39,7 +39,7 @@ FC   = { desc = "Future Consideration" }
 [references.UC]
 # Use Case derives Actor, Interface, and Requirements
 rules = [
-  { dir = "to", targets = ["ACT", "IF", "FR", "UC"], min = 0 }
+  { dir = "to", targets = ["ACT", "IF", "FR", "UC"], min = 0, desc = "Use cases serve as the foundation for actor behavior, interfaces, and functional requirements" }
 ]
 
 [references.ACT]
@@ -59,27 +59,27 @@ rules = [
 [references.FR]
 # Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
 rules = [
-  { dir = "from", targets = ["UC", "CON"], min = 1 },
-  { dir = "to", targets = ["NFR", "ERR", "BB", "RT", "CC", "IF"], min = 0 }
+  { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Functional requirements are derived from business needs (UC) or constraints (CON) to clarify their existence" },
+  { dir = "to", targets = ["NFR", "ERR", "BB", "RT", "CC", "IF"], min = 0, desc = "Functional requirements must be traceable to non-functional requirements or detailed designs (BB)" }
 ]
 
 [references.NFR]
 # Non-Functional Requirement is derived from FR/Constraint and derives architecture
 rules = [
-  { dir = "from", targets = ["FR", "CON"], min = 1 },
-  { dir = "to", targets = ["BB", "CC"], min = 0 }
+  { dir = "from", targets = ["FR", "CON"], min = 1, desc = "Non-functional requirements should be defined to meet specific functionality or overall constraints" },
+  { dir = "to", targets = ["BB", "CC"], min = 0, desc = "Non-functional requirements must be reflected in specific implementation strategies (BB) or cross-cutting concerns (CC)" }
 ]
 
 [references.ERR]
 # Error is derived from Functional Requirement
 rules = [
-  { dir = "from", targets = ["FR"], min = 1 }
+  { dir = "from", targets = ["FR"], min = 1, desc = "Defined error states must relate to the behavior (abnormal flow) of at least one functional requirement" }
 ]
 
 [references.CON]
 # Constraint derives Functional/Non-Functional Requirements
 rules = [
-  { dir = "to", targets = ["FR", "NFR"], min = 1 }
+  { dir = "to", targets = ["FR", "NFR"], min = 1, desc = "Constraints must be embodied as specific functional or quality requirements for the system" }
 ]
 
 # ========== Architecture Relations ==========
@@ -87,37 +87,37 @@ rules = [
 [references.CTX]
 # Context View derives from Actor or refers to other high-level components for overview
 rules = [
-  { dir = "to", targets = ["ACT", "UC", "FR", "DAT", "IF", "ADR", "RT"], min = 0 }
+  { dir = "to", targets = ["ACT", "UC", "FR", "DAT", "IF", "ADR", "RT"], min = 0, desc = "Context views aggregate major elements from all layers to explain the overall system picture" }
 ]
 
 [references.BB]
 # Building Block is derived from Requirements and derives scenarios/deployment
 rules = [
-  { dir = "from", targets = ["FR", "NFR"], min = 1 },
-  { dir = "to", targets = ["RT", "DEP"], min = 0 }
+  { dir = "from", targets = ["FR", "NFR"], min = 1, desc = "Design elements (Building Blocks) must exist to satisfy at least one requirement (prevention of over-engineering)" },
+  { dir = "to", targets = ["RT", "DEP"], min = 0, desc = "Design elements are defined as runtime behaviors (RT) or deployment units (DEP)" }
 ]
 
 [references.RT]
 # Runtime Scenario is derived from Building Block or Requirement
 rules = [
-  { dir = "from", targets = ["BB", "FR"], min = 1 }
+  { dir = "from", targets = ["BB", "FR"], min = 1, desc = "Runtime scenarios must explain the operation of specific design components or functional requirements" }
 ]
 
 [references.DEP]
 # Deployment is derived from Building Block, Architecture Decision, or Concept
 rules = [
-  { dir = "from", targets = ["BB", "ADR", "CC", "NFR"], min = 1 }
+  { dir = "from", targets = ["BB", "ADR", "CC", "NFR"], min = 1, desc = "Deployment configurations require physical justification based on design (BB), decisions (ADR), or non-functional requirements (NFR)" }
 ]
 
 [references.CC]
 # Cross-cutting Concept is derived from Requirements and derives Decisions
 rules = [
-  { dir = "from", targets = ["NFR", "FR"], min = 1 },
-  { dir = "to", targets = ["ADR"], min = 0 }
+  { dir = "from", targets = ["NFR", "FR"], min = 1, desc = "Cross-cutting concerns are derived from requirements to maintain consistency across the entire system" },
+  { dir = "to", targets = ["ADR"], min = 0, desc = "Cross-cutting concerns lead to specific architectural decisions (ADR)" }
 ]
 
 [references.ADR]
 # Architecture Decision derives Deployment
 rules = [
-  { dir = "to", targets = ["DEP"], min = 0 }
+  { dir = "to", targets = ["DEP"], min = 0, desc = "Architectural decisions influence physical deployment configurations and implementation" }
 ]
