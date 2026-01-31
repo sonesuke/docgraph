@@ -1,8 +1,11 @@
+use crate::lsp::backend::Backend;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
-use crate::lsp::backend::Backend;
 
-pub async fn completion(backend: &Backend, _: CompletionParams) -> Result<Option<CompletionResponse>> {
+pub async fn completion(
+    backend: &Backend,
+    _: CompletionParams,
+) -> Result<Option<CompletionResponse>> {
     let blocks = backend.blocks.lock().await;
     let items = blocks
         .iter()
@@ -12,7 +15,11 @@ pub async fn completion(backend: &Backend, _: CompletionParams) -> Result<Option
             detail: block.name.clone(),
             documentation: Some(Documentation::MarkupContent(MarkupContent {
                 kind: MarkupKind::Markdown,
-                value: format!("**{}**\n\nDefined in `{}`", block.id, block.file_path.display()),
+                value: format!(
+                    "**{}**\n\nDefined in `{}`",
+                    block.id,
+                    block.file_path.display()
+                ),
             })),
             ..Default::default()
         })

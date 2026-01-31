@@ -118,7 +118,9 @@ pub fn check_workspace(
 
                         diagnostics.push(Diagnostic {
                             severity: match warning.severity {
-                                rumdl_lib::rule::Severity::Error => crate::core::types::Severity::Error,
+                                rumdl_lib::rule::Severity::Error => {
+                                    crate::core::types::Severity::Error
+                                }
                                 _ => crate::core::types::Severity::Warning,
                             },
                             code: rule_name.to_string(),

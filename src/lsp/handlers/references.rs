@@ -1,8 +1,11 @@
+use crate::lsp::backend::Backend;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
-use crate::lsp::backend::Backend;
 
-pub async fn references(backend: &Backend, params: ReferenceParams) -> Result<Option<Vec<Location>>> {
+pub async fn references(
+    backend: &Backend,
+    params: ReferenceParams,
+) -> Result<Option<Vec<Location>>> {
     let uri = params.text_document_position.text_document.uri;
     let position = params.text_document_position.position;
     let line = position.line as usize + 1;
@@ -46,8 +49,14 @@ pub async fn references(backend: &Backend, params: ReferenceParams) -> Result<Op
                             locations.push(Location {
                                 uri: u,
                                 range: Range {
-                                    start: Position { line: edge.line as u32 - 1, character: edge.col_start as u32 - 1 },
-                                    end: Position { line: edge.line as u32 - 1, character: edge.col_end as u32 - 1 },
+                                    start: Position {
+                                        line: edge.line as u32 - 1,
+                                        character: edge.col_start as u32 - 1,
+                                    },
+                                    end: Position {
+                                        line: edge.line as u32 - 1,
+                                        character: edge.col_end as u32 - 1,
+                                    },
                                 },
                             });
                         }
@@ -60,8 +69,14 @@ pub async fn references(backend: &Backend, params: ReferenceParams) -> Result<Op
                         locations.push(Location {
                             uri: u,
                             range: Range {
-                                start: Position { line: r.line as u32 - 1, character: r.col_start as u32 - 1 },
-                                end: Position { line: r.line as u32 - 1, character: r.col_end as u32 - 1 },
+                                start: Position {
+                                    line: r.line as u32 - 1,
+                                    character: r.col_start as u32 - 1,
+                                },
+                                end: Position {
+                                    line: r.line as u32 - 1,
+                                    character: r.col_end as u32 - 1,
+                                },
                             },
                         });
                     }

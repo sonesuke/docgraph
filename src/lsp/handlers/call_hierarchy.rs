@@ -1,6 +1,6 @@
+use crate::lsp::backend::Backend;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
-use crate::lsp::backend::Backend;
 
 pub async fn prepare_call_hierarchy(
     backend: &Backend,
@@ -40,12 +40,24 @@ pub async fn prepare_call_hierarchy(
                         detail: Some(id.clone()),
                         uri: target_uri,
                         range: Range {
-                            start: Position { line: target_block.line_start as u32 - 1, character: 0 },
-                            end: Position { line: target_block.line_start as u32 - 1, character: 0 },
+                            start: Position {
+                                line: target_block.line_start as u32 - 1,
+                                character: 0,
+                            },
+                            end: Position {
+                                line: target_block.line_start as u32 - 1,
+                                character: 0,
+                            },
                         },
                         selection_range: Range {
-                            start: Position { line: target_block.line_start as u32 - 1, character: 0 },
-                            end: Position { line: target_block.line_start as u32 - 1, character: 0 },
+                            start: Position {
+                                line: target_block.line_start as u32 - 1,
+                                character: 0,
+                            },
+                            end: Position {
+                                line: target_block.line_start as u32 - 1,
+                                character: 0,
+                            },
                         },
                         data: Some(serde_json::to_value(id).unwrap()),
                     }]));
@@ -62,7 +74,9 @@ pub async fn incoming_calls(
 ) -> Result<Option<Vec<CallHierarchyIncomingCall>>> {
     let id_val = params.item.data.clone().unwrap_or_default();
     let target_id: String = serde_json::from_value(id_val).unwrap_or_default();
-    if target_id.is_empty() { return Ok(None); }
+    if target_id.is_empty() {
+        return Ok(None);
+    }
 
     let blocks = backend.blocks.lock().await;
     let mut calls = Vec::new();
@@ -72,8 +86,14 @@ pub async fn incoming_calls(
         for edge in &block.edges {
             if edge.id == target_id {
                 from_ranges.push(Range {
-                    start: Position { line: edge.line as u32 - 1, character: edge.col_start as u32 - 1 },
-                    end: Position { line: edge.line as u32 - 1, character: edge.col_end as u32 - 1 },
+                    start: Position {
+                        line: edge.line as u32 - 1,
+                        character: edge.col_start as u32 - 1,
+                    },
+                    end: Position {
+                        line: edge.line as u32 - 1,
+                        character: edge.col_end as u32 - 1,
+                    },
                 });
             }
         }
@@ -87,12 +107,24 @@ pub async fn incoming_calls(
                         detail: Some(block.id.clone()),
                         uri: u,
                         range: Range {
-                            start: Position { line: block.line_start as u32 - 1, character: 0 },
-                            end: Position { line: block.line_start as u32 - 1, character: 0 },
+                            start: Position {
+                                line: block.line_start as u32 - 1,
+                                character: 0,
+                            },
+                            end: Position {
+                                line: block.line_start as u32 - 1,
+                                character: 0,
+                            },
                         },
                         selection_range: Range {
-                            start: Position { line: block.line_start as u32 - 1, character: 0 },
-                            end: Position { line: block.line_start as u32 - 1, character: 0 },
+                            start: Position {
+                                line: block.line_start as u32 - 1,
+                                character: 0,
+                            },
+                            end: Position {
+                                line: block.line_start as u32 - 1,
+                                character: 0,
+                            },
                         },
                         data: Some(serde_json::to_value(block.id.clone()).unwrap()),
                     },
@@ -110,17 +142,26 @@ pub async fn outgoing_calls(
 ) -> Result<Option<Vec<CallHierarchyOutgoingCall>>> {
     let id_val = params.item.data.clone().unwrap_or_default();
     let source_id: String = serde_json::from_value(id_val).unwrap_or_default();
-    if source_id.is_empty() { return Ok(None); }
+    if source_id.is_empty() {
+        return Ok(None);
+    }
 
     let blocks = backend.blocks.lock().await;
     let mut calls = Vec::new();
 
     if let Some(source_block) = blocks.iter().find(|b| b.id == source_id) {
-        let mut targets: std::collections::HashMap<String, Vec<Range>> = std::collections::HashMap::new();
+        let mut targets: std::collections::HashMap<String, Vec<Range>> =
+            std::collections::HashMap::new();
         for edge in &source_block.edges {
             targets.entry(edge.id.clone()).or_default().push(Range {
-                start: Position { line: edge.line as u32 - 1, character: edge.col_start as u32 - 1 },
-                end: Position { line: edge.line as u32 - 1, character: edge.col_end as u32 - 1 },
+                start: Position {
+                    line: edge.line as u32 - 1,
+                    character: edge.col_start as u32 - 1,
+                },
+                end: Position {
+                    line: edge.line as u32 - 1,
+                    character: edge.col_end as u32 - 1,
+                },
             });
         }
         for (target_id, from_ranges) in targets {
@@ -128,18 +169,33 @@ pub async fn outgoing_calls(
                 if let Ok(u) = Url::from_file_path(&target_block.file_path) {
                     calls.push(CallHierarchyOutgoingCall {
                         to: CallHierarchyItem {
-                            name: target_block.name.clone().unwrap_or_else(|| target_id.clone()),
+                            name: target_block
+                                .name
+                                .clone()
+                                .unwrap_or_else(|| target_id.clone()),
                             kind: SymbolKind::INTERFACE,
                             tags: None,
                             detail: Some(target_id.clone()),
                             uri: u,
                             range: Range {
-                                start: Position { line: target_block.line_start as u32 - 1, character: 0 },
-                                end: Position { line: target_block.line_start as u32 - 1, character: 0 },
+                                start: Position {
+                                    line: target_block.line_start as u32 - 1,
+                                    character: 0,
+                                },
+                                end: Position {
+                                    line: target_block.line_start as u32 - 1,
+                                    character: 0,
+                                },
                             },
                             selection_range: Range {
-                                start: Position { line: target_block.line_start as u32 - 1, character: 0 },
-                                end: Position { line: target_block.line_start as u32 - 1, character: 0 },
+                                start: Position {
+                                    line: target_block.line_start as u32 - 1,
+                                    character: 0,
+                                },
+                                end: Position {
+                                    line: target_block.line_start as u32 - 1,
+                                    character: 0,
+                                },
                             },
                             data: Some(serde_json::to_value(target_id).unwrap()),
                         },

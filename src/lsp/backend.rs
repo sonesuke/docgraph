@@ -1,12 +1,12 @@
+use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::sync::Mutex;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer};
-use std::sync::Arc;
-use tokio::sync::Mutex;
-use std::path::PathBuf;
 
-use crate::core::{config, lint, types, collect};
 use super::handlers;
+use crate::core::{collect, config, lint, types};
 
 pub struct Backend {
     pub client: Client,
@@ -41,8 +41,9 @@ impl Backend {
             }
 
             // Group diagnostics by file path
-            let mut file_diagnostics: std::collections::HashMap<PathBuf, Vec<Diagnostic>> = std::collections::HashMap::new();
-            
+            let mut file_diagnostics: std::collections::HashMap<PathBuf, Vec<Diagnostic>> =
+                std::collections::HashMap::new();
+
             for d in diagnostics {
                 let diag = Diagnostic {
                     range: Range {
@@ -100,7 +101,11 @@ impl LanguageServer for Backend {
                 definition_provider: Some(OneOf::Left(true)),
                 hover_provider: Some(HoverProviderCapability::Simple(true)),
                 completion_provider: Some(CompletionOptions {
-                    trigger_characters: Some(vec!["[".to_string(), "#".to_string(), "(".to_string()]),
+                    trigger_characters: Some(vec![
+                        "[".to_string(),
+                        "#".to_string(),
+                        "(".to_string(),
+                    ]),
                     ..Default::default()
                 }),
                 references_provider: Some(OneOf::Left(true)),
@@ -136,7 +141,9 @@ impl LanguageServer for Backend {
     }
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
-        self.client.publish_diagnostics(params.text_document.uri, vec![], None).await;
+        self.client
+            .publish_diagnostics(params.text_document.uri, vec![], None)
+            .await;
     }
 
     async fn goto_definition(

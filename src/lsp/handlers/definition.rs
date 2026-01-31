@@ -1,6 +1,6 @@
+use crate::lsp::backend::Backend;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
-use crate::lsp::backend::Backend;
 
 pub async fn goto_definition(
     backend: &Backend,
@@ -43,8 +43,14 @@ pub async fn goto_definition(
                     return Ok(Some(GotoDefinitionResponse::Scalar(Location {
                         uri: target_uri,
                         range: Range {
-                            start: Position { line: target_block.line_start as u32 - 1, character: 0 },
-                            end: Position { line: target_block.line_start as u32 - 1, character: 0 },
+                            start: Position {
+                                line: target_block.line_start as u32 - 1,
+                                character: 0,
+                            },
+                            end: Position {
+                                line: target_block.line_start as u32 - 1,
+                                character: 0,
+                            },
                         },
                     })));
                 }

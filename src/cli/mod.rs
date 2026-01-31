@@ -1,10 +1,10 @@
 pub mod args;
 
-use std::process::ExitCode;
-use clap::Parser;
-use args::{Cli, Commands};
-use crate::core::{config, lint, types, collect, rules};
+use crate::core::{collect, config, lint, rules, types};
 use crate::lsp;
+use args::{Cli, Commands};
+use clap::Parser;
+use std::process::ExitCode;
 
 pub async fn run() -> ExitCode {
     let args = Cli::parse();

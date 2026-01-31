@@ -1,6 +1,6 @@
+use crate::lsp::backend::Backend;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
-use crate::lsp::backend::Backend;
 
 pub async fn hover(backend: &Backend, params: HoverParams) -> Result<Option<Hover>> {
     let uri = params.text_document_position_params.text_document.uri;
@@ -45,9 +45,16 @@ pub async fn hover(backend: &Backend, params: HoverParams) -> Result<Option<Hove
             if let Some(target_block) = blocks.iter().find(|b| b.id == id) {
                 let title = target_block.name.as_deref().unwrap_or(&id);
                 let mut markdown = format!("**{}** ({})", title, id);
-                let ref_count = blocks.iter().flat_map(|b| b.edges.iter()).filter(|e| e.id == id).count() 
-                               + refs.iter().filter(|r| r.target_id == id).count();
-                markdown.push_str(&format!("\n\nReferenced {} times in the workspace.", ref_count));
+                let ref_count = blocks
+                    .iter()
+                    .flat_map(|b| b.edges.iter())
+                    .filter(|e| e.id == id)
+                    .count()
+                    + refs.iter().filter(|r| r.target_id == id).count();
+                markdown.push_str(&format!(
+                    "\n\nReferenced {} times in the workspace.",
+                    ref_count
+                ));
 
                 return Ok(Some(Hover {
                     contents: HoverContents::Markup(MarkupContent {

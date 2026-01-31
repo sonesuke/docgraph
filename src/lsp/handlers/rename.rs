@@ -1,6 +1,6 @@
+use crate::lsp::backend::Backend;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
-use crate::lsp::backend::Backend;
 
 pub async fn rename(backend: &Backend, params: RenameParams) -> Result<Option<WorkspaceEdit>> {
     let uri = params.text_document_position.text_document.uri;
@@ -21,7 +21,8 @@ pub async fn rename(backend: &Backend, params: RenameParams) -> Result<Option<Wo
         }
 
         if let Some(id) = target_id {
-            let mut changes: std::collections::HashMap<Url, Vec<TextEdit>> = std::collections::HashMap::new();
+            let mut changes: std::collections::HashMap<Url, Vec<TextEdit>> =
+                std::collections::HashMap::new();
             for block in blocks.iter() {
                 if block.id == id {
                     if let Ok(u) = Url::from_file_path(&block.file_path) {
@@ -32,8 +33,14 @@ pub async fn rename(backend: &Backend, params: RenameParams) -> Result<Option<Wo
                                 if let Some(start_idx) = line_content.find(&id) {
                                     changes.entry(u).or_default().push(TextEdit {
                                         range: Range {
-                                            start: Position { line: block.line_start as u32 - 1, character: start_idx as u32 },
-                                            end: Position { line: block.line_start as u32 - 1, character: (start_idx + id.len()) as u32 },
+                                            start: Position {
+                                                line: block.line_start as u32 - 1,
+                                                character: start_idx as u32,
+                                            },
+                                            end: Position {
+                                                line: block.line_start as u32 - 1,
+                                                character: (start_idx + id.len()) as u32,
+                                            },
                                         },
                                         new_text: new_name.clone(),
                                     });
@@ -49,8 +56,14 @@ pub async fn rename(backend: &Backend, params: RenameParams) -> Result<Option<Wo
                         if let Ok(u) = Url::from_file_path(&block.file_path) {
                             changes.entry(u).or_default().push(TextEdit {
                                 range: Range {
-                                    start: Position { line: edge.line as u32 - 1, character: edge.col_start as u32 - 1 },
-                                    end: Position { line: edge.line as u32 - 1, character: edge.col_end as u32 - 1 },
+                                    start: Position {
+                                        line: edge.line as u32 - 1,
+                                        character: edge.col_start as u32 - 1,
+                                    },
+                                    end: Position {
+                                        line: edge.line as u32 - 1,
+                                        character: edge.col_end as u32 - 1,
+                                    },
                                 },
                                 new_text: new_name.clone(),
                             });
@@ -63,15 +76,24 @@ pub async fn rename(backend: &Backend, params: RenameParams) -> Result<Option<Wo
                     if let Ok(u) = Url::from_file_path(&r.file_path) {
                         changes.entry(u).or_default().push(TextEdit {
                             range: Range {
-                                start: Position { line: r.line as u32 - 1, character: r.col_start as u32 - 1 },
-                                end: Position { line: r.line as u32 - 1, character: r.col_end as u32 - 1 },
+                                start: Position {
+                                    line: r.line as u32 - 1,
+                                    character: r.col_start as u32 - 1,
+                                },
+                                end: Position {
+                                    line: r.line as u32 - 1,
+                                    character: r.col_end as u32 - 1,
+                                },
                             },
                             new_text: new_name.clone(),
                         });
                     }
                 }
             }
-            return Ok(Some(WorkspaceEdit { changes: Some(changes), ..Default::default() }));
+            return Ok(Some(WorkspaceEdit {
+                changes: Some(changes),
+                ..Default::default()
+            }));
         }
     }
     Ok(None)
