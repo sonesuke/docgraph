@@ -92,3 +92,62 @@ impl Rule for DG002 {
         self
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rumdl_lib::config::MarkdownFlavor;
+
+    fn index_content(content: &str, path: &Path) -> FileIndex {
+        let rule = DG002;
+        let rules: Vec<Box<dyn rumdl_lib::rule::Rule>> = vec![Box::new(rule)];
+        let (_, index) = rumdl_lib::lint_and_index(
+            content,
+            &rules,
+            false,
+            MarkdownFlavor::Standard,
+            Some(path.to_path_buf()),
+            None,
+        );
+        index
+    }
+
+    #[test]
+    fn test_dg002_unique_ids() {
+        let file1 = r#"<a id="ID-1"></a>"#;
+        let file2 = r#"<a id="ID-2"></a>"#;
+        let path1 = Path::new("file1.md");
+        let path2 = Path::new("file2.md");
+
+        let idx1 = index_content(file1, path1);
+        let idx2 = index_content(file2, path2);
+
+        let mut ws = WorkspaceIndex::new();
+        ws.insert_file(path1.to_path_buf(), idx1.clone());
+        ws.insert_file(path2.to_path_buf(), idx2.clone());
+
+        let rule = DG002;
+        let warnings = rule.cross_file_check(path1, &idx1, &ws).unwrap();
+        assert!(warnings.is_empty());
+    }
+
+    #[test]
+    fn test_dg002_duplicate_across_files() {
+        let file1 = r#"<a id="ID-SAME"></a>"#;
+        let file2 = r#"<a id="ID-SAME"></a>"#;
+        let path1 = Path::new("file1.md");
+        let path2 = Path::new("file2.md");
+
+        let idx1 = index_content(file1, path1);
+        let idx2 = index_content(file2, path2);
+
+        let mut ws = WorkspaceIndex::new();
+        ws.insert_file(path1.to_path_buf(), idx1.clone());
+        ws.insert_file(path2.to_path_buf(), idx2.clone());
+
+        let rule = DG002;
+        let warnings = rule.cross_file_check(path1, &idx1, &ws).unwrap();
+        assert_eq!(warnings.len(), 1);
+        assert!(warnings[0].message.contains("Duplicate anchor ID"));
+    }
+}

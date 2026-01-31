@@ -1,9 +1,9 @@
-use crate::lsp::backend::Backend;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 
-pub async fn references(
-    backend: &Backend,
+pub fn references(
+    blocks: &[crate::core::types::SpecBlock],
+    refs: &[crate::core::types::RefUse],
     params: ReferenceParams,
 ) -> Result<Option<Vec<Location>>> {
     let uri = params.text_document_position.text_document.uri;
@@ -12,9 +12,6 @@ pub async fn references(
     let col = position.character as usize + 1;
 
     if let Ok(path) = uri.to_file_path() {
-        let blocks = backend.blocks.lock().await;
-        let refs = backend.standalone_refs.lock().await;
-
         let mut target_id = None;
 
         for block in blocks.iter() {
@@ -86,4 +83,63 @@ pub async fn references(
         }
     }
     Ok(None)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::core::types::{EdgeUse, SpecBlock};
+
+    #[test]
+    fn test_references() {
+        let path = std::env::current_dir().unwrap().join("test.md");
+        let blocks = vec![
+            SpecBlock {
+                id: "FR-01".to_string(),
+                file_path: path.clone(),
+                line_start: 10,
+                line_end: 12,
+                ..Default::default()
+            },
+            SpecBlock {
+                id: "UC-01".to_string(),
+                file_path: path.clone(),
+                line_start: 1,
+                line_end: 5,
+                edges: vec![EdgeUse {
+                    id: "FR-01".to_string(),
+                    line: 2,
+                    col_start: 5,
+                    col_end: 10,
+                    ..Default::default()
+                }],
+                ..Default::default()
+            },
+        ];
+        let refs = vec![];
+
+        let uri = Url::from_file_path(&path).unwrap();
+        let params = ReferenceParams {
+            text_document_position: TextDocumentPositionParams {
+                text_document: TextDocumentIdentifier { uri },
+                position: Position {
+                    line: 9,
+                    character: 0,
+                }, // At definition of FR-01
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+            context: ReferenceContext {
+                include_declaration: true,
+            },
+        };
+
+        let result = references(&blocks, &refs, params).unwrap();
+        if let Some(locs) = result {
+            assert_eq!(locs.len(), 1);
+            assert_eq!(locs[0].range.start.line, 1); // Edge at line 2 (index 1)
+        } else {
+            panic!("Expected references locations");
+        }
+    }
 }

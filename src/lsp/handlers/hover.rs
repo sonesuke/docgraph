@@ -1,17 +1,17 @@
-use crate::lsp::backend::Backend;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 
-pub async fn hover(backend: &Backend, params: HoverParams) -> Result<Option<Hover>> {
+pub fn hover(
+    blocks: &[crate::core::types::SpecBlock],
+    refs: &[crate::core::types::RefUse],
+    params: HoverParams,
+) -> Result<Option<Hover>> {
     let uri = params.text_document_position_params.text_document.uri;
     let position = params.text_document_position_params.position;
     let line = position.line as usize + 1;
     let col = position.character as usize + 1;
 
     if let Ok(path) = uri.to_file_path() {
-        let blocks = backend.blocks.lock().await;
-        let refs = backend.standalone_refs.lock().await;
-
         let mut target_id = None;
 
         for block in blocks.iter() {
@@ -65,4 +65,48 @@ pub async fn hover(backend: &Backend, params: HoverParams) -> Result<Option<Hove
         }
     }
     Ok(None)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::core::types::SpecBlock;
+
+    #[test]
+    fn test_hover_definition() {
+        let path = std::env::current_dir().unwrap().join("test.md");
+        let blocks = vec![SpecBlock {
+            id: "FR-01".to_string(),
+            name: Some("Test Req".to_string()),
+            file_path: path.clone(),
+            line_start: 1,
+            line_end: 5,
+            edges: vec![],
+        }];
+        let refs = vec![];
+
+        let uri = Url::from_file_path(path).unwrap();
+        let params = HoverParams {
+            text_document_position_params: TextDocumentPositionParams {
+                text_document: TextDocumentIdentifier { uri },
+                position: Position {
+                    line: 0,
+                    character: 0,
+                },
+            },
+            work_done_progress_params: Default::default(),
+        };
+
+        let result = hover(&blocks, &refs, params).unwrap();
+        if let Some(h) = result {
+            match h.contents {
+                HoverContents::Scalar(MarkedString::String(s)) => {
+                    assert!(s.contains("**Test Req** (FR-01)"));
+                }
+                _ => panic!("Expected string content"),
+            }
+        } else {
+            panic!("Expected hover response");
+        }
+    }
 }

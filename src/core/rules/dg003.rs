@@ -224,3 +224,197 @@ impl Rule for DG003 {
         self
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rumdl_lib::config::MarkdownFlavor;
+    use tempfile::tempdir;
+
+    use crate::core::rules::dg002::DG002;
+
+    fn index_content(content: &str, path: &Path) -> FileIndex {
+        let rule_dg003 = DG003;
+        let rule_dg002 = DG002; // DG002 contributes anchors to index
+        let rules: Vec<Box<dyn rumdl_lib::rule::Rule>> =
+            vec![Box::new(rule_dg003), Box::new(rule_dg002)];
+        let (_, index) = rumdl_lib::lint_and_index(
+            content,
+            &rules,
+            false,
+            MarkdownFlavor::Standard,
+            Some(path.to_path_buf()),
+            None,
+        );
+        index
+    }
+
+    #[test]
+    fn test_dg003_valid_local_link() {
+        let dir = tempdir().unwrap();
+        let path = dir.path().join("test.md");
+
+        let content = r#"<a id="ID-1"></a>
+Link to [myself](#ID-1)"#;
+        std::fs::write(&path, content).unwrap();
+
+        let idx = index_content(content, &path);
+
+        let mut ws = WorkspaceIndex::new();
+        ws.insert_file(path.clone(), idx.clone());
+
+        let rule = DG003;
+        let warnings = rule.cross_file_check(&path, &idx, &ws).unwrap();
+        assert!(warnings.is_empty());
+    }
+
+    #[test]
+    fn test_dg003_valid_cross_file_link() {
+        let dir = tempdir().unwrap();
+        let p1 = dir.path().join("file1.md");
+        let p2 = dir.path().join("file2.md");
+
+        let c1 = r#"Link to [other](file2.md#ID-2)"#;
+        let c2 = r#"<a id="ID-2"></a>"#;
+
+        std::fs::write(&p1, c1).unwrap();
+        std::fs::write(&p2, c2).unwrap();
+
+        let idx1 = index_content(c1, &p1);
+        let idx2 = index_content(c2, &p2);
+
+        let mut ws = WorkspaceIndex::new();
+        ws.insert_file(p1.clone(), idx1.clone());
+        ws.insert_file(p2.clone(), idx2.clone());
+
+        let rule = DG003;
+        let warnings = rule.cross_file_check(&p1, &idx1, &ws).unwrap();
+        assert!(warnings.is_empty());
+    }
+
+    #[test]
+    fn test_dg003_broken_link() {
+        let dir = tempdir().unwrap();
+        let path = dir.path().join("test.md");
+
+        // Write content to disk because DG003 reads it
+        let content = r#"Link to [nowhere](#MISSING)"#;
+        std::fs::write(&path, content).unwrap();
+
+        let idx = index_content(content, &path);
+        let mut ws = WorkspaceIndex::new();
+        ws.insert_file(path.clone(), idx.clone());
+
+        let rule = DG003;
+        let warnings = rule.cross_file_check(&path, &idx, &ws).unwrap();
+        assert_eq!(warnings.len(), 1);
+        assert!(warnings[0].message.contains("MISSING anchor ID"));
+    }
+
+    #[test]
+    fn test_dg003_ambiguous_link() {
+        let dir = tempdir().unwrap();
+        let p1 = dir.path().join("file1.md");
+        let p2 = dir.path().join("file2.md");
+
+        let c1 = r#"Link to [implicit](#ID-REMOTE)"#;
+        let c2 = r#"<a id="ID-REMOTE"></a>"#;
+
+        std::fs::write(&p1, c1).unwrap();
+        std::fs::write(&p2, c2).unwrap();
+
+        let idx1 = index_content(c1, &p1);
+        let idx2 = index_content(c2, &p2);
+
+        let mut ws = WorkspaceIndex::new();
+        ws.insert_file(p1.clone(), idx1.clone());
+        ws.insert_file(p2.clone(), idx2.clone());
+
+        let rule = DG003;
+        let warnings = rule.cross_file_check(&p1, &idx1, &ws).unwrap();
+
+        assert_eq!(warnings.len(), 1);
+        assert!(warnings[0].message.contains("defined in another file"));
+        assert!(warnings[0].fix.is_some());
+    }
+
+    #[test]
+    fn test_dg003_explicit_link_missing_file() {
+        let dir = tempdir().unwrap();
+        let p1 = dir.path().join("file1.md");
+        let content = r#"Link to [nowhere](missing.md#ID)"#;
+        std::fs::write(&p1, content).unwrap();
+
+        let idx = index_content(content, &p1);
+        let mut ws = WorkspaceIndex::new();
+        ws.insert_file(p1.clone(), idx.clone());
+
+        let rule = DG003;
+        // Should not panic, just ignore
+        let warnings = rule.cross_file_check(&p1, &idx, &ws).unwrap();
+        assert!(warnings.is_empty());
+    }
+
+    #[test]
+    fn test_dg003_explicit_link_ambiguous() {
+        let dir = tempdir().unwrap();
+        let p1 = dir.path().join("file1.md");
+        // Linking to file2.md#COMMON, but file2.md doesn't have it.
+        // Both file3.md and file4.md DO have it.
+        let p2 = dir.path().join("file2.md");
+        let p3 = dir.path().join("file3.md");
+        let p4 = dir.path().join("file4.md");
+
+        let c1 = r#"Link to [ambiguous](file2.md#COMMON)"#;
+        let c2 = "";
+        let c3 = r#"<a id="COMMON"></a>"#;
+        let c4 = r#"<a id="COMMON"></a>"#;
+
+        std::fs::write(&p1, c1).unwrap();
+        std::fs::write(&p2, c2).unwrap();
+        std::fs::write(&p3, c3).unwrap();
+        std::fs::write(&p4, c4).unwrap();
+
+        let idx1 = index_content(c1, &p1);
+        let idx2 = index_content(c2, &p2);
+        let idx3 = index_content(c3, &p3);
+        let idx4 = index_content(c4, &p4);
+
+        let mut ws = WorkspaceIndex::new();
+        ws.insert_file(p1.clone(), idx1.clone());
+        ws.insert_file(p2.clone(), idx2.clone());
+        ws.insert_file(p3.clone(), idx3.clone());
+        ws.insert_file(p4.clone(), idx4.clone());
+
+        let rule = DG003;
+        let warnings = rule.cross_file_check(&p1, &idx1, &ws).unwrap();
+
+        // Should be 1 warning about being found in multiple files
+        assert_eq!(warnings.len(), 1);
+        assert!(warnings[0].message.contains("found in multiple files"));
+        assert!(warnings[0].fix.is_none());
+    }
+
+    #[test]
+    fn test_dg003_read_error() {
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            let dir = tempdir().unwrap();
+            let p1 = dir.path().join("unreadable.md");
+            std::fs::write(&p1, "content").unwrap();
+
+            let mut perms = std::fs::metadata(&p1).unwrap().permissions();
+            perms.set_mode(0o000);
+            std::fs::set_permissions(&p1, perms).unwrap();
+
+            let idx = index_content("content", &p1);
+            let mut ws = WorkspaceIndex::new();
+            ws.insert_file(p1.clone(), idx.clone());
+
+            let rule = DG003;
+            let warnings = rule.cross_file_check(&p1, &idx, &ws).unwrap();
+            assert!(warnings.is_empty()); // Should just return empty on read error
+        }
+    }
+}

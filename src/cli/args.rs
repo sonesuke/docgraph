@@ -88,3 +88,66 @@ pub enum Commands {
     /// Start the language server
     Lsp,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use clap::CommandFactory;
+
+    #[test]
+    fn verify_cli() {
+        Cli::command().debug_assert();
+    }
+
+    #[test]
+    fn test_check_default() {
+        let cli = Cli::parse_from(["docgraph", "check"]);
+        match cli.command {
+            Commands::Check {
+                path,
+                json,
+                fix,
+                rule,
+            } => {
+                assert_eq!(path, PathBuf::from("."));
+                assert!(!json);
+                assert!(!fix);
+                assert!(rule.is_none());
+            }
+            _ => panic!("Expected Check command"),
+        }
+    }
+
+    #[test]
+    fn test_check_flags() {
+        let cli = Cli::parse_from([
+            "docgraph", "check", "./doc", "--json", "--fix", "--rule", "MD001",
+        ]);
+        match cli.command {
+            Commands::Check {
+                path,
+                json,
+                fix,
+                rule,
+            } => {
+                assert_eq!(path, PathBuf::from("./doc"));
+                assert!(json);
+                assert!(fix);
+                assert_eq!(rule, Some(vec!["MD001".to_string()]));
+            }
+            _ => panic!("Expected Check command"),
+        }
+    }
+
+    #[test]
+    fn test_list_query() {
+        let cli = Cli::parse_from(["docgraph", "list", "FR-*"]);
+        match cli.command {
+            Commands::List { query, path } => {
+                assert_eq!(query, "FR-*");
+                assert_eq!(path, PathBuf::from("."));
+            }
+            _ => panic!("Expected List command"),
+        }
+    }
+}
