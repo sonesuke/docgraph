@@ -16,7 +16,14 @@ Determine if the input `{{TARGET}}` is a TYPE_ID (e.g., FR, SYS, ACT, UC) or a N
    docgraph list "{{TARGET}}*"
    ```
 
-3. Analyze for MECE (Mutually Exclusive, Collectively Exhaustive)
+3. Verify Individual Elements (Iterative Case 2 Check)
+   For each element listed in Step 2, perform the **"Case 2: Input is a NODE_ID"** workflow.
+   - Run `docgraph describe {{NODE_ID}}`
+   - Check for SRP (Single Responsibility)
+   - Check for Realizability (Sufficient dependencies)
+   - Refine/Fix individual nodes *before* proceeding to holistic analysis.
+
+4. Analyze for MECE (Mutually Exclusive, Collectively Exhaustive)
    Verify if the listed elements accurately reflect the type definition shown in step 1.
    Check if the responsibilities among the elements with the same type are MECE.
    - Identify potential overlaps based on IDs and Titles.
@@ -29,7 +36,7 @@ Determine if the input `{{TARGET}}` is a TYPE_ID (e.g., FR, SYS, ACT, UC) or a N
    ID_C, ID_D
    ```
 
-4. Refine structure
+5. Refine structure
    If overlaps are found:
    1. **Explain the overlap**: Clearly state what is overlapping and how (e.g., "ID_A cover X, while ID_B covers X and Y").
    2. **Propose options**: Suggest ways to integrate them (e.g., "Option 1: Merge A into B", "Option 2: Delete A").
