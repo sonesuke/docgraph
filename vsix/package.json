@@ -39,17 +39,17 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
+    "lint": "biome check src",
+    "lint:fix": "biome check --write src",
+    "format": "biome format --write src",
     "package": "vsce package"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.3.13",
     "@types/node": "16.x",
     "@types/vscode": "^1.75.0",
-    "@typescript-eslint/eslint-plugin": "^5.53.0",
-    "@typescript-eslint/parser": "^5.53.0",
-    "eslint": "^8.34.0",
-    "typescript": "^4.9.5",
-    "@vscode/vsce": "^2.19.0"
+    "@vscode/vsce": "^2.19.0",
+    "typescript": "^4.9.5"
   },
   "dependencies": {
     "vscode-languageclient": "^8.1.0"
