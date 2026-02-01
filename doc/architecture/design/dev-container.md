@@ -8,21 +8,21 @@ We provide a standardized development environment using VS Code Dev Containers t
 
 - [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY)
 
-## 1. Environment Configuration
+**Realized by:** [MOD_DEV_CONTAINER (Dev Container Modules)](../view/module.md#MOD_DEV_CONTAINER)
 
 Defined in [.devcontainer/devcontainer.json](../../../.devcontainer/devcontainer.json).
 
-### Base Image
+## Base Image
 
 - **Image**: `mcr.microsoft.com/devcontainers/rust:1` (Debian Bullseye based).
 - **Toolchain**: Latest stable Rust.
 
-### Features
+## Features
 
 - `ghcr.io/devcontainers/features/node:1`: Required for VSIX (Extension) development.
 - `ghcr.io/devcontainers/features/github-cli:1`: For PR creation and management.
 
-### CLI Tools
+## CLI Tools
 
 The `postCreateCommand` installs additional tools:
 
@@ -31,7 +31,7 @@ The `postCreateCommand` installs additional tools:
   - Configured with docgraph plugin support
   - Aliased to skip permissions for container development
 
-### Extensions
+## Extensions
 
 The environment automatically installs:
 
@@ -41,7 +41,7 @@ The environment automatically installs:
 - `dbaeumer.vscode-eslint` (TS Linting)
 - `anthropic.claude-code` (AI Assistant)
 
-## 2. Coding Standards
+## Coding Standards
 
 - **Formatting**: `cargo fmt` (Rust), `npm run format` (VSIX).
 - **Linting**: `cargo clippy` (Rust), `npm run lint` (VSIX).

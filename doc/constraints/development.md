@@ -16,8 +16,7 @@ This project is developed by a single individual. To maintain quality and veloci
 
 Enforced by:
 
-- [NFR_CI_AUTO (Automated Validation)](../requirements/non-functional/automation.md#NFR_CI_AUTO)
-- [CC_CICD (CI/CD Pipeline)](../architecture/design/cicd.md#CC_CICD)
+- [FR_DEV_CI (Automated Validation)](../requirements/functional/development.md#FR_DEV_CI)
 
 <a id="CON_EXT"></a>
 

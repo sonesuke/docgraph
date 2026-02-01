@@ -1,86 +1,140 @@
 # Functional Requirements: CLI
 
+<a id="FR_CLI_LINT"></a>
+
+## Lint Command
+
+The `lint` command shall parse all Markdown files in the target directory, build the graph, and report any violations of validation rules.
+
+**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+
 <a id="FR_CLI_GRAPH"></a>
 
-## Graph Generation
+## Graph Command
 
-The system SHALL generate a JSON representation of the document graph, including all nodes and edges.
+The `graph` command shall output the graph structure in JSON format.
 
 **Realized by:**
 
 - [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
 - [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
 
-**Derives:**
-
-- [IF_CLI_GRAPH (Command: `graph`)](../interfaces/cli-specs.md#IF_CLI_GRAPH)
-
-<a id="FR_CLI_LSP"></a>
-
-## LSP Server
-
-The system SHALL provide a Language Server Protocol server to support interactive editing.
-
-**Realized by:**
-
-- [MOD_LSP (LSP Modules)](../../architecture/view/module.md#MOD_LSP)
-
-**Derives:**
-
-- [IF_CLI_LSP (Command: `lsp`)](../interfaces/cli-specs.md#IF_CLI_LSP)
-
-<a id="FR_CLI_TYPE"></a>
-
-## Type Information
-
-The system SHALL provide a command to list and describe available node types and their validation rules.
-
-**Realized by:**
-
-- [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
-
-**Derives:**
-
-- [IF_CLI_TYPE (Command: `type`)](../interfaces/cli-specs.md#IF_CLI_TYPE)
-
 <a id="FR_CLI_LIST"></a>
 
-## List Specifications
+## List Command
 
-The system SHALL provide a command to list spec blocks matching a query pattern.
+The `list` command shall output spec blocks matching a specific query with their names.
 
-**Realized by:**
+The query can contain wildcards (`*` and `?`). If no wildcards are present, the command performs a prefix match (forward match).
 
-- [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+**Usage:**
 
-**Derives:**
+```bash
+docgraph list "FR-*"
+docgraph list FR
+```
 
-- [IF_CLI_LIST (Command: `list`)](../interfaces/cli-specs.md#IF_CLI_LIST)
+**Output format:**
+
+```text
+ID : Description
+```
+
+**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
 
 <a id="FR_CLI_TRACE"></a>
 
-## Trace Relationships
+## Trace Command
 
-The system SHALL provide a command to trace and display paths between document nodes.
+The `trace` command shall find and display all paths between a start ID and target IDs matching a query.
 
-**Realized by:**
+**Usage:**
 
-- [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+```bash
+docgraph trace <from> <to> [--direction <down|up>]
+```
 
-**Derives:**
+- `<from>`: The starting SpecBlock ID.
+- `<to>`: Target ID or prefix (supports wildcards).
+- `--direction`:
+  - `down` (default): Follow outgoing links (references).
+  - `up`: Follow incoming links (reverse references).
 
-- [IF_CLI_TRACE (Command: `trace`)](../interfaces/cli-specs.md#IF_CLI_TRACE)
+**Output format:**
+
+```text
+ID1 -> ID2 -> ID3
+```
+
+(Using `<-` for `up` direction)
+
+**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
 
 <a id="FR_CLI_DESCRIBE"></a>
 
-## Describe Node
+## Describe Command
 
-The system SHALL provide a command to show detailed information and relationships of a specific node.
+The `describe` command shall display the details and relationships of a specific SpecBlock.
 
-**Realized by:**
+**Usage:**
 
-- [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+```bash
+docgraph describe <id>
+```
 
-**Derives:**
+- `<id>`: The ID of the SpecBlock to describe.
 
-- [IF_CLI_DESCRIBE (Command: `describe`)](../interfaces/cli-specs.md#IF_CLI_DESCRIBE)
+**Output format:**
+
+```text
+ID: Name
+ID references to
+target_id: target_name
+...
+
+The following IDs are depends on ID
+source_id: source_name
+source_id: source_name
+...
+```
+
+**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+
+<a id="FR_CLI_TYPE"></a>
+
+## Type Command
+
+The `type` command shall display node type information from the configuration file.
+
+**Usage:**
+
+```bash
+docgraph type             # List all node types with descriptions
+docgraph type <type-id>   # Show type details and rules
+```
+
+- Without arguments: Lists all defined node types with their descriptions.
+- With `<type-id>`: Shows the type's description and reference rules.
+
+**Output format (list):**
+
+```text
+Node Types:
+
+  FR - Functional Requirement
+  NFR - Non-Functional Requirement
+  ...
+```
+
+**Output format (details):**
+
+```text
+Type: FR
+Description: Functional Requirement
+
+Rules:
+  from [UC, CON] min=1 max=-: Functional requirements are derived from business needs
+  to [MOD] min=1 max=-: Each functional requirement must be realized by at least one module
+```
+
+**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)

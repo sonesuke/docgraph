@@ -147,9 +147,6 @@ fn check_strict_node_types() {
     crate::common::create_config(
         tmp.path(),
         r#"
-[graph]
-strict_node_types = true
-
 [node_types]
 TEST = { desc = "Test node" }
 "#,

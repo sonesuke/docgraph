@@ -2,9 +2,7 @@
 # Based on the Dependency Model specification
 
 [graph]
-strict_node_types = true
-strict_relations  = true
-doc_types = ["ACT", "DAT", "IF", "ADR", "CON"]
+doc_types = ["ACT", "DAT", "IF", "ADR"]
 ignore = ["README.md", "SECURITY.md", ".claude", ".claude-plugin", "docgraph-plugin"]
 
 [node_types]
@@ -15,7 +13,6 @@ NFR = { desc = "Non-Functional Requirement" }
 CON = { desc = "Constraint" }
 MOD = { desc = "Module" }
 
-
 # Architecture types (Core Dependency Model)
 CC  = { desc = "Cross-cutting Concept" }
 
@@ -25,12 +22,6 @@ DAT  = { desc = "Data Entity" }
 IF   = { desc = "Interface Specification" }
 ADR  = { desc = "Architecture Decision Record" }
 
-
-# Dependency Model (Derive Flow):
-# Business: ACT/IF <- UC
-# Spec: UC -> FR -> NFR/ERR, CON -> FR/NFR
-# Arch: FR/NFR -> BB, BB -> RT/DEP, ADR -> DEP, CC -> ADR
-
 # ========== Business Relations ==========
 
 [references.UC]
@@ -39,20 +30,20 @@ rules = [
   { dir = "to", targets = ["ACT"], min = 1, desc = "Use cases must involve at least one Actor" },
   { dir = "to", targets = ["IF"], min = 1, desc = "Use cases must interact through at least one Interface" },
   { dir = "to", targets = ["FR"], min = 1, desc = "Use cases must realize at least one Functional Requirement" },
-  { dir = "to", targets = ["UC", "NFR"], min = 0, desc = "Use cases may relate to other Use Cases or NFRs" }
+  { dir = "to", targets = ["NFR"], min = 0, desc = "Use cases may relate to NFRs" }
 ]
 
 [references.ACT]
 # Actor is derived from Use Case
 rules = [
-  { dir = "from", targets = ["UC"], min = 0, desc = "System actors are typically involved in at least one use case" }
+  { dir = "from", targets = ["UC"], min = 1, desc = "System actors must be involved in at least one use case" }
 ]
 
 [references.IF]
 # Interface is derived from Use Case and may reference other specs or data
 rules = [
   { dir = "from", targets = ["UC"], min = 0, desc = "Exposed interfaces should be justified by business use cases" },
-  { dir = "to", targets = ["IF", "FR", "DAT", "UC", "NFR"], min = 0, desc = "Interfaces may reference other specifications, requirements, data entities, or related business contexts" }
+  { dir = "to", targets = ["MOD"], min = 1, desc = "Interface specifications must be realized by at least one module (MOD) to ensure implementation" }
 ]
 
 # ========== Specification Relations ==========
@@ -61,39 +52,33 @@ rules = [
 # Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
 rules = [
   { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Functional requirements are derived from business needs (UC) or constraints (CON) to clarify their existence" },
-  { dir = "to", targets = ["MOD"], min = 1, desc = "Each functional requirement must be realized by at least one module (MOD) to ensure implementation" },
-  { dir = "to", targets = ["NFR", "CC", "IF", "DAT"], min = 0, desc = "Functional requirements may be traceable to non-functional requirements or defined data entities (DAT)" }
+  { dir = "to", targets = ["MOD", "NFR"], min = 1, desc = "Each functional requirement must be realized by at least one module (MOD) or derive a non-functional requirement (NFR) to ensure implementation" },
+  { dir = "to", targets = ["CC"], min = 0, desc = "Functional requirements may be reflected in cross-cutting concerns (CC)" }
 ]
 
 [references.NFR]
-# Non-Functional Requirement is derived from FR/Constraint and derives architecture
+# Non-Functional Requirement is derived from UC/FR/Constraint and derives architecture
 rules = [
-  { dir = "from", targets = ["FR", "CON"], min = 1, desc = "Non-functional requirements should be defined to meet specific functionality or overall constraints" },
-  { dir = "to", targets = ["CC", "MOD"], min = 0, desc = "Non-functional requirements must be reflected in cross-cutting concerns (CC) or implementation modules (MOD)" }
+  { dir = "from", targets = ["UC", "FR", "CON"], min = 1, desc = "Non-functional requirements should be defined to meet specific functionality, business needs, or overall constraints" },
+  { dir = "to", targets = ["CC", "MOD", "NFR"], min = 1, desc = "Non-functional requirements must be reflected in cross-cutting concerns (CC), implementation modules (MOD), or point to other NFRs" }
 ]
-
 
 [references.CON]
 # Constraint derives Functional/Non-Functional Requirements
 rules = [
-  { dir = "to", targets = ["FR", "NFR", "CC"], min = 1, desc = "Constraints must be embodied as specific functional or quality requirements for the system" }
+  { dir = "to", targets = ["FR", "NFR"], min = 1, desc = "Constraints must be embodied as specific functional or quality requirements for the system" }
 ]
 
 [references.CC]
-# Cross-cutting Concept is derived from Requirements and derives Decisions
+# Cross-cutting Concept is derived from Requirements and derives Decisions or is realized by Modules
 rules = [
-  { dir = "from", targets = ["NFR", "FR", "CC"], min = 0, desc = "Cross-cutting concerns are derived from requirements or parent concepts" },
-  { dir = "to", targets = ["ADR", "CC", "UC"], min = 0, desc = "Cross-cutting concerns lead to specific architectural decisions (ADR), sub-concepts, or use cases" }
-]
-
-[references.ADR]
-# Architecture Decision derives Deployment
-rules = [
-  { dir = "to", targets = ["DEP"], min = 0, desc = "Architectural decisions influence physical deployment configurations and implementation" }
+  { dir = "from", targets = ["NFR", "FR"], min = 0, desc = "Cross-cutting concerns are derived from requirements" },
+  { dir = "to", targets = ["ADR"], min = 0, desc = "Cross-cutting concerns lead to specific architectural decisions (ADR)" },
+  { dir = "to", targets = ["MOD"], min = 0, desc = "Cross-cutting concerns may be realized by specific modules (MOD)" }
 ]
 
 [references.MOD]
-# Module is derived from Functional Requirements
+# Module is derived from Functional Requirements, Non-Functional Requirements, Interfaces, or Cross-cutting Concepts
 rules = [
-  { dir = "from", targets = ["FR"], min = 1, desc = "Each module must be justified by at least one functional requirement to ensure traceability" }
+  { dir = "from", targets = ["FR", "NFR", "IF", "CC"], min = 1, desc = "Each module must be justified by at least one functional/non-functional requirement, interface, or cross-cutting concept to ensure traceability" }
 ]

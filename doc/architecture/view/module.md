@@ -65,3 +65,32 @@ The `lsp` module provides the Language Server Protocol implementation.
 The `vsix` module is a TypeScript-based project that acts as the LSP client.
 
 - **`src/extension.ts`**: Manages the lifecycle of the `docgraph` language server and registers editor-specific commands.
+
+<a id="MOD_CICD"></a>
+
+## CI/CD Modules
+
+The `.github` directory contains the CI/CD pipeline configuration.
+
+- **`.github/workflows/ci.yml`**: Automated validation and testing on pull requests.
+- **`.github/workflows/codeql.yml`**: Static application security testing.
+- **`.github/dependabot.yml`**: Automated dependency updates.
+
+<a id="MOD_PLUGIN"></a>
+
+## Claude Code Plugin
+
+The `docgraph-plugin` provides a Model Context Protocol (MCP) server for Claude Code.
+
+- **`skills/docgraph`**: Defines the tools and resources available to the AI agent.
+- **`.claude-plugin`**: Contains the plugin manifest and capability definitions.
+
+<a id="MOD_DEV_CONTAINER"></a>
+
+## Dev Container Modules
+
+The `.devcontainer` directory contains the development environment configuration.
+
+- **`devcontainer.json`**: Defines the container image, features, and tool installations.
+- **`postCreateCommand`**: Installs additional tools (docgraph, Claude Code).
+- **Extensions**: Pre-configured VS Code extensions for Rust, TOML, debugging, and AI assistance.

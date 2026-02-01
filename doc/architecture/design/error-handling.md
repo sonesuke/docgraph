@@ -1,6 +1,6 @@
 <a id="CC_ERROR_HANDLING"></a>
 
-# Cross-Cutting Concept: Error Handling Boundaries
+# Error Handling Boundaries
 
 ## Overview
 
