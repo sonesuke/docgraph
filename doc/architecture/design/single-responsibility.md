@@ -22,7 +22,7 @@ Each handler handles exactly one command or request:
 Each core module has a single, well-defined responsibility:
 
 - `parse.rs`: Extract structure from Markdown
-- `collect.rs`: Gather SpecBlocks across workspace
+- `collect.rs`: Gather Nodes across workspace
 - `lint.rs`: Orchestrate validation
 - `walk.rs`: Traverse file system
 - `config.rs`: Load and manage configuration

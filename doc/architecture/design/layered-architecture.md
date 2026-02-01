@@ -33,7 +33,7 @@ graph TD
 - `config.rs`: Configuration file loading and management
 - `walk.rs`: File system traversal
 - `rules/`: Validation rules (DG001-DG006)
-- `types.rs`: Common data types (`SpecBlock`, `Diagnostic`, etc.)
+- `types.rs`: Common data types (`Node`, `Diagnostic`, etc.)
 
 **Characteristics**:
 

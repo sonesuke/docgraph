@@ -22,7 +22,7 @@ CLI Handlers → Core ← LSP Handlers
 
 The `src/core/` module contains only:
 
-- Domain types (`SpecBlock`, `Diagnostic`, etc.)
+- Domain types (`Node`, `Diagnostic`, etc.)
 - Business logic (parsing, validation, graph building)
 - No references to CLI or LSP types
 
