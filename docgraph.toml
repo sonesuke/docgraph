@@ -83,7 +83,7 @@ rules = [
 # Cross-cutting Concept is derived from Requirements and derives Decisions
 rules = [
   { dir = "from", targets = ["NFR", "FR", "CC"], min = 0, desc = "Cross-cutting concerns are derived from requirements or parent concepts" },
-  { dir = "to", targets = ["ADR", "CC"], min = 0, desc = "Cross-cutting concerns lead to specific architectural decisions (ADR) or sub-concepts" }
+  { dir = "to", targets = ["ADR", "CC", "UC"], min = 0, desc = "Cross-cutting concerns lead to specific architectural decisions (ADR), sub-concepts, or use cases" }
 ]
 
 [references.ADR]

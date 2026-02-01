@@ -41,8 +41,9 @@ The environment automatically installs:
 
 If you prefer to develop locally without Docker:
 
-- **Rust**: `rustup update stable && rustup component add llvm-tools-preview`.
-- **Node.js**: v18+ (Required for `vsix`).
+If you prefer to develop locally without Docker:
+
+See [UC_INSTALL_MANUAL (Install Manual Setup)](../../usecases/install.md#UC_INSTALL_MANUAL)
 
 ## 3. Project Structure
 
