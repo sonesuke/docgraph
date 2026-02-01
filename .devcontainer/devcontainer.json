@@ -20,5 +20,5 @@
             ]
         }
     },
-    "postCreateCommand": "npm install --prefix vsix && cargo install --force cargo-audit cargo-llvm-cov && cargo check && cargo install --force --path ."
+    "postCreateCommand": "bash .devcontainer/post-create.sh"
 }
