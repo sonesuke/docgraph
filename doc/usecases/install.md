@@ -8,7 +8,6 @@ The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) sets up the development en
 
 - [IF_RUST_TOOLCHAIN (Rust Toolchain)](../requirements/interfaces/external.md#IF_RUST_TOOLCHAIN)
 - [IF_NODEJS (Node.js Environment)](../requirements/interfaces/external.md#IF_NODEJS)
-- [FR_INSTALL (Installation Requirements)](../requirements/functional/installation.md#FR_INSTALL)
 - [FR_INSTALL_MANUAL (Manual Installation)](../requirements/functional/installation.md#FR_INSTALL_MANUAL)
 
 ## Description

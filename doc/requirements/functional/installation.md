@@ -1,4 +1,3 @@
-<a id="FR_INSTALL"></a>
 
 # Installation Requirements
 
