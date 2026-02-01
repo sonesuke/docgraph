@@ -81,6 +81,10 @@ We use `cargo-llvm-cov` to measure test effectiveness.
 
 Every PR includes a `Cargo llvm-cov` step. We strive for high coverage in `core` logic.
 
+**Integration:**
+
+All testing layers are integrated into our [CC_CICD (CI/CD Pipeline)](./cicd.md#CC_CICD).
+
 ---
 
 <a id="CC_PERF_TESTING"></a>

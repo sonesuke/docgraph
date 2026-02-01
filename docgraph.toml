@@ -76,7 +76,7 @@ rules = [
 [references.CON]
 # Constraint derives Functional/Non-Functional Requirements
 rules = [
-  { dir = "to", targets = ["FR", "NFR"], min = 1, desc = "Constraints must be embodied as specific functional or quality requirements for the system" }
+  { dir = "to", targets = ["FR", "NFR", "CC"], min = 1, desc = "Constraints must be embodied as specific functional or quality requirements for the system" }
 ]
 
 [references.CC]

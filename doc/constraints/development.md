@@ -14,7 +14,10 @@ Enforced by: [NFR_PERF (High Performance)](../requirements/non-functional/perfor
 
 This project is developed by a single individual. To maintain quality and velocity with limited resources, automation is mandatory.
 
-Enforced by: [NFR_CI_AUTO (Automated Validation)](../requirements/non-functional/automation.md#NFR_CI_AUTO)
+Enforced by:
+
+- [NFR_CI_AUTO (Automated Validation)](../requirements/non-functional/automation.md#NFR_CI_AUTO)
+- [CC_CICD (CI/CD Pipeline)](../architecture/design/cicd.md#CC_CICD)
 
 <a id="CON_EXT"></a>
 
