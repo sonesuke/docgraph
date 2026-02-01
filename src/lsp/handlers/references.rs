@@ -56,7 +56,7 @@ mod tests {
         // Line 10: FR-01
         writeln!(temp_file, "<a id=\"UC-01\"></a>").unwrap();
         for _ in 0..8 {
-            writeln!(temp_file, "").unwrap();
+            writeln!(temp_file).unwrap();
         } // filler
         writeln!(temp_file, "<a id=\"FR-01\"></a>").unwrap();
         let path = temp_file.path().to_path_buf();
@@ -118,7 +118,7 @@ mod tests {
             // BUT `locate_id_at_position` (the input) DOES verify disk content to find "what ID am I on?".
 
             // So provided I click on FR-01 definition correctly, it should find references.
-            assert!(locs.len() >= 1);
+            assert!(!locs.is_empty());
             // Check for the edge
             assert!(locs.iter().any(|l| l.range.start.line == 1));
         } else {
@@ -139,7 +139,7 @@ mod tests {
 
         // ... filler ...
         for _ in 0..7 {
-            writeln!(temp_file, "").unwrap();
+            writeln!(temp_file).unwrap();
         }
         writeln!(temp_file, "<a id=\"FR-01\"></a>").unwrap();
         let path = temp_file.path().to_path_buf();
@@ -196,7 +196,7 @@ mod tests {
         let result = references(&blocks, &refs, params).unwrap();
         assert!(result.is_some());
         let locs = result.unwrap();
-        assert!(locs.len() >= 1);
+        assert!(!locs.is_empty());
     }
 
     #[test]
@@ -247,7 +247,7 @@ mod tests {
         let result = references(&blocks, &refs, params).unwrap();
         assert!(result.is_some());
         let locs = result.unwrap();
-        assert!(locs.len() >= 1);
+        assert!(!locs.is_empty());
         // Should find the standalone ref in path2
         assert!(
             locs.iter()

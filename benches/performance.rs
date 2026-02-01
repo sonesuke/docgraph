@@ -1,5 +1,5 @@
 use criterion::{Criterion, criterion_group, criterion_main};
-use std::fs::{self, File};
+use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use tempfile::tempdir;
@@ -84,7 +84,7 @@ fn bench_lint_1000_nodes(c: &mut Criterion) {
         b.iter(|| {
             let diagnostics = check_workspace(dir.path(), false, None, true, &config);
             // Just run the check, verify diagnostic count to ensure rules are running
-            assert!(diagnostics.len() > 0);
+            assert!(!diagnostics.is_empty());
         })
     });
 }

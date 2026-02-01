@@ -161,7 +161,7 @@ mod tests {
         #[cfg(windows)]
         let root = Path::new("C:\\");
 
-        let config = Config::load(root).unwrap();
+        let _config = Config::load(root).unwrap();
         // Since we run this in the project root, it falls back to the actual docgraph.toml.
         // The important part is that it didn't error.
         let cwd_config = Path::new("docgraph.toml");
