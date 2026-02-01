@@ -4,6 +4,8 @@
 
 We prioritize code quality and correctness through a multi-layered testing approach. This document outlines our strategies for Unit, E2E, Performance testing, and Code Coverage.
 
+**Derived from:** [ADR_TESTING (Context)](../../decisions/testing.md#ADR_TESTING)
+
 ---
 
 <a id="CC_UNIT_TESTING"></a>
@@ -66,6 +68,8 @@ tests/
 
 We use `cargo-llvm-cov` to measure test effectiveness.
 
+**Realized by**: [MOD_LSP (LSP Modules)](../../architecture/view/module.md#MOD_LSP)
+
 **Running Coverage Locally:**
 
 1. Install: `cargo install cargo-llvm-cov`
@@ -81,15 +85,13 @@ We use `cargo-llvm-cov` to measure test effectiveness.
 
 Every PR includes a `Cargo llvm-cov` step. We strive for high coverage in `core` logic.
 
-**Integration:**
-
-All testing layers are integrated into our [CC_CICD (CI/CD Pipeline)](./cicd.md#CC_CICD).
-
 ---
 
 <a id="CC_PERF_TESTING"></a>
 
 ## 4. Performance Testing
+
+**Derived from:** [ADR_PERF (Context)](../../decisions/perf.md#ADR_PERF)
 
 **Strategy:**
 
@@ -108,26 +110,3 @@ cargo bench
 
 - **Linting**: < 50ms for typical workspaces.
 - **Graph Generation**: Scalable to 1000+ nodes.
-
----
-
-<a id="CC_SAST"></a>
-
-## 5. Static Application Security Testing
-
-**Strategy:**
-
-We use GitHub CodeQL to automatically analyze the codebase for security vulnerabilities and coding errors.
-
-**Configuration:**
-
-- **Workflow**: `.github/workflows/codeql.yml`
-- **Languages**: Rust (analyzed via build)
-
-**Execution:**
-
-CodeQL runs on:
-
-- Push to main behavior
-- Pull Requests targeting main
-- Schedule (Weekly)

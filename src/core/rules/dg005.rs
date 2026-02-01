@@ -6,10 +6,6 @@ use crate::core::types::{Diagnostic, Range, Severity, SpecBlock};
 pub fn check_strict_node_types(blocks: &[SpecBlock], config: &Config) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
 
-    if !config.graph.strict_node_types {
-        return diagnostics;
-    }
-
     for block in blocks {
         let s: &str = block.id.as_str();
         let prefix = s.split(['-', '_']).next().unwrap_or(s);
@@ -59,7 +55,6 @@ mod tests {
     #[test]
     fn test_dg005_unknown_prefix() {
         let mut config = Config::default();
-        config.graph.strict_node_types = true;
         config
             .node_types
             .insert("REQ".to_string(), Default::default());
@@ -74,23 +69,11 @@ mod tests {
     #[test]
     fn test_dg005_known_prefix() {
         let mut config = Config::default();
-        config.graph.strict_node_types = true;
         config
             .node_types
             .insert("REQ".to_string(), Default::default());
 
         let blocks = vec![create_block("REQ-01")];
-        let diags = check_strict_node_types(&blocks, &config);
-
-        assert!(diags.is_empty());
-    }
-
-    #[test]
-    fn test_dg005_disabled() {
-        let mut config = Config::default();
-        config.graph.strict_node_types = false; // default
-
-        let blocks = vec![create_block("UNK-01")];
         let diags = check_strict_node_types(&blocks, &config);
 
         assert!(diags.is_empty());

@@ -18,5 +18,3 @@ Realized by:
 - [CC_UNIT_TESTING (1. Unit Testing Standards)](../../architecture/design/testing.md#CC_UNIT_TESTING)
 - [CC_E2E_TESTING (2. E2E Testing Design)](../../architecture/design/testing.md#CC_E2E_TESTING)
 - [CC_COVERAGE (3. Code Coverage Standards)](../../architecture/design/testing.md#CC_COVERAGE)
-- [CC_SAST (5. Static Application Security Testing)](../../architecture/design/testing.md#CC_SAST)
-- [ADR_E2E_TESTING (Testing Strategy for CLI and LSP)](../../decisions/e2e-testing.md#ADR_E2E_TESTING)

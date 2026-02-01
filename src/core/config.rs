@@ -23,10 +23,6 @@ pub struct NodeType {
 #[derive(Debug, Deserialize, Default, Clone)]
 pub struct GraphConfig {
     #[serde(default)]
-    pub strict_node_types: bool,
-    #[serde(default)]
-    pub strict_relations: bool,
-    #[serde(default)]
     pub doc_types: Vec<String>,
     #[serde(default)]
     pub ignore: Vec<String>,
@@ -105,13 +101,10 @@ mod tests {
         let dir = tempdir().unwrap();
         let config_path = dir.path().join("docgraph.toml");
         let mut file = File::create(&config_path).unwrap();
-        // Use single [graph] block
-        writeln!(file, "[graph]\nlimit = 10\nstrict_node_types = true").unwrap();
         // Add node type to check desc
         writeln!(file, "[node_types.REQ]\ndesc = \"Requirement\"").unwrap();
 
         let config = Config::load(dir.path()).unwrap();
-        assert!(config.graph.strict_node_types);
         assert_eq!(config.node_types["REQ"].desc, "Requirement");
     }
 
@@ -123,10 +116,10 @@ mod tests {
 
         let config_path = dir.path().join("docgraph.toml");
         let mut file = File::create(&config_path).unwrap();
-        writeln!(file, "[graph]\nstrict_relations = true").unwrap();
+        writeln!(file, "[node_types.REQ]\ndesc = \"Requirement\"").unwrap();
 
         let config = Config::load(&subdir).unwrap();
-        assert!(config.graph.strict_relations);
+        assert_eq!(config.node_types["REQ"].desc, "Requirement");
     }
 
     #[test]
@@ -145,7 +138,7 @@ mod tests {
         let dir = tempdir().unwrap();
         let config_path = dir.path().join("docgraph.toml");
         let mut file = File::create(&config_path).unwrap();
-        writeln!(file, "[graph]\nstrict_node_types = true").unwrap();
+        writeln!(file, "[node_types.REQ]\ndesc = \"Requirement\"").unwrap();
 
         // Pass the FILE path, not dir
         // The code `start_dir = if path.is_dir() { ... } else { path.parent() ... }`
@@ -154,7 +147,7 @@ mod tests {
         let file_path = dir.path().join("file.md");
         let config = Config::load(&file_path).unwrap();
 
-        assert!(config.graph.strict_node_types);
+        assert_eq!(config.node_types["REQ"].desc, "Requirement");
     }
 
     #[test]
@@ -169,17 +162,11 @@ mod tests {
         let root = Path::new("C:\\");
 
         let config = Config::load(root).unwrap();
-        // Since we run this in the project root, it falls back to the actual docgraph.toml
-        // which might have strict_node_types = true or false.
+        // Since we run this in the project root, it falls back to the actual docgraph.toml.
         // The important part is that it didn't error.
-        // And the failure showed it was true, so let's just assert that it loaded *something*.
-        // If we want to be sure it's the project config:
         let cwd_config = Path::new("docgraph.toml");
         if cwd_config.exists() {
-            // It loaded the CWD config
-            // We just verify that we are in a valid state
-        } else {
-            assert!(!config.graph.strict_node_types);
+            // It loaded the CWD config - just verify it didn't error
         }
     }
     #[test]

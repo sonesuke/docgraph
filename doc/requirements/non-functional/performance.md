@@ -13,5 +13,4 @@ The system must be highly performant to ensure a smooth user experience, even wi
 
 **Realized by:**
 
-- [CON_PERF (High Performance)](../../constraints/development.md#CON_PERF)
 - [CC_PERF_TESTING (4. Performance Testing)](../../architecture/design/testing.md#CC_PERF_TESTING)

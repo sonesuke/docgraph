@@ -154,33 +154,31 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                 }
             }
 
-            // if strict_relations is true, all outgoing edges must be in allowed_outgoing_types
-            if config.graph.strict_relations {
-                for edge in &block.edges {
-                    let target_type = edge.id.split(['-', '_']).next().unwrap_or(&edge.id);
+            // All outgoing edges must be in allowed_outgoing_types
+            for edge in &block.edges {
+                let target_type = edge.id.split(['-', '_']).next().unwrap_or(&edge.id);
 
-                    // Always allow documentation types
-                    if config.graph.doc_types.contains(&target_type.to_string()) {
-                        continue;
-                    }
+                // Always allow documentation types
+                if config.graph.doc_types.contains(&target_type.to_string()) {
+                    continue;
+                }
 
-                    if !allowed_outgoing_types.contains(target_type) {
-                        diagnostics.push(Diagnostic {
-                            severity: Severity::Error,
-                            code: "DG006".to_string(),
-                            message: format!(
-                                "Node '{}' (type {}) is not allowed to reference '{}' (type {}). Allowed target types: {:?}.",
-                                block.id, prefix, edge.id, target_type, allowed_outgoing_types
-                            ),
-                            path: block.file_path.clone(),
-                            range: Range {
-                                start_line: block.line_start,
-                                start_col: 1,
-                                end_line: block.line_start,
-                                end_col: 1,
-                            },
-                        });
-                    }
+                if !allowed_outgoing_types.contains(target_type) {
+                    diagnostics.push(Diagnostic {
+                        severity: Severity::Error,
+                        code: "DG006".to_string(),
+                        message: format!(
+                            "Node '{}' (type {}) is not allowed to reference '{}' (type {}). Allowed target types: {:?}.",
+                            block.id, prefix, edge.id, target_type, allowed_outgoing_types
+                        ),
+                        path: block.file_path.clone(),
+                        range: Range {
+                            start_line: block.line_start,
+                            start_col: 1,
+                            end_line: block.line_start,
+                            end_col: 1,
+                        },
+                    });
                 }
             }
         }
@@ -219,7 +217,6 @@ mod tests {
     #[test]
     fn test_dg006_strict_relations_invalid() {
         let mut config = Config::default();
-        config.graph.strict_relations = true;
 
         let mut ref_config = ReferenceConfig::default();
         ref_config.rules.push(RuleConfig {
@@ -243,7 +240,6 @@ mod tests {
     #[test]
     fn test_dg006_strict_relations_valid() {
         let mut config = Config::default();
-        config.graph.strict_relations = true;
 
         let mut ref_config = ReferenceConfig::default();
         ref_config.rules.push(RuleConfig {
@@ -266,7 +262,6 @@ mod tests {
     #[test]
     fn test_dg006_min_incoming() {
         let mut config = Config::default();
-        config.graph.strict_relations = false;
 
         let mut ref_config = ReferenceConfig::default();
         ref_config.rules.push(RuleConfig {
@@ -302,7 +297,6 @@ mod tests {
     #[test]
     fn test_dg006_max_incoming() {
         let mut config = Config::default();
-        config.graph.strict_relations = false;
 
         let mut ref_config = ReferenceConfig::default();
         ref_config.rules.push(RuleConfig {
