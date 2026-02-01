@@ -8,13 +8,16 @@ The project uses GitHub Actions for Continuous Integration and Deployment.
 
 ### 1. Verification (On Pull Request)
 
-Triggered on every PR targeting `main`.
+Triggered on every PR targeting `main`. Defined in [.github/workflows/ci.yml](../../../.github/workflows/ci.yml).
 
-- **Check & Build**: `cargo build` and `cargo check`.
-- **Linting**: `cargo clippy` and `cargo fmt`.
-- **Testing**: `cargo test` (Unit/Integration) and `tests/lsp` (E2E).
-- **Code Coverage**: `cargo llvm-cov` generates report.
-- **Security**: CodeQL analysis (SAST) and `cargo audit`.
+- **Lint & Security**:
+  - `cargo fmt` and `cargo clippy`.
+  - `cargo audit` (Dependency Security).
+  - Biome Lint for VSIX (`npm run lint`).
+- **Test & Coverage**:
+  - `cargo llvm-cov` (Unit/Integration coverage).
+  - `docgraph check ./doc` (Integration test).
+- **CodeQL**: SAST analysis (via [.github/workflows/codeql.yml](../../../.github/workflows/codeql.yml)).
 
 ### 2. Deployment (On Push to Main)
 
