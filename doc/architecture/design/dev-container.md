@@ -1,79 +1,57 @@
 <a id="CC_DEV_ENV"></a>
 
-# Developer Guide
+# Development Environment
 
-Welcome to the `docgraph` project! This guide is designed to help you get up to speed with the codebase and start contributing.
+We provide a standardized development environment using VS Code Dev Containers to ensure consistency across all contributors.
 
-## Quick Start
+## 1. Environment Configuration
 
-### 1. Environment Setup
+Defined in [.devcontainer/devcontainer.json](../../../.devcontainer/devcontainer.json).
 
-#### Prerequisites
+### Base Image
 
-- [Rust Toolchain](https://rustup.rs/) (latest stable)
-- [Node.js](https://nodejs.org/) (for VSIX development)
-- [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) (Optional)
+- **Image**: `mcr.microsoft.com/devcontainers/rust:1` (Debian Bullseye based).
+- **Toolchain**: Latest stable Rust.
 
-#### Quick Start (Dev Container)
+### Features
 
-Since this project requires both Rust, Node.js, and specific VS Code extensions, we highly recommend using the provided Dev Container.
+- `ghcr.io/devcontainers/features/node:1`: Required for VSIX (Extension) development.
+- `ghcr.io/devcontainers/features/github-cli:1`: For PR creation and management.
 
-1. Open the project in VS Code.
-2. Click "Reopen in Container" when prompted.
-3. The environment will automatically install all dependencies (`cargo check`, `npm install`).
+### Extensions
 
-#### Manual Setup
+The environment automatically installs:
 
-`docgraph` is built with Rust. Ensure you have the latest stable toolchain installed:
+- `rust-lang.rust-analyzer` (Language Server)
+- `tamasfe.even-better-toml` (Config Support)
+- `vadimcn.vscode-lldb` (Debugging)
+- `dbaeumer.vscode-eslint` (TS Linting)
 
-```bash
-rustup update stable
-rustup component add clippy rustfmt llvm-tools-preview
-```
+## 2. Usage Guide
 
-### 2. Building the Project
+### Starting the Container
 
-Clone the repository ∏and build using cargo:
+1. Open `docgraph` project in VS Code.
+2. Click **"Reopen in Container"** when prompted, or run the command from the palette.
+3. Wait for initialization. The `postCreateCommand` will automatically run:
+   - `npm install` (in `vsix/`)
+   - `cargo check`
 
-```bash
-git clone https://github.com/sonesuke/docgraph.git
-cd docgraph
-cargo build
-```
+### Manual Setup (Alternative)
 
-### 3. Running docgraph
+If you prefer to develop locally without Docker:
 
-You can run the CLI directly using `cargo run`:
+- **Rust**: `rustup update stable && rustup component add llvm-tools-preview`.
+- **Node.js**: v18+ (Required for `vsix`).
 
-```bash
-cargo run -- check ./doc
-```
+## 3. Project Structure
 
-## Project Structure
+- **`src/`**: Core logic (`core`), CLI (`cli`), and LSP (`lsp`).
+- **`vsix/`**: VS Code Extension (TypeScript) acting as LSP Client.
+- **`doc/`**: Documentation Graph.
 
-The project is split into several main areas:
+## 4. Coding Standards
 
-- **`src/`**: The core logic and CLI implementation.
-  - **`core/`**: Graph building, parsing, and validation rules.
-  - **`cli/`**: CLI command definitions and output formatting.
-  - **`lsp/`**: Language Server Protocol implementation.
-- **`doc/`**: Documentation (this is where you are!).
-
-## Coding Standards
-
-- **Formatting**: Always run `cargo fmt` before committing.
-- **Linting**: We use Clippy to ensure idiomatic code. The CI will fail if there are any warnings.
-
-  ```bash
-  cargo clippy -- -D warnings
-  ```
-
-- **Security**: Be mindful of dependency security. CI includes a `cargo audit` step.
-
----
-
-For a deeper understanding of the system architecture, see:
-
-- [Layered Architecture](./layered-architecture.md)
-- [Module View](../view/module.md)
-- [Testing & Coverage](./testing.md)
+- **Formatting**: `cargo fmt` (Rust), `npm run format` (VSIX).
+- **Linting**: `cargo clippy` (Rust), `npm run lint` (VSIX).
+- **Security**: `cargo audit`.
