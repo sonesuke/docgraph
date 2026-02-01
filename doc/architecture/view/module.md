@@ -65,4 +65,3 @@ The `lsp` module provides the Language Server Protocol implementation.
 The `vsix` module is a TypeScript-based project that acts as the LSP client.
 
 - **`src/extension.ts`**: Manages the lifecycle of the `docgraph` language server and registers editor-specific commands.
-

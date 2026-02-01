@@ -15,7 +15,7 @@ rustup component add clippy rustfmt llvm-tools-preview
 
 ### 2. Building the Project
 
-Clone the repository and build using cargo:
+Clone the repository ∏and build using cargo:
 
 ```bash
 git clone https://github.com/sonesuke/docgraph.git
