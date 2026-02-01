@@ -77,7 +77,7 @@ References: [REQ-001](a.md#REQ-001)
     let loc = if res.is_array() {
         res.as_array()
             .unwrap()
-            .get(0)
+            .first()
             .expect("Empty definition result")
     } else {
         res

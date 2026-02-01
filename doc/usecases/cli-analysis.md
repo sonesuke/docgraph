@@ -11,8 +11,8 @@ The [ACT_USER (User)](../actors/users.md#ACT_USER) and [ACT_CI (CI System)](../a
 - **Linting**: Checks for errors in the document graph (duplicate IDs, missing references).
 - **Automated Checks**: CI automatically verifies the document graph on every push.
 - **Graph Generation**: Generates a JSON representation of the document graph.
-- **Search**: Searches for spec blocks by ID or wildcards.
-- **Trace**: Visualizes paths between spec blocks to understand dependencies.
+- **Search**: Searches for nodes by ID or wildcards.
+- **Trace**: Visualizes paths between nodes to understand dependencies.
 - **Describe**: Inspects detailed relationships of a specific block.
 
 **Derives:**

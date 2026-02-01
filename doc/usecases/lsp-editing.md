@@ -10,7 +10,7 @@ The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) uses a compatible editor t
 
 - **Navigation**: Jump to definition and find references.
 - **Verification**: Real-time linting diagnostics.
-- **Refactoring**: Workspace-wide renaming of SpecBlock IDs.
+- **Refactoring**: Workspace-wide renaming of Node IDs.
 
 **Derives:**
 

@@ -29,7 +29,7 @@ rules = [
 | Attribute | Type | Description |
 | :--- | :--- | :--- |
 | `doc_types` | `List<String>` | Node types that are exempt from strict relation checks. |
-| `[node_types]` | `Table` | Defines allowed prefixes for spec blocks. |
+| `[node_types]` | `Table` | Defines allowed prefixes for nodes. |
 | `[references]` | `Table` | Defines constraints on how different node types can connect. |
 
 **Note:** Strict node type and strict relation validation are always enabled and cannot be disabled.
@@ -104,3 +104,19 @@ The distribution platform for Visual Studio Code extensions.
 The user interface of Visual Studio Code, including commands, views, and settings.
 
 **Realized by**: [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
+
+---
+
+<a id="IF_GITHUB_RELEASES"></a>
+
+## GitHub Releases Interface
+
+The system interacts with GitHub Releases to distribute pre-compiled binaries and extension packages.
+
+**Realized by**: [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+
+### Specifications
+
+1. **Host**: `github.com`
+2. **Access**: Public anonymous access for downloads.
+3. **Format**: Compressed archives (`.tar.gz`, `.zip`) and VSIX packages.

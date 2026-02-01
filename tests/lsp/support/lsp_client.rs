@@ -43,26 +43,24 @@ impl LspClient {
                     if buffer == "\r\n" {
                         break;
                     }
-                    if buffer.starts_with("Content-Length: ") {
-                        if let Ok(len) = buffer
-                            .trim_start_matches("Content-Length: ")
-                            .trim()
-                            .parse::<usize>()
-                        {
-                            size = Some(len);
-                        }
+                    if let Some(len) = buffer
+                        .strip_prefix("Content-Length: ")
+                        .and_then(|s| s.trim().parse::<usize>().ok())
+                    {
+                        size = Some(len);
                     }
                     buffer.clear();
                 }
 
                 if let Some(len) = size {
                     let mut body_buf = vec![0; len];
-                    if reader.read_exact(&mut body_buf).is_ok() {
-                        if let Ok(val) = serde_json::from_slice::<Value>(&body_buf) {
-                            // In a real async test harness, we might block here if channel full,
-                            // but for tests it is usually fine.
-                            let _ = reader_tx.blocking_send(val);
-                        }
+                    if let (Ok(()), Ok(val)) = (
+                        reader.read_exact(&mut body_buf),
+                        serde_json::from_slice::<Value>(&body_buf),
+                    ) {
+                        // In a real async test harness, we might block here if channel full,
+                        // but for tests it is usually fine.
+                        let _ = reader_tx.blocking_send(val);
                     }
                 } else {
                     // EOF or broken pipe

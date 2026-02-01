@@ -23,7 +23,7 @@ The `graph` command shall output the graph structure in JSON format.
 
 ## List Command
 
-The `list` command shall output spec blocks matching a specific query with their names.
+The `list` command shall output nodes matching a specific query with their names.
 
 The query can contain wildcards (`*` and `?`). If no wildcards are present, the command performs a prefix match (forward match).
 
@@ -54,7 +54,7 @@ The `trace` command shall find and display all paths between a start ID and targ
 docgraph trace <from> <to> [--direction <down|up>]
 ```
 
-- `<from>`: The starting SpecBlock ID.
+- `<from>`: The starting Node ID.
 - `<to>`: Target ID or prefix (supports wildcards).
 - `--direction`:
   - `down` (default): Follow outgoing links (references).
@@ -74,7 +74,7 @@ ID1 -> ID2 -> ID3
 
 ## Describe Command
 
-The `describe` command shall display the details and relationships of a specific SpecBlock.
+The `describe` command shall display the details and relationships of a specific Node.
 
 **Usage:**
 
@@ -82,7 +82,7 @@ The `describe` command shall display the details and relationships of a specific
 docgraph describe <id>
 ```
 
-- `<id>`: The ID of the SpecBlock to describe.
+- `<id>`: The ID of the Node to describe.
 
 **Output format:**
 

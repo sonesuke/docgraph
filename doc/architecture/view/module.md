@@ -36,9 +36,9 @@ graph TD
 
 The `core` module contains the fundamental logic for analyzing documentation graphs.
 
-- **`types`**: Defines the data structures for `SpecBlock`, `RefUse`, and `Graph`.
+- **`types`**: Defines the data structures for `Node`, `RefUse`, and `Graph`.
 - **`parse`**: Responsible for extracting `{document}` blocks and HTML anchors from Markdown files.
-- **`collect`**: Orchestrates the scanning of directories and aggregation of spec blocks.
+- **`collect`**: Orchestrates the scanning of directories and aggregation of nodes.
 - **`lint`**: Implements the validation engine and individual rules (DG001-DG006).
 
 <a id="MOD_CLI"></a>

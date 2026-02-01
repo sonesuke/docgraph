@@ -17,6 +17,33 @@ The developer ensures their local environment meets the specifications defined i
 
 ---
 
+<a id="UC_INSTALL_BINARY"></a>
+
+## Install via Binary Script
+
+The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) installs the `docgraph` CLI binary using automated scripts for their platform.
+
+### Procedure
+
+Run the appropriate script for your platform:
+
+**macOS / Linux:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sonesuke/docgraph/main/install.sh | bash
+```
+
+**Windows (PowerShell):**
+
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/sonesuke/docgraph/main/install.ps1 | iex"
+```
+
+**Derives:**
+
+- [IF_GITHUB_RELEASES (GitHub Releases Interface)](../requirements/interfaces/interfaces.md#IF_GITHUB_RELEASES)
+- [FR_INSTALL_BINARY (Binary Installation Support)](../requirements/functional/installation.md#FR_INSTALL_BINARY)
+
 <a id="UC_CLAUDE_INSTALL"></a>
 
 ## Install Claude Plugin
@@ -62,6 +89,13 @@ After adding the marketplace, install the Docgraph plugin by running:
 ## Install VS Code Extension
 
 The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) installs the `docgraph` VS Code extension to enable rich editing features for Markdown-based specifications.
+
+### Procedure
+
+1. Download the latest `docgraph.vsix` from the [GitHub Releases](https://github.com/sonesuke/docgraph/releases).
+2. Install it in VS Code:
+   - Run `Extensions: Install from VSIX...` from the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`).
+   - Or run from command line: `code --install-extension docgraph.vsix`
 
 **Derives:**
 

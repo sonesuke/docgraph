@@ -6,7 +6,7 @@ The `docgraph` language server provides interactive features for IDEs (e.g., VS 
 
 ## Go to Definition
 
-The server supports jumping to the source of a SpecBlock by clicking on its ID in a link.
+The server supports jumping to the source of a Node by clicking on its ID in a link.
 
 **Capability**: `definitionProvider`
 
@@ -18,11 +18,11 @@ The server supports jumping to the source of a SpecBlock by clicking on its ID i
 
 ## Hover Information
 
-The server displays the SpecBlock's description and metadata when hovering over an ID or link.
+The server displays the Node's description and metadata when hovering over an ID or link.
 
 **Capability**: `hoverProvider`
 
-**Behavior**: Shows the human-readable name and reference counts (incoming/outgoing) for the SpecBlock under the cursor.
+**Behavior**: Shows the human-readable name and reference counts (incoming/outgoing) for the Node under the cursor.
 
 **Realized by**: [MOD_LSP (LSP Modules)](../../architecture/view/module.md#MOD_LSP)
 
@@ -30,13 +30,13 @@ The server displays the SpecBlock's description and metadata when hovering over 
 
 ## Auto-completion
 
-The server suggests existing SpecBlock IDs when typing links.
+The server suggests existing Node IDs when typing links.
 
 **Capability**: `completionProvider`
 
 **Triggers**: `[` (link start), `#` (fragment start), `(` (path start)
 
-**Behavior**: Returns a list of all SpecBlock IDs defined in the workspace.
+**Behavior**: Returns a list of all Node IDs defined in the workspace.
 
 **Realized by**: [MOD_LSP (LSP Modules)](../../architecture/view/module.md#MOD_LSP)
 
@@ -48,7 +48,7 @@ The server searches all Markdown files for the ID string at the current cursor p
 
 **Capability**: `referencesProvider`
 
-**Behavior**: Lists all occurrences of a SpecBlock ID throughout the workspace.
+**Behavior**: Lists all occurrences of a Node ID throughout the workspace.
 
 **Realized by**: [MOD_LSP (LSP Modules)](../../architecture/view/module.md#MOD_LSP)
 
@@ -56,7 +56,7 @@ The server searches all Markdown files for the ID string at the current cursor p
 
 ## Symbol Rename
 
-The server renames a SpecBlock ID and automatically updates all its references across all files.
+The server renames a Node ID and automatically updates all its references across all files.
 
 **Capability**: `renameProvider`
 
@@ -77,8 +77,8 @@ The server explores incoming and outgoing relationship chains in a tree view for
 
 **Behavior**:
 
-- **Incoming Calls**: Shows which SpecBlocks reference the current block.
-- **Outgoing Calls**: Shows which SpecBlocks are referenced by the current block.
+- **Incoming Calls**: Shows which Nodes reference the current block.
+- **Outgoing Calls**: Shows which Nodes are referenced by the current block.
 
 **Realized by**: [MOD_LSP (LSP Modules)](../../architecture/view/module.md#MOD_LSP)
 
@@ -86,11 +86,11 @@ The server explores incoming and outgoing relationship chains in a tree view for
 
 ## Document Symbol
 
-The server lists all spec blocks in the current document for navigation.
+The server lists all nodes in the current document for navigation.
 
 **Capability**: `documentSymbolProvider`
 
-**Behavior**: Returns a list of all SpecBlocks defined in the current document. This populates the "Outline" view in most editors.
+**Behavior**: Returns a list of all Nodes defined in the current document. This populates the "Outline" view in most editors.
 
 **Realized by**: [MOD_LSP (LSP Modules)](../../architecture/view/module.md#MOD_LSP)
 
@@ -98,11 +98,11 @@ The server lists all spec blocks in the current document for navigation.
 
 ## Workspace Symbol
 
-The server allows searching for SpecBlocks across the entire workspace.
+The server allows searching for Nodes across the entire workspace.
 
 **Capability**: `workspaceSymbolProvider`
 
-**Behavior**: Allows searching for SpecBlocks across the entire workspace by matching their ID or human-readable name.
+**Behavior**: Allows searching for Nodes across the entire workspace by matching their ID or human-readable name.
 
 **Realized by**: [MOD_LSP (LSP Modules)](../../architecture/view/module.md#MOD_LSP)
 

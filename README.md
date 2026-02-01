@@ -19,85 +19,29 @@ For a comprehensive guide on concepts, architecture, and specifications, please 
 - **AI-Agent Ready**: Built-in support for GraphRAG knowledge construction. AI Agents can consume `docgraph` outputs to assist in documentation and development workflows.
 - **Modern IDE Integration**: A dedicated VS Code plugin with full LSP support.
 
-## Quick Start: Claude Code (AI-First)
+## Getting Started
 
-The fastest way to start using `docgraph` is via Claude Desktop.
+Follow these steps to set up `docgraph` for your project.
 
-### 1. Install the Plugin
+### Step 1: Install CLI Binary
 
-In a Claude chat, run the following commands to add the official marketplace and install the plugin:
+`docgraph` requires the CLI binary to be installed on your system for all use cases (CLI, AI, and IDE).
 
-```text
-/plugin marketplace add sonesuke/docgraph
-/plugin install docgraph-plugin@docgraph-claude-plugins
-```
-
-### 2. Use with AI Agent
-
-Once installed, the AI agent can automatically build a knowledge graph of your project and assist you:
-
-> "Building knowledge graph... Done. Found 15 spec blocks and 24 relationships."
->
-> **You**: "What are the dependencies for UC_WRITE?"
-> **Claude**: "UC_WRITE depends on ACT_USER and is realized by IF_CLI_LINT."
-
-## Quick Start: CLI
-
-For local development and CI/CD integration.
-
-### 1. Installation
-
+**macOS / Linux:**
 ```bash
-cargo install --path .
+curl -fsSL https://raw.githubusercontent.com/sonesuke/docgraph/main/install.sh | bash
 ```
 
-### 2. Define a SpecBlock
-
-In any Markdown file, define an ID followed by a heading:
-
-```markdown
-<a id="UC_LOGIN"></a>
-
-## User Login
-
-The system shall allow users to log in to their accounts ([FR_EMAIL_LOGIN](#FR_EMAIL_LOGIN)).
+**Windows (PowerShell):**
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/sonesuke/docgraph/main/install.ps1 | iex"
 ```
 
-### 3. Define a Relationship
+*Or build from source:* `cargo install --path .`
 
-Reference another ID using standard Markdown links. Functional Requirements must be realized by a Module:
+### Step 2: Configure (`docgraph.toml`)
 
-```markdown
-<a id="FR_EMAIL_LOGIN"></a>
-
-## Email Login Requirement
-
-Users must be able to log in using their email address.
-
-**Realized by:**
-
-- [MOD_CORE (Core Modules)](./doc/architecture/view/module.md#MOD_CORE)
-```
-
-### 4. Run Validation
-
-```bash
-docgraph check .
-```
-
-## CLI Commands
-
-- `check [path]`: Validate the graph for broken links and rule violations.
-- `fmt [path]`: Automatically fix fixable formatting and lint issues.
-- `list <query>`: Search for spec blocks matching a pattern (supports wildcards).
-- `trace <from> <to>`: Trace and visualize relationship paths between nodes.
-- `describe <id>`: Show detailed bidirectional relationships for a specific node.
-- `graph [path]`: Generate raw graph data as JSON for AI agents or external analysis.
-- `lsp`: Start the Language Server for interactive IDE support.
-
-## Configuration (`docgraph.toml`)
-
-`docgraph` is highly configurable. Enforce your documentation architecture by defining strict node types and relationship rules. Refer to the **[Configuration Specification](./doc/requirements/interfaces/config-specs.md)** for details.
+Create a `docgraph.toml` file in your project root to define your documentation architecture rules.
 
 ```toml
 [node_types]
@@ -110,10 +54,59 @@ rules = [
 ]
 ```
 
+### Step 3: Set Up Your Environment
+
+Choose how you want to interact with `docgraph`:
+
+#### Option A: Claude Code
+
+1. In a Claude chat, install the official plugin:
+   ```text
+   /plugin marketplace add sonesuke/docgraph
+   /plugin install docgraph-plugin@docgraph-claude-plugins
+   ```
+2. The AI agent will now automatically use the installed `docgraph` binary to analyze your documentation.
+
+   **Example Claude Interaction:**
+   > **You**: "Build a knowledge graph from the current directory."
+   > **Claude**: "Building knowledge graph... Done. Found 15 nodes and 24 relationships."
+   >
+   > **You**: "What are the dependencies for UC_WRITE?"
+   > **Claude**: "UC_WRITE depends on ACT_USER and is realized by IF_CLI_LINT."
+
+#### Option B: VS Code Extension
+
+1. Download `docgraph.vsix` from [GitHub Releases](https://github.com/sonesuke/docgraph/releases).
+2. Install via Command Palette (`Extensions: Install from VSIX...`) or CLI:
+   ```bash
+   code --install-extension docgraph.vsix
+   ```
+
+#### Option C: Standard CLI
+
+Use the commands directly in your terminal for validation and analysis:
+
+```bash
+# Validate the graph
+docgraph check .
+
+# Trace relationships
+docgraph trace UC_LOGIN FR_EMAIL_LOGIN
+```
+
+## CLI Commands Reference
+
+- `check [path]`: Validate the graph for broken links and rule violations.
+- `fmt [path]`: Automatically fix fixable formatting and lint issues.
+- `list <query>`: Search for nodes matching a pattern.
+- `trace <from> <to>`: Trace and visualize relationship paths.
+- `describe <id>`: Show bidirectional relationships for a specific node.
+- `lsp`: Start the Language Server for IDE support.
+
+
+
 ---
 
-## Contributing
+Contributions are welcome! If you're interested in helping improve `docgraph`, please check out our **[Module View](./doc/architecture/view/module.md)** for an overview of the technical structure.
 
-Contributions are welcome! If you're interested in helping improve `docgraph`, please check out our **[Developer Guide](./doc/architecture/view/guide.md)** for more information.
-
-Detailed technical documentation and use cases can be found in the **[doc/](./doc/overview.md)** directory.
+Detailed technical documentation and use cases can be found in the **[Documentation Overview](./doc/overview.md)**.
