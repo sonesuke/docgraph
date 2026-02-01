@@ -20,7 +20,7 @@ Docgraph is a specialized linter and graph generator for product documentation m
 | **Constraints** | System-wide limitations and technology choices. | [CON_PERF (High Performance)](./constraints/development.md#CON_PERF), [CON_SOLO (Solo Development)](./constraints/development.md#CON_SOLO), [CON_EXT (Extensibility)](./constraints/development.md#CON_EXT) |
 | **Specifications**| CLI behavior and interfaces. | [IF_CLI_LINT (Command: `lint`)](./requirements/interfaces/cli-specs.md#IF_CLI_LINT), [IF_LSP (Language Server Protocol (LSP) Support)](./requirements/interfaces/lsp-specs.md#IF_LSP), [IF_CONFIG (docgraph.toml Configuration)](./requirements/interfaces/config-specs.md#IF_CONFIG), [IF_CLAUDE_CODE (Interface: Claude Code Plugin)](./requirements/interfaces/claude-plugin.md#IF_CLAUDE_CODE) |
 | **Architecture**  | Design decisions and rationale. | [ADR_MARKDOWN_FORMAT (Choice of Plain Markdown and HTML Anchors)](./decisions/markdown-format.md#ADR_MARKDOWN_FORMAT), [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./decisions/layered-architecture.md#ADR_LAYERED_ARCH) |
-| **Development** | Onboarding guide and architecture for developers. | [Developer Guide](./architecture/design/developer-guide.md) |
+| **Development** | Onboarding guide and architecture for developers. | [CC_DEV_ENV (Developer Guide)](./architecture/design/dev-container.md#CC_DEV_ENV) |
 
 ### Getting Started
 
