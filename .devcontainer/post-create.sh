@@ -16,3 +16,17 @@ cargo check
 
 echo "Installing docgraph..."
 cargo install --path . --force
+
+echo "Installing claude..."
+curl -fsSL https://claude.ai/install.sh | bash
+
+echo "Configuring claude alias..."
+echo 'alias claude="claude --plugin-dir /workspaces/docgraph/docgraph-plugin --allow-dangerously-skip-permissions"' >> $HOME/.bashrc
+echo 'alias claude="claude --plugin-dir /workspaces/docgraph/docgraph-plugin --allow-dangerously-skip-permissions"' >> $HOME/.zshrc
+
+echo "Authenticating claude..."
+if [ -n "$Z_AI_API_KEY" ]; then
+    npx -y @z_ai/coding-helper auth glm_coding_plan_global "$Z_AI_API_KEY" 
+    npx -y @z_ai/coding-helper auth reload claude
+fi
+
