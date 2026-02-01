@@ -15,7 +15,7 @@ Testing strategy:
 Realized by:
 
 - [CC_TESTING_STRATEGY (Testing Strategy)](../../architecture/design/testing.md#CC_TESTING_STRATEGY)
-- [CC_UNIT_TESTING (Unit Testing Standards)](../../architecture/design/unit-testing.md#CC_UNIT_TESTING)
-- [CC_E2E_TESTING (E2E Testing Design)](../../architecture/design/e2e-testing.md#CC_E2E_TESTING)
-- [CC_COVERAGE (Code Coverage Standards)](../../architecture/design/coverage.md#CC_COVERAGE)
+- [CC_UNIT_TESTING (1. Unit Testing Standards)](../../architecture/design/testing.md#CC_UNIT_TESTING)
+- [CC_E2E_TESTING (2. E2E Testing Design)](../../architecture/design/testing.md#CC_E2E_TESTING)
+- [CC_COVERAGE (3. Code Coverage Standards)](../../architecture/design/testing.md#CC_COVERAGE)
 - [ADR_E2E_TESTING (Testing Strategy for CLI and LSP)](../../decisions/e2e-testing.md#ADR_E2E_TESTING)
