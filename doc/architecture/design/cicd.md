@@ -2,7 +2,11 @@
 
 # CI/CD Pipeline
 
-The project uses GitHub Actions for Continuous Integration and Deployment.
+The project uses GitHub Actions for Continuous Integration and Deployment. We utilize the `devcontainers/ci` action to run tests inside the Dev Container, ensuring environment parity.
+
+**Realized By:**
+
+- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY)
 
 ## Pipeline Structure
 

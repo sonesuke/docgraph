@@ -23,3 +23,15 @@ The distribution platform for Visual Studio Code extensions.
 ## VS Code UI
 
 The user interface of Visual Studio Code, including commands, views, and settings.
+
+<a id="IF_RUST_TOOLCHAIN"></a>
+
+## Rust Toolchain
+
+The standard Rust development environment (rustup, cargo, rustc).
+
+<a id="IF_NODEJS"></a>
+
+## Node.js Environment
+
+The JavaScript runtime required for VS Code extension development.
