@@ -2,9 +2,14 @@
     "name": "Docgraph Dev",
     "image": "mcr.microsoft.com/devcontainers/rust:1-bullseye",
     "features": {
-        "ghcr.io/devcontainers/features/node:1": {},
-        "ghcr.io/devcontainers/features/github-cli:1": {}
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "lts"
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
     },
+    "remoteUser": "vscode",
+    "containerUser": "vscode",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -15,5 +20,5 @@
             ]
         }
     },
-    "postCreateCommand": "npm install --prefix vsix && cargo install cargo-audit cargo-llvm-cov && cargo check"
+    "postCreateCommand": "npm install --prefix vsix && cargo install --force cargo-audit cargo-llvm-cov && cargo check && cargo install --force --path ."
 }
