@@ -15,5 +15,5 @@
             ]
         }
     },
-    "postCreateCommand": "npm install --prefix vsix && cargo check"
+    "postCreateCommand": "npm install --prefix vsix && cargo install cargo-audit cargo-llvm-cov && cargo check"
 }

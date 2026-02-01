@@ -2,7 +2,11 @@
 
 # Development Environment
 
-We provide a standardized development environment using VS Code Dev Containers to ensure consistency across all contributors.
+We provide a standardized development environment using VS Code Dev Containers to ensure consistency across all contributors and the CI pipeline.
+
+**Derived From:**
+
+- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY)
 
 ## 1. Environment Configuration
 
