@@ -104,3 +104,26 @@ cargo bench
 
 - **Linting**: < 50ms for typical workspaces.
 - **Graph Generation**: Scalable to 1000+ nodes.
+
+---
+
+<a id="CC_SAST"></a>
+
+## 5. Static Application Security Testing
+
+**Strategy:**
+
+We use GitHub CodeQL to automatically analyze the codebase for security vulnerabilities and coding errors.
+
+**Configuration:**
+
+- **Workflow**: `.github/workflows/codeql.yml`
+- **Languages**: Rust (analyzed via build)
+
+**Execution:**
+
+CodeQL runs on:
+
+- Push to main behavior
+- Pull Requests targeting main
+- Schedule (Weekly)
