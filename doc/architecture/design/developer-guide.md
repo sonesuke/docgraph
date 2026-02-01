@@ -15,7 +15,7 @@ rustup component add clippy rustfmt llvm-tools-preview
 
 ### 2. Building the Project
 
-Clone the repository and build using cargo:
+Clone the repository ∏and build using cargo:
 
 ```bash
 git clone https://github.com/sonesuke/docgraph.git
@@ -56,6 +56,6 @@ The project is split into several main areas:
 
 For a deeper understanding of the system architecture, see:
 
-- [Layered Architecture](../design/layered-architecture.md)
-- [Module View](./module.md)
+- [Layered Architecture](./layered-architecture.md)
+- [Module View](../view/module.md)
 - [Testing & Coverage](./testing.md)
