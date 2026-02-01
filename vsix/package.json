@@ -4,6 +4,11 @@
   "description": "LSP client for docgraph documentation modeling tool",
   "version": "0.2.0",
   "publisher": "sonesuke",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sonesuke/docgraph"
+  },
+  "license": "MIT",
   "engines": {
     "vscode": "^1.75.0"
   },
