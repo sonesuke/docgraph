@@ -22,6 +22,15 @@ Defined in [.devcontainer/devcontainer.json](../../../.devcontainer/devcontainer
 - `ghcr.io/devcontainers/features/node:1`: Required for VSIX (Extension) development.
 - `ghcr.io/devcontainers/features/github-cli:1`: For PR creation and management.
 
+### CLI Tools
+
+The `postCreateCommand` installs additional tools:
+
+- **docgraph**: Installed from source via `cargo install --path .`
+- **Claude Code**: AI assistant installed via `curl -fsSL https://claude.ai/install.sh | bash`
+  - Configured with docgraph plugin support
+  - Aliased to skip permissions for container development
+
 ### Extensions
 
 The environment automatically installs:
@@ -30,32 +39,9 @@ The environment automatically installs:
 - `tamasfe.even-better-toml` (Config Support)
 - `vadimcn.vscode-lldb` (Debugging)
 - `dbaeumer.vscode-eslint` (TS Linting)
+- `anthropic.claude-code` (AI Assistant)
 
-## 2. Usage Guide
-
-### Starting the Container
-
-1. Open `docgraph` project in VS Code.
-2. Click **"Reopen in Container"** when prompted, or run the command from the palette.
-3. Wait for initialization. The `postCreateCommand` will automatically run:
-   - `npm install` (in `vsix/`)
-   - `cargo check`
-
-### Manual Setup (Alternative)
-
-If you prefer to develop locally without Docker:
-
-If you prefer to develop locally without Docker:
-
-See [UC_INSTALL_MANUAL (Install Manual Setup)](../../usecases/install.md#UC_INSTALL_MANUAL)
-
-## 3. Project Structure
-
-- **`src/`**: Core logic (`core`), CLI (`cli`), and LSP (`lsp`).
-- **`vsix/`**: VS Code Extension (TypeScript) acting as LSP Client.
-- **`doc/`**: Documentation Graph.
-
-## 4. Coding Standards
+## 2. Coding Standards
 
 - **Formatting**: `cargo fmt` (Rust), `npm run format` (VSIX).
 - **Linting**: `cargo clippy` (Rust), `npm run lint` (VSIX).
