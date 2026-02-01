@@ -6,6 +6,22 @@ Welcome to the `docgraph` project! This guide is designed to help you get up to 
 
 ### 1. Environment Setup
 
+#### Prerequisites
+
+- [Rust Toolchain](https://rustup.rs/) (latest stable)
+- [Node.js](https://nodejs.org/) (for VSIX development)
+- [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) (Optional)
+
+#### Quick Start (Dev Container)
+
+Since this project requires both Rust, Node.js, and specific VS Code extensions, we highly recommend using the provided Dev Container.
+
+1. Open the project in VS Code.
+2. Click "Reopen in Container" when prompted.
+3. The environment will automatically install all dependencies (`cargo check`, `npm install`).
+
+#### Manual Setup
+
 `docgraph` is built with Rust. Ensure you have the latest stable toolchain installed:
 
 ```bash
