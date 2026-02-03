@@ -120,3 +120,13 @@ The system interacts with GitHub Releases to distribute pre-compiled binaries an
 1. **Host**: `github.com`
 2. **Access**: Public anonymous access for downloads.
 3. **Format**: Compressed archives (`.tar.gz`, `.zip`) and VSIX packages.
+
+---
+
+<a id="IF_ZED_UI"></a>
+
+## Zed UI
+
+The user interface of the Zed editor, including the command palette and settings.
+
+**Realized by**: [MOD_EXT_ZED (Zed Editor Extension)](../../architecture/view/module.md#MOD_EXT_ZED)

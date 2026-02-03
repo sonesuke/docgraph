@@ -66,6 +66,14 @@ The `vsix` module is a TypeScript-based project that acts as the LSP client.
 
 - **`src/extension.ts`**: Manages the lifecycle of the `docgraph` language server and registers editor-specific commands.
 
+<a id="MOD_EXT_ZED"></a>
+
+## Zed Editor Extension
+
+The `zed-extension` is a WASM-based extension for the Zed editor.
+
+- **`zed-extension/src/lib.rs`**: Implements the `zed::Extension` trait and the `language_server_command` to bridge Zed and the `docgraph` binary.
+
 <a id="MOD_CICD"></a>
 
 ## CI/CD Modules

@@ -1,0 +1,10 @@
+{
+  "languages": {
+    "Markdown": {
+      "language_servers": [
+        "docgraph"
+      ],
+      "format_on_save": "on"
+    }
+  }
+}
