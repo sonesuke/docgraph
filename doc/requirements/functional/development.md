@@ -6,11 +6,13 @@
 
 The system SHALL provide an automated validation pipeline to ensure document graph integrity on every change.
 
-**Realized by**:
+**Derived From:**
 
-- [MOD_CICD (CI/CD Modules)](../../architecture/view/module.md#MOD_CICD)
+- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY)
 - [CC_CICD (CI/CD Pipeline)](../../architecture/design/cicd.md#CC_CICD)
 - [CC_DEV_ENV (Development Environment)](../../architecture/design/development-norm.md#CC_DEV_ENV)
+
+**Realized by**: [MOD_CICD (CI/CD Modules)](../../architecture/view/module.md#MOD_CICD)
 
 <a id="FR_DEV_STANDARDS"></a>
 

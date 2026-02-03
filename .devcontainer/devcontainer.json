@@ -1,12 +1,10 @@
 {
     "name": "Docgraph Dev",
-    "image": "mcr.microsoft.com/devcontainers/rust:1-bullseye",
-    "features": {
-        "ghcr.io/devcontainers/features/node:1": {
-            "version": "lts"
-        },
-        "ghcr.io/devcontainers/features/github-cli:1": {}
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
     },
+    "features": {},
     "remoteUser": "vscode",
     "containerUser": "vscode",
     "remoteEnv": {
