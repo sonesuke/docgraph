@@ -2,8 +2,9 @@ use crate::core::types::Diagnostic;
 use rumdl_lib::fix_coordinator::FixCoordinator;
 use rumdl_lib::workspace_index::WorkspaceIndex;
 
+use std::collections::HashMap;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 /// Check if a rumdl warning should be skipped.
 /// - MD013 (line length): Always skip
@@ -24,6 +25,7 @@ pub fn check_workspace(
     rule_filter: Option<Vec<String>>,
     use_docgraph_filter: bool,
     config: &crate::core::config::Config,
+    overrides: Option<&HashMap<PathBuf, String>>,
 ) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
     let files = crate::core::walk::find_markdown_files(path, &config.graph.ignore);
@@ -60,7 +62,18 @@ pub fn check_workspace(
 
     // Pass 1: Lint individual files and build index
     for file_path in &files {
-        match fs::read_to_string::<&Path>(file_path) {
+        // Canonicalize the path for lookup to match the keys in overrides
+        let lookup_path = fs::canonicalize(file_path).unwrap_or_else(|_| file_path.clone());
+
+        let content_result = if let Some(map) = overrides
+            && let Some(content) = map.get(lookup_path.as_path())
+        {
+            Ok(content.clone())
+        } else {
+            fs::read_to_string::<&Path>(file_path)
+        };
+
+        match content_result {
             Ok(content) => {
                 let mut working_content = content.clone();
 
@@ -210,7 +223,7 @@ pub fn check_workspace(
     // Pass 3: Run custom docgraph workspace-level checks (DG005, DG006, DG004)
     // Collect docgraph's own SpecBlock data
     let (spec_blocks, _refs) =
-        crate::core::collect::collect_workspace_all(path, &config.graph.ignore);
+        crate::core::collect::collect_workspace_all(path, &config.graph.ignore, overrides);
 
     // DG005: Strict Node Types
     let dg005_diags = crate::core::rules::dg005::check_strict_node_types(&spec_blocks, config);
@@ -348,7 +361,7 @@ Text instead of heading"#;
 
         let config = Config::default();
         // Enable fix=true, use_docgraph_filter=false (to ensure we run standard rules)
-        let _diagnostics = check_workspace(dir.path(), true, None, false, &config);
+        let _diagnostics = check_workspace(dir.path(), true, None, false, &config, None);
 
         // Content should be updated
         let new_content = std::fs::read_to_string(&f1).unwrap();
@@ -371,6 +384,7 @@ Text instead of heading"#;
             Some(vec!["MD033".to_string()]),
             false,
             &config,
+            None,
         );
         assert!(diagnostics.iter().any(|d| d.code == "MD033"));
 
@@ -381,6 +395,7 @@ Text instead of heading"#;
             Some(vec!["MD001".to_string()]),
             false,
             &config,
+            None,
         );
         assert!(!diagnostics_empty.iter().any(|d| d.code == "MD033"));
     }
@@ -408,7 +423,7 @@ Text instead of heading"#;
             // We need rules that trigger a fix. MD047 adds a newline.
             // Rumdl default rules include MD047.
             // use_docgraph_filter=false ensures standard rules run
-            let diags = check_workspace(dir.path(), true, None, false, &config);
+            let diags = check_workspace(dir.path(), true, None, false, &config, None);
 
             // Expect DG000 error for write failure
             assert!(

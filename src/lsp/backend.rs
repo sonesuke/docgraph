@@ -1,3 +1,4 @@
+use dashmap::DashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -13,6 +14,7 @@ pub struct Backend {
     pub workspace_root: Arc<Mutex<Option<PathBuf>>>,
     pub blocks: Arc<Mutex<Vec<types::SpecBlock>>>,
     pub standalone_refs: Arc<Mutex<Vec<types::RefUse>>>,
+    pub documents: Arc<DashMap<Url, String>>,
 }
 
 impl Backend {
@@ -22,6 +24,7 @@ impl Backend {
             workspace_root: Arc::new(Mutex::new(None)),
             blocks: Arc::new(Mutex::new(Vec::new())),
             standalone_refs: Arc::new(Mutex::new(Vec::new())),
+            documents: Arc::new(DashMap::new()),
         }
     }
 
@@ -29,10 +32,28 @@ impl Backend {
         let root_opt = self.workspace_root.lock().await.clone();
         if let Some(root) = root_opt {
             let config = config::Config::load(&root).unwrap_or_else(|_| config::Config::default());
-            let diagnostics = lint::check_workspace(&root, false, None, true, &config);
+
+            // Create overrides map (convert DashMap<Url, String> to HashMap<PathBuf, String>)
+            // This decouples core from lsp types
+            let mut overrides = std::collections::HashMap::new();
+            for entry in self.documents.iter() {
+                if let Ok(path) = entry.key().to_file_path() {
+                    // Try to canonicalize the path for consistent lookup
+                    if let Ok(canon_path) = std::fs::canonicalize(&path) {
+                        overrides.insert(canon_path, entry.value().clone());
+                    } else {
+                        overrides.insert(path, entry.value().clone());
+                    }
+                }
+            }
+
+            // Use documents map for overrides (pass reference to HashMap)
+            let diagnostics =
+                lint::check_workspace(&root, false, None, true, &config, Some(&overrides));
 
             // Update index
-            let (blocks, refs) = collect::collect_workspace_all(&root, &config.graph.ignore);
+            let (blocks, refs) =
+                collect::collect_workspace_all(&root, &config.graph.ignore, Some(&overrides));
             {
                 let mut b = self.blocks.lock().await;
                 *b = blocks;
@@ -43,6 +64,21 @@ impl Backend {
             // Group diagnostics by file path
             let mut file_diagnostics: std::collections::HashMap<PathBuf, Vec<Diagnostic>> =
                 std::collections::HashMap::new();
+
+            // Initialize with all workspace files + open files to ensure we clear diagnostics for everything
+            let workspace_files =
+                crate::core::walk::find_markdown_files(&root, &config.graph.ignore);
+            for path in workspace_files {
+                file_diagnostics.entry(path).or_default();
+            }
+
+            // Also ensure open files are included (though they should be in workspace_files if on disk)
+            // But if they are new untitled files or outside root? (LSP usually handles workspace files)
+            for entry in self.documents.iter() {
+                if let Ok(path) = entry.key().to_file_path() {
+                    file_diagnostics.entry(path).or_default();
+                }
+            }
 
             for d in diagnostics {
                 let diag = Diagnostic {
@@ -129,11 +165,18 @@ impl LanguageServer for Backend {
         Ok(())
     }
 
-    async fn did_open(&self, _: DidOpenTextDocumentParams) {
+    async fn did_open(&self, params: DidOpenTextDocumentParams) {
+        self.documents
+            .insert(params.text_document.uri.clone(), params.text_document.text);
         self.run_lint().await;
     }
 
-    async fn did_change(&self, _: DidChangeTextDocumentParams) {
+    async fn did_change(&self, params: DidChangeTextDocumentParams) {
+        // We assume full text sync (TextDocumentSyncKind::FULL)
+        if let Some(change) = params.content_changes.first() {
+            self.documents
+                .insert(params.text_document.uri.clone(), change.text.clone());
+        }
         self.run_lint().await;
     }
 
@@ -142,6 +185,7 @@ impl LanguageServer for Backend {
     }
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
+        self.documents.remove(&params.text_document.uri);
         self.client
             .publish_diagnostics(params.text_document.uri, vec![], None)
             .await;

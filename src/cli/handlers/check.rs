@@ -22,7 +22,7 @@ fn try_check(
 ) -> anyhow::Result<ExitCode> {
     let config = config::Config::load(&path).context("failed to load docgraph.toml")?;
 
-    let diagnostics = lint::check_workspace(&path, fix, rule, true, &config);
+    let diagnostics = lint::check_workspace(&path, fix, rule, true, &config, None);
 
     if json {
         let json_out = serde_json::to_string_pretty(&diagnostics)
@@ -89,7 +89,7 @@ pub fn handle_fmt(path: PathBuf, rule: Option<Vec<String>>) -> ExitCode {
 
 fn try_fmt(path: PathBuf, rule: Option<Vec<String>>) -> anyhow::Result<ExitCode> {
     let config = config::Config::load(&path).context("failed to load docgraph.toml")?;
-    let diagnostics = lint::check_workspace(&path, true, rule, false, &config);
+    let diagnostics = lint::check_workspace(&path, true, rule, false, &config, None);
     print_diagnostics(&diagnostics);
     Ok(ExitCode::SUCCESS)
 }
