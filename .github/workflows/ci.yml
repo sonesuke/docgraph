@@ -20,11 +20,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and Run Dev Container (Lint)
         uses: devcontainers/ci@v0.3
         with:
-          imageName: docgraph-dev
-          cacheFrom: docgraph-dev
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
           runCmd: |
             cargo fmt -- --check
@@ -39,11 +46,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and Run Dev Container (Test)
         uses: devcontainers/ci@v0.3
         with:
-          imageName: docgraph-dev
-          cacheFrom: docgraph-dev
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
           runCmd: |
             cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
