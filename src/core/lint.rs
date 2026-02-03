@@ -73,6 +73,7 @@ pub fn check_workspace(
                         &mut working_content,
                         &rumdl_config,
                         10,
+                        Some(file_path),
                     );
                     if let Some(_result) = fix_result.ok().filter(|r| r.rules_fixed > 0) {
                         let write_result = fs::write(file_path, &working_content);
