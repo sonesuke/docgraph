@@ -1,11 +1,16 @@
 FROM mcr.microsoft.com/devcontainers/rust:1-bullseye
 
+# Set CARGO_TARGET_DIR to a location that will be preserved in the image
+ENV CARGO_TARGET_DIR=/usr/local/cargo/target
+
 # Pre-build dependencies to cache them in the image
+RUN mkdir -p /tmp/build/src /tmp/build/benches
+WORKDIR /tmp/build
 COPY Cargo.toml Cargo.lock ./
-RUN mkdir src && echo "fn main() {}" > src/main.rs \
-    && mkdir benches && echo "fn main() {}" > benches/performance.rs \
+RUN echo "fn main() {}" > src/main.rs \
+    && echo "fn main() {}" > benches/performance.rs \
     && cargo build --release \
-    && rm -rf src benches
+    && cd / && rm -rf /tmp/build
 
 # Install Node.js and other dependencies
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
