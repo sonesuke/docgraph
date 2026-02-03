@@ -15,15 +15,13 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
 # Install cargo-binstall
 RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
-# Install cargo tools and components
+# Install vsce for VSIX packaging (global install needs root)
+RUN npm install -g @vscode/vsce
+
+# Install cargo tools and components as vscode
 USER vscode
 RUN rustup component add llvm-tools-preview \
     && cargo binstall -y cargo-audit cargo-llvm-cov
 
-# Install vsce for VSIX packaging
-RUN npm install -g @vscode/vsce
-
-# Install Claude CLI
+# Install Claude CLI as vscode
 RUN curl -fsSL https://claude.ai/install.sh | bash
-
-USER root
