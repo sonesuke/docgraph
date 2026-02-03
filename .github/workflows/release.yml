@@ -158,6 +158,7 @@ jobs:
           OUTPUT: CHANGELOG.md
 
       - name: Commit and Push Changelog
+        continue-on-error: true
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
