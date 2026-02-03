@@ -4,10 +4,11 @@ set -e
 echo "Installing VSIX dependencies..."
 npm install --prefix vsix
 (cd vsix && npx vsce package -o ../docgraph.vsix)
-if command -v code >/dev/null 2>&1; then
+if command -v code >/dev/null 2>&1 && code --version >/dev/null 2>&1; then
+    echo "Installing docgraph.vsix..."
     code --install-extension docgraph.vsix
 else
-    echo "VS Code CLI (code) not found, skipping extension installation."
+    echo "VS Code CLI (code) not found or not working, skipping extension installation."
 fi
 
 echo "Installing cargo-binstall..."
