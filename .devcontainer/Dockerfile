@@ -18,10 +18,11 @@ RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/ca
 # Install vsce for VSIX packaging (global install needs root)
 RUN npm install -g @vscode/vsce
 
-# Install cargo tools and components as vscode
-USER vscode
+# Install cargo tools and components as root
 RUN rustup component add llvm-tools-preview \
     && cargo binstall -y cargo-audit cargo-llvm-cov
 
-# Install Claude CLI as vscode
+# Install Claude CLI
 RUN curl -fsSL https://claude.ai/install.sh | bash
+
+USER vscode

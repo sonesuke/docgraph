@@ -1,6 +1,5 @@
 {
     "name": "Docgraph Dev",
-    "image": "ghcr.io/sonesuke/docgraph/docgraph-dev:latest",
     "build": {
         "dockerfile": "Dockerfile",
         "context": ".."
