@@ -28,6 +28,22 @@ name = "Docgraph"
 languages = ["Markdown"]
 ```
 
+### Project Settings (`.zed/settings.json`)
+
+To explicitly enable the `docgraph` language server in a project, a `.zed/settings.json` file should be created in the project root:
+
+```json
+{
+  "languages": {
+    "Markdown": {
+      "language_servers": [
+        "docgraph"
+      ]
+    }
+  }
+}
+```
+
 ## Security and Trust
 
 Since the extension executes an external binary (`docgraph`), Zed requires the user to **Trust the Workspace** (exit Restricted Mode) before the language server can start. If the LSP does not start, ensure that the workspace is trusted.

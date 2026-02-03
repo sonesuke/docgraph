@@ -10,7 +10,6 @@ The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) sets up the development en
 
 - [IF_CLAUDE_MARKETPLACE (Claude Marketplace)](../requirements/interfaces/interfaces.md#IF_CLAUDE_MARKETPLACE)
 - [FR_INSTALL_MANUAL (Manual Installation)](../requirements/functional/installation.md#FR_INSTALL_MANUAL)
-- [FR_INSTALL_EXT_ZED (Zed Editor Extension)](../requirements/functional/installation.md#FR_INSTALL_EXT_ZED)
 
 ## Description
 
@@ -106,3 +105,43 @@ The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) installs the `docgraph` VS
 - [FR_VSC_SERVER_LIFECYCLE (Server Lifecycle Commands)](../requirements/functional/vscode.md#FR_VSC_SERVER_LIFECYCLE)
 - [NFR_VSCODE_PORTABILITY (Cross-platform Portability)](../requirements/non-functional/vscode.md#NFR_VSCODE_PORTABILITY)
 - [NFR_VSCODE_PACKAGING (Lightweight Packaging)](../requirements/non-functional/vscode.md#NFR_VSCODE_PACKAGING)
+
+---
+
+<a id="UC_ZED_INSTALL"></a>
+
+## Install Zed Extension
+
+The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) installs the `docgraph` Zed extension to enable rich editing features for Markdown-based specifications.
+
+### Procedure
+
+1. Build the extension:
+
+   ```bash
+   cd zed-extension && cargo build --release --target wasm32-wasip1
+   ```
+
+2. In Zed, run the command `zed: install dev extension`.
+3. Select the `zed-extension` directory.
+4. Create or update `.zed/settings.json` in the project root to enable the language server:
+
+   ```json
+   {
+     "languages": {
+       "Markdown": {
+         "language_servers": [
+           "docgraph"
+         ],
+         "format_on_save": "on"
+       }
+     }
+   }
+   ```
+
+5. Trust the workspace to allow the language server to start.
+
+**Derives:**
+
+- [IF_ZED_UI (Zed UI)](../requirements/interfaces/interfaces.md#IF_ZED_UI)
+- [FR_INSTALL_EXT_ZED (Zed Editor Extension)](../requirements/functional/installation.md#FR_INSTALL_EXT_ZED)

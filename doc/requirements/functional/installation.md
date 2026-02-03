@@ -58,6 +58,7 @@ The system must provide an extension for the Zed editor to enable LSP support.
 2. **Features**: Real-time diagnostics, Go to Definition, Traceability References.
 3. **Distribution**: Source code or packaged archive.
 4. **Security**: Requires **Trusting the Workspace** (exiting Restricted Mode) in Zed to allow the external binary execution.
+5. **Configuration**: Requires a `.zed/settings.json` in the project root to explicitly enable the `docgraph` language server.
 
 **Derived From:**
 
