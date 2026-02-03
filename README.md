@@ -82,16 +82,30 @@ Choose how you want to interact with `docgraph`:
    code --install-extension docgraph.vsix
    ```
 
-#### Option D: Zed Editor Extension
+#### Option C: Zed Editor Extension
 
 1. Build the extension or download from releases:
    ```bash
    cd zed-extension && cargo build --release --target wasm32-wasip1
    ```
-2. In Zed, run `zed: install dev extension` and select the `zed-extension` directory.
-   - **Note**: Ensure the workspace is trusted (exit Restricted Mode) to allow the language server to start.
+2. In Zed, run the command `zed: install dev extension`.
+3. Select the `zed-extension` directory.
+4. Create `.zed/settings.json` in your project root to enable the language server:
 
-#### Option C: Standard CLI
+   ```json
+   {
+     "languages": {
+       "Markdown": {
+         "language_servers": ["docgraph"],
+         "format_on_save": "on"
+       }
+     }
+   }
+   ```
+
+5. **Note**: Ensure the workspace is trusted (exit Restricted Mode) to allow the language server to start.
+
+#### Option D: Standard CLI
 
 Use the commands directly in your terminal for validation and analysis:
 
