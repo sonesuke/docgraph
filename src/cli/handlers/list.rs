@@ -16,7 +16,7 @@ pub fn handle_list(query: String, path: PathBuf) -> ExitCode {
 
 fn try_list(query: String, path: PathBuf) -> anyhow::Result<ExitCode> {
     let config = config::Config::load(&path).context("failed to load docgraph.toml")?;
-    let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore);
+    let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore, None);
     let regex_str = glob_to_regex(&query);
     let re = regex::Regex::new(&regex_str)
         .with_context(|| format!("Invalid query pattern: '{}'", query))?;

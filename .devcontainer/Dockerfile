@@ -35,6 +35,7 @@ COPY Cargo.toml Cargo.lock ./
 RUN echo "fn main() {}" > src/main.rs \
     && echo "fn main() {}" > benches/performance.rs \
     && cargo build --release \
+    && cargo build \
     && cd / && rm -rf /tmp/build
 
 # Install cargo-binstall as vscode

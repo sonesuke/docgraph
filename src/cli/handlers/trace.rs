@@ -21,7 +21,7 @@ fn try_trace(
     direction: String,
 ) -> anyhow::Result<ExitCode> {
     let config = config::Config::load(&path).context("failed to load docgraph.toml")?;
-    let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore);
+    let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore, None);
     let target_regex_str = glob_to_regex(&to);
     let target_re = regex::Regex::new(&target_regex_str)
         .with_context(|| format!("Invalid target pattern: '{}'", to))?;

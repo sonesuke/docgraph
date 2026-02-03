@@ -15,7 +15,7 @@ pub fn handle_describe(id: String, path: PathBuf) -> ExitCode {
 
 fn try_describe(id: String, path: PathBuf) -> anyhow::Result<ExitCode> {
     let config = config::Config::load(&path).context("failed to load docgraph.toml")?;
-    let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore);
+    let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore, None);
 
     let target_block = blocks
         .iter()

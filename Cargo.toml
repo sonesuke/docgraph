@@ -16,6 +16,7 @@ thiserror = "2.0"
 toml = "0.9.11"
 tower-lsp = "0.20.0"
 tokio = { version = "1.37.0", features = ["full"] }
+dashmap = "6.1.0"
 
 [dev-dependencies]
 tempfile = "3.24.0"
