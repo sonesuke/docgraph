@@ -1,18 +1,6 @@
 FROM mcr.microsoft.com/devcontainers/rust:1-bullseye
 
-# Set CARGO_TARGET_DIR to a location that will be preserved in the image
-ENV CARGO_TARGET_DIR=/usr/local/cargo/target
-
-# Pre-build dependencies to cache them in the image
-RUN mkdir -p /tmp/build/src /tmp/build/benches
-WORKDIR /tmp/build
-COPY Cargo.toml Cargo.lock ./
-RUN echo "fn main() {}" > src/main.rs \
-    && echo "fn main() {}" > benches/performance.rs \
-    && cargo build --release \
-    && cd / && rm -rf /tmp/build
-
-# Install Node.js and other dependencies
+# Install Node.js and other dependencies as root
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
     curl \
@@ -30,7 +18,20 @@ RUN npm install -g @vscode/vsce
 # Ensure vscode user has ownership of cargo and rustup directories before switching
 RUN chown -R vscode:vscode /usr/local/cargo /usr/local/rustup
 
+# Switch to vscode user
 USER vscode
+
+# Set CARGO_TARGET_DIR to a location that vscode can now write to
+ENV CARGO_TARGET_DIR=/usr/local/cargo/target
+
+# Pre-build dependencies to cache them in the image (as vscode)
+RUN mkdir -p /tmp/build/src /tmp/build/benches
+WORKDIR /tmp/build
+COPY Cargo.toml Cargo.lock ./
+RUN echo "fn main() {}" > src/main.rs \
+    && echo "fn main() {}" > benches/performance.rs \
+    && cargo build --release \
+    && cd / && rm -rf /tmp/build
 
 # Install cargo-binstall as vscode
 RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
