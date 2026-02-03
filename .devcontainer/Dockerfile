@@ -25,4 +25,7 @@ RUN rustup component add llvm-tools-preview \
 # Install Claude CLI
 RUN curl -fsSL https://claude.ai/install.sh | bash
 
+# Ensure vscode user has ownership of cargo and rustup directories
+RUN chown -R vscode:vscode /usr/local/cargo /usr/local/rustup
+
 USER vscode
