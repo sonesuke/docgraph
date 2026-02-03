@@ -478,7 +478,7 @@ dependencies = [
 
 [[package]]
 name = "docgraph"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "assert_cmd",
@@ -1577,9 +1577,9 @@ checksum = "7a2d987857b319362043e95f5353c0535c1f58eec5336fdfcf626430af7def58"
 
 [[package]]
 name = "rumdl"
-version = "0.1.7"
+version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "441ead89f9e222ec28df54a822b11cb33edcd8d881cd6cb5f40f61a77cc1efb6"
+checksum = "b15a3c737fa0068bda70fd3766f02ec5561cd524349c4ada14178ba98e64150c"
 dependencies = [
  "anyhow",
  "blake3",
