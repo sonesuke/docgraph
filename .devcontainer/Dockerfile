@@ -3,8 +3,9 @@ FROM mcr.microsoft.com/devcontainers/rust:1-bullseye
 # Pre-build dependencies to cache them in the image
 COPY Cargo.toml Cargo.lock ./
 RUN mkdir src && echo "fn main() {}" > src/main.rs \
+    && mkdir benches && echo "fn main() {}" > benches/performance.rs \
     && cargo build --release \
-    && rm -rf src
+    && rm -rf src benches
 
 # Install Node.js and other dependencies
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
