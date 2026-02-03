@@ -8,24 +8,24 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     pkg-config \
     libssl-dev
 
-# Install Node.js LTS manually to avoid using features for faster builds
+# Install Node.js LTS manually
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get install -y nodejs
-
-# Install cargo-binstall
-RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
 # Install vsce for VSIX packaging (global install needs root)
 RUN npm install -g @vscode/vsce
 
-# Install cargo tools and components as root
-RUN rustup component add llvm-tools-preview \
-    && cargo binstall -y cargo-audit cargo-llvm-cov
-
-# Install Claude CLI
-RUN curl -fsSL https://claude.ai/install.sh | bash
-
-# Ensure vscode user has ownership of cargo and rustup directories
+# Ensure vscode user has ownership of cargo and rustup directories before switching
 RUN chown -R vscode:vscode /usr/local/cargo /usr/local/rustup
 
 USER vscode
+
+# Install cargo-binstall as vscode
+RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+# Install cargo tools and components as vscode
+RUN rustup component add llvm-tools-preview \
+    && cargo binstall -y cargo-audit cargo-llvm-cov
+
+# Install Claude CLI as vscode
+RUN curl -fsSL https://claude.ai/install.sh | bash

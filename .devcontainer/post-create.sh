@@ -15,7 +15,7 @@ echo "Checking project..."
 cargo check
 
 echo "Installing docgraph..."
-sudo cargo install --path . --force
+cargo install --path . --force
 
 echo "Configuring claude alias..."
 echo 'alias claude="claude --plugin-dir /workspaces/docgraph/docgraph-plugin --allow-dangerously-skip-permissions"' >> $HOME/.bashrc
