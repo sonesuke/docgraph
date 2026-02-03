@@ -82,6 +82,15 @@ Choose how you want to interact with `docgraph`:
    code --install-extension docgraph.vsix
    ```
 
+#### Option D: Zed Editor Extension
+
+1. Build the extension or download from releases:
+   ```bash
+   cd zed-extension && cargo build --release --target wasm32-wasip1
+   ```
+2. In Zed, run `zed: install dev extension` and select the `zed-extension` directory.
+   - **Note**: Ensure the workspace is trusted (exit Restricted Mode) to allow the language server to start.
+
 #### Option C: Standard CLI
 
 Use the commands directly in your terminal for validation and analysis:

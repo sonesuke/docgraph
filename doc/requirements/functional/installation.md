@@ -57,6 +57,7 @@ The system must provide an extension for the Zed editor to enable LSP support.
 1. **Format**: WASM (`wasm32-wasip1`)
 2. **Features**: Real-time diagnostics, Go to Definition, Traceability References.
 3. **Distribution**: Source code or packaged archive.
+4. **Security**: Requires **Trusting the Workspace** (exiting Restricted Mode) in Zed to allow the external binary execution.
 
 **Derived From:**
 
