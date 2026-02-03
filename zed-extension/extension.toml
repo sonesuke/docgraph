@@ -1,0 +1,7 @@
+id = "docgraph"
+name = "Docgraph"
+version = "0.1.0"
+schema_version = 1
+authors = ["sonesuke"]
+description = "Docgraph support for Zed"
+repository = "https://github.com/sonesuke/docgraph"

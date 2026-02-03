@@ -10,10 +10,11 @@ The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) sets up the development en
 
 - [IF_CLAUDE_MARKETPLACE (Claude Marketplace)](../requirements/interfaces/interfaces.md#IF_CLAUDE_MARKETPLACE)
 - [FR_INSTALL_MANUAL (Manual Installation)](../requirements/functional/installation.md#FR_INSTALL_MANUAL)
+- [FR_INSTALL_EXT_ZED (Zed Editor Extension)](../requirements/functional/installation.md#FR_INSTALL_EXT_ZED)
 
 ## Description
 
-The developer ensures their local environment meets the specifications defined in [FR_INSTALL_MANUAL](../requirements/functional/installation.md#FR_INSTALL_MANUAL).
+The developer ensures their local environment meets the specifications defined in [FR_INSTALL_MANUAL (Manual Installation)](../requirements/functional/installation.md#FR_INSTALL_MANUAL).
 
 ---
 
