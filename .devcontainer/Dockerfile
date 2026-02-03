@@ -1,5 +1,11 @@
 FROM mcr.microsoft.com/devcontainers/rust:1-bullseye
 
+# Pre-build dependencies to cache them in the image
+COPY Cargo.toml Cargo.lock ./
+RUN mkdir src && echo "fn main() {}" > src/main.rs \
+    && cargo build --release \
+    && rm -rf src
+
 # Install Node.js and other dependencies
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
