@@ -21,8 +21,8 @@ RUN chown -R vscode:vscode /usr/local/cargo /usr/local/rustup
 # Switch to vscode user
 USER vscode
 
-# Set CARGO_TARGET_DIR to a location that vscode can now write to
-ENV CARGO_TARGET_DIR=/usr/local/cargo/target
+# Set CARGO_TARGET_DIR to a location in user home that is safe from volume mounts
+ENV CARGO_TARGET_DIR=/home/vscode/.cargo-target
 
 # Pre-build dependencies to cache them in the image (as vscode)
 RUN mkdir -p /tmp/build/src /tmp/build/benches
