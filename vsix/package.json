@@ -2,7 +2,7 @@
   "name": "docgraph",
   "displayName": "Docgraph",
   "description": "LSP client for docgraph documentation modeling tool",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "sonesuke",
   "repository": {
     "type": "git",
