@@ -11,21 +11,11 @@ else
     echo "VS Code CLI (code) not found or not working, skipping extension installation."
 fi
 
-echo "Installing cargo-binstall..."
-curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-
-echo "Installing cargo tools..."
-rustup component add llvm-tools-preview
-cargo binstall -y cargo-audit cargo-llvm-cov
-
 echo "Checking project..."
 cargo check
 
 echo "Installing docgraph..."
 cargo install --path . --force
-
-echo "Installing claude..."
-curl -fsSL https://claude.ai/install.sh | bash
 
 echo "Configuring claude alias..."
 echo 'alias claude="claude --plugin-dir /workspaces/docgraph/docgraph-plugin --allow-dangerously-skip-permissions"' >> $HOME/.bashrc
