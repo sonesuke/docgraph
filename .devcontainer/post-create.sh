@@ -4,7 +4,11 @@ set -e
 echo "Installing VSIX dependencies..."
 npm install --prefix vsix
 (cd vsix && npx vsce package -o ../docgraph.vsix)
-code --install-extension docgraph.vsix
+if command -v code >/dev/null 2>&1; then
+    code --install-extension docgraph.vsix
+else
+    echo "VS Code CLI (code) not found, skipping extension installation."
+fi
 
 echo "Installing cargo-binstall..."
 curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
