@@ -3,6 +3,8 @@ set -e
 
 echo "Installing VSIX dependencies..."
 npm install --prefix vsix
+(cd vsix && npx vsce package -o ../docgraph.vsix)
+code --install-extension docgraph.vsix
 
 echo "Installing cargo-binstall..."
 curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
