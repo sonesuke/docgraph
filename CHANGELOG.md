@@ -7,15 +7,6 @@ All notable changes to this project will be documented in this file.
 ### Bug Fixes
 
 - Optimize devcontainer build config (#65)
-
-### Miscellaneous Tasks
-
-- *(release)* Allow release to continue if changelog push fails (#63)
-- *(release)* Remove zed extension from release and ci (#64)
-- Refine release workflow and documentation (#66)
-
-### Bug Fixes
-
 - Check for code command in post-create.sh to fix CI failure
 - Use more robust check for code command in post-create.sh
 - Pin rumdl to 0.1.10 and fix compilation error
@@ -30,6 +21,17 @@ All notable changes to this project will be documented in this file.
 - *(ci)* Pre-build debug dependency artifacts in Dockerfile to speed up CI
 - *(zed)* Update zed_extension_api to 0.7.0 and bind to Markdown language
 
+### Miscellaneous Tasks
+
+- *(release)* Allow release to continue if changelog push fails (#63)
+- *(release)* Remove zed extension from release and ci (#64)
+- Refine release workflow and documentation (#66)
+- Set default user to vscode in Dockerfile
+- Remove zed-extension/target from git and add .gitignore
+- Cleanup zed-extension artifacts and update .gitignore
+- *(release)* Automate CHANGELOG.md generation and commitment
+- *(release)* Bump version to 0.2.1 (#62)
+
 ### Documentation
 
 - *(zed)* Add zed extension design and update installation guide
@@ -42,14 +44,6 @@ All notable changes to this project will be documented in this file.
 - Use GHCR for pre-built dev container for faster setup
 - *(lsp)* Implement real-time diagnostics and decouple core
 - *(zed)* Add zed extension, update docs and workflow
-
-### Miscellaneous Tasks
-
-- Set default user to vscode in Dockerfile
-- Remove zed-extension/target from git and add .gitignore
-- Cleanup zed-extension artifacts and update .gitignore
-- *(release)* Automate CHANGELOG.md generation and commitment
-- *(release)* Bump version to 0.2.1 (#62)
 
 ### Performance
 
