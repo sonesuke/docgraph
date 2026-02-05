@@ -90,10 +90,14 @@ Choose how you want to interact with `docgraph`:
 
 #### Option C: Zed Editor Extension
 
-1. Build the extension or download from releases:
-   ```bash
-   cd zed-extension && cargo build --release --target wasm32-wasip1
-   ```
+1.  **Prerequisites**: Ensure you have Rust installed and the WASI target added:
+    ```bash
+    rustup target add wasm32-wasip1
+    ```
+2.  Build the extension:
+    ```bash
+    cd zed-extension && cargo build --release --target wasm32-wasip1
+    ```
 2. In Zed, run the command `zed: install dev extension`.
 3. Select the `zed-extension` directory.
 
