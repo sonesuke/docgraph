@@ -23,20 +23,12 @@ USER vscode
 
 # Set CARGO_HOME to a location in user home to avoid permission issues in CI
 # and add it to PATH
-ENV CARGO_HOME=/home/vscode/.cargo
+# ENV CARGO_HOME=/home/vscode/.cargo (Deferred until runtime)
 ENV PATH=$CARGO_HOME/bin:$PATH
 # Set CARGO_TARGET_DIR to a location in user home that is safe from volume mounts
 ENV CARGO_TARGET_DIR=/home/vscode/.cargo-target
 
-# Pre-build dependencies to cache them in the image (as vscode)
-RUN mkdir -p /tmp/build/src /tmp/build/benches
-WORKDIR /tmp/build
-COPY Cargo.toml Cargo.lock ./
-RUN echo "fn main() {}" > src/main.rs \
-    && echo "fn main() {}" > benches/performance.rs \
-    && cargo build --release \
-    && cargo build \
-    && cd / && rm -rf /tmp/build
+# No pre-build (cache is disabled by user request)
 
 # Install cargo-binstall as vscode
 RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
