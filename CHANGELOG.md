@@ -14,8 +14,6 @@ All notable changes to this project will be documented in this file.
 - *(release)* Remove zed extension from release and ci (#64)
 - Refine release workflow and documentation (#66)
 
-## [0.2.1] - 2026-02-05
-
 ### Bug Fixes
 
 - Check for code command in post-create.sh to fix CI failure
