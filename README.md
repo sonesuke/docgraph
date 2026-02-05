@@ -96,20 +96,6 @@ Choose how you want to interact with `docgraph`:
    ```
 2. In Zed, run the command `zed: install dev extension`.
 3. Select the `zed-extension` directory.
-4. Create `.zed/settings.json` in your project root to enable the language server:
-
-   ```json
-   {
-     "languages": {
-       "Markdown": {
-         "language_servers": ["docgraph"],
-         "format_on_save": "on"
-       }
-     }
-   }
-   ```
-
-5. **Note**: Ensure the workspace is trusted (exit Restricted Mode) to allow the language server to start.
 
 #### Option D: Standard CLI
 
