@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+
 echo "Installing VSIX dependencies..."
 npm install --prefix vsix
 (cd vsix && npx vsce package -o ../docgraph.vsix)
