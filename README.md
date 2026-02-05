@@ -12,12 +12,6 @@ A powerful lint tool and graph generator designed to build and verify directed g
 
 For a comprehensive guide on concepts, architecture, and specifications, please refer to the **[Documentation Overview](./doc/overview.md)**.
 
-## Development
-
-*   [Setup Guide](doc/usecases/setup.md)
-*   [Architecture Overview](doc/architecture/README.md)
-*   [Release Process](doc/process/release.md)
-
 ## Key Features
 
 - **Graph Validation**: Automated checks for broken links, duplicate IDs, and relationship rule violations defined in `docgraph.toml`.
@@ -90,16 +84,26 @@ Choose how you want to interact with `docgraph`:
 
 #### Option C: Zed Editor Extension
 
-1.  **Prerequisites**: Ensure you have Rust installed and the WASI target added:
-    ```bash
-    rustup target add wasm32-wasip1
-    ```
-2.  Build the extension:
-    ```bash
-    cd zed-extension && cargo build --release --target wasm32-wasip1
-    ```
+1. Build the extension or download from releases:
+   ```bash
+   cd zed-extension && cargo build --release --target wasm32-wasip1
+   ```
 2. In Zed, run the command `zed: install dev extension`.
 3. Select the `zed-extension` directory.
+4. Create `.zed/settings.json` in your project root to enable the language server:
+
+   ```json
+   {
+     "languages": {
+       "Markdown": {
+         "language_servers": ["docgraph"],
+         "format_on_save": "on"
+       }
+     }
+   }
+   ```
+
+5. **Note**: Ensure the workspace is trusted (exit Restricted Mode) to allow the language server to start.
 
 #### Option D: Standard CLI
 
