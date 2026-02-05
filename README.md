@@ -12,6 +12,12 @@ A powerful lint tool and graph generator designed to build and verify directed g
 
 For a comprehensive guide on concepts, architecture, and specifications, please refer to the **[Documentation Overview](./doc/overview.md)**.
 
+## Development
+
+*   [Setup Guide](doc/usecases/setup.md)
+*   [Architecture Overview](doc/architecture/README.md)
+*   [Release Process](doc/process/release.md)
+
 ## Key Features
 
 - **Graph Validation**: Automated checks for broken links, duplicate IDs, and relationship rule violations defined in `docgraph.toml`.

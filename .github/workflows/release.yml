@@ -119,25 +119,6 @@ jobs:
           path: artifacts
           merge-multiple: true
 
-      - name: Generate Full Changelog
-        uses: orhun/git-cliff-action@v4
-        with:
-          config: cliff.toml
-          args: --verbose
-        env:
-          OUTPUT: CHANGELOG.md
-
-      - name: Commit and Push Changelog
-        continue-on-error: true
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md
-          if ! git diff --cached --quiet; then
-            git commit -m "chore(release): update CHANGELOG.md for ${{ github.ref_name }} [skip ci]"
-            git push origin HEAD:main
-          fi
-
       - name: Generate Release Notes
         uses: orhun/git-cliff-action@v4
         with:
