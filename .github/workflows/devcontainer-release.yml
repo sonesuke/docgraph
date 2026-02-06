@@ -28,12 +28,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+      - name: Build and push Dev Container
+        uses: devcontainers/ci@v0.3
         with:
-          context: .
-          file: .devcontainer/Dockerfile
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository }}/docgraph-dev:latest
-            ghcr.io/${{ github.repository }}/docgraph-dev:${{ github.sha }}
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: always
