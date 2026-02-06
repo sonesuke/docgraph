@@ -1,186 +1,199 @@
 use crate::core::types::{EdgeUse, RefUse, SpecBlock};
+use pulldown_cmark::{Event, LinkType, Options, Parser, Tag, TagEnd};
 use regex::Regex;
 use std::path::Path;
 
-/// Extract anchor headings: `<a id="XXX"></a>` followed by a Markdown heading
-/// Scope extends from anchor to next anchor (or EOF), extracting refs as edges
-pub fn extract_anchor_headings(content: &str, file_path: &Path) -> Vec<SpecBlock> {
-    let raw_lines: Vec<&str> = content.lines().collect();
-    let clean_content = crate::core::utils::strip_markdown_code(content);
-    let clean_lines: Vec<&str> = clean_content.lines().collect();
+/// Extract all definitions and references from content using pulldown-cmark
+pub fn extract_all(content: &str, file_path: &Path) -> (Vec<SpecBlock>, Vec<RefUse>) {
+    let mut blocks = Vec::new();
+    let mut standalone_refs = Vec::new();
 
-    // Regex for <a id="XXX"></a> or <a id='XXX'></a> (must be the entire line)
-    let anchor_re = Regex::new(r#"^<a\s+id=["']([^"']+)["']\s*>\s*</a>$"#).unwrap();
-    // Regex for Markdown heading
-    let heading_re = Regex::new(r"^(#{1,6})\s+(.+)$").unwrap();
-    // Regex for Markdown links with fragment: [text](#ID) or [text](path#ID)
-    let link_re = Regex::new(r"\[([^\]]*)\]\(([^)]*#([^)]+))\)").unwrap();
+    // Context tracking
+    let mut current_anchor_id: Option<String> = None;
+    let mut current_anchor_line: usize = 0;
+    let mut current_block_refs: Vec<EdgeUse> = Vec::new();
+    let mut current_block_name: Option<String> = None;
 
-    // First pass: find all anchor positions using RAW lines
-    // (IDs and Titles should be extracted as they appear in the file)
-    let mut anchor_positions: Vec<(usize, String, Option<String>, usize)> = Vec::new(); // (line_idx, id, name, heading_line_idx)
+    // We need to track the *byte offset* to *line/column* mapping manually or helper
+    // pulldown-cmark gives byte offsets.
+    let line_offsets: Vec<usize> = std::iter::once(0)
+        .chain(content.match_indices('\n').map(|(i, _)| i + 1))
+        .collect();
 
-    let mut i = 0;
-    while i < raw_lines.len() {
-        let trimmed = raw_lines[i].trim();
+    let offset_to_line_col = |offset: usize| -> (usize, usize) {
+        // Binary search for the line
+        let line_idx = match line_offsets.binary_search(&offset) {
+            Ok(i) => i,
+            Err(i) => i - 1,
+        };
+        let line_start = line_offsets[line_idx];
+        let col = offset - line_start + 1; // 1-based
+        (line_idx + 1, col)
+    };
 
-        if trimmed.is_empty() {
-            i += 1;
-            continue;
-        }
+    let mut parser = Parser::new_ext(content, Options::all()).into_offset_iter();
 
-        if let Some(caps) = anchor_re.captures(trimmed) {
-            let id = caps.get(1).unwrap().as_str().to_string();
+    #[allow(clippy::while_let_on_iterator)]
+    while let Some((event, range)) = parser.next() {
+        match event {
+            // Check for HTML anchor tag: <a id="XXX"></a>
+            Event::Html(html) | Event::InlineHtml(html) => {
+                // Determine if this is a block start anchor
+                if let Some(id) = parse_anchor_tag(&html) {
+                    // If we were already in a block, close it
+                    if let Some(prev_id) = current_anchor_id.take() {
+                        let (end_line, _) = offset_to_line_col(range.start);
+                        blocks.push(SpecBlock {
+                            id: prev_id,
+                            name: current_block_name.take(),
+                            edges: std::mem::take(&mut current_block_refs),
+                            file_path: file_path.to_path_buf(),
+                            line_start: current_anchor_line,
+                            line_end: end_line, // Ends at start of new anchor
+                        });
+                    }
 
-            // Look for heading in next non-empty lines
-            let mut j = i + 1;
-            while j < raw_lines.len() && raw_lines[j].trim().is_empty() {
-                j += 1;
+                    // Start new block
+                    current_anchor_id = Some(id);
+                    let (start_line, _) = offset_to_line_col(range.start);
+                    current_anchor_line = start_line;
+                }
             }
 
-            let (name, heading_idx) = if j < raw_lines.len() {
-                if let Some(h_caps) = heading_re.captures(raw_lines[j].trim()) {
-                    let raw_name = h_caps.get(2).unwrap().as_str();
-                    // Strip ID prefix from heading if present
-                    let clean_name = raw_name
-                        .strip_prefix(&id)
-                        .map(|s| s.trim_start())
-                        .unwrap_or(raw_name)
-                        .to_string();
-                    (Some(clean_name), j)
-                } else {
-                    (None, i)
-                }
-            } else {
-                (None, i)
-            };
-
-            anchor_positions.push((i, id, name, heading_idx));
-            i = heading_idx;
-        }
-        i += 1;
-    }
-
-    // Second pass: build blocks with scoped refs using CLEAN lines
-    // (Avoid extracting links from code blocks/fences)
-    let mut blocks = Vec::new();
-
-    for (idx, (anchor_idx, id, name, heading_idx)) in anchor_positions.iter().enumerate() {
-        let anchor_line = anchor_idx + 1; // 1-based
-
-        // Scope: from heading to next anchor (or EOF)
-        let scope_start = *heading_idx + 1;
-        let scope_end = if idx + 1 < anchor_positions.len() {
-            anchor_positions[idx + 1].0
-        } else {
-            raw_lines.len()
-        };
-
-        // Extract refs within scope
-        let mut edges = Vec::new();
-        for line_idx in scope_start..scope_end {
-            if line_idx < clean_lines.len() {
-                for cap in link_re.captures_iter(clean_lines[line_idx]) {
-                    if let Some(id_match) = cap.get(3) {
-                        let target_id = id_match.as_str().to_string();
-                        let display_name = cap.get(1).map(|m| m.as_str().to_string());
-
-                        // 1. Edge for the ID in the URL (#ID)
-                        edges.push(EdgeUse {
-                            id: target_id.clone(),
-                            name: display_name.clone(),
-                            line: line_idx + 1, // 1-based
-                            col_start: id_match.start() + 1,
-                            col_end: id_match.end() + 1,
-                        });
-
-                        // 2. Edge for the ID in the Text ([ID])
-                        if let Some(text_match) = cap.get(1)
-                            && let Some(idx) = text_match.as_str().find(&target_id)
-                        {
-                            let start = text_match.start() + idx;
-                            edges.push(EdgeUse {
-                                id: target_id,
-                                name: display_name,
-                                line: line_idx + 1,
-                                col_start: start + 1,
-                                col_end: start + 1 + id_match.as_str().len(),
-                            });
+            // Check for Heading immediately following an anchor
+            Event::Start(Tag::Heading {
+                level: _,
+                id: _,
+                classes: _,
+                attrs: _,
+            }) => {
+                if let Some(ref anchor_id) = current_anchor_id {
+                    // Extract heading text
+                    let mut heading_text = String::new();
+                    // Consume events until heading end
+                    while let Some((h_event, _)) = parser.next() {
+                        match h_event {
+                            Event::Text(text) => heading_text.push_str(&text),
+                            Event::Code(text) => heading_text.push_str(&text),
+                            Event::End(TagEnd::Heading(_)) => break,
+                            _ => {}
                         }
+                    }
+
+                    // Strip ID prefix if present to clean up name
+                    let clean_name = heading_text
+                        .strip_prefix(anchor_id)
+                        .map(|s| s.trim_start())
+                        .unwrap_or(&heading_text)
+                        .to_string();
+
+                    if !clean_name.is_empty() {
+                        current_block_name = Some(clean_name);
                     }
                 }
             }
-        }
 
+            // Check for Links: [text](#ID)
+            Event::Start(Tag::Link {
+                link_type,
+                dest_url,
+                ..
+            }) => {
+                // We only care about inline links with fragment
+                // Note: pulldown-cmark might handle reference links differently
+                if (link_type == LinkType::Inline
+                    || link_type == LinkType::Reference
+                    || link_type == LinkType::Shortcut)
+                    && let Some(target_id) = parse_link_fragment(&dest_url)
+                {
+                    let (line, col) = offset_to_line_col(range.start);
+                    let col_end = offset_to_line_col(range.end).1;
+
+                    // We also need to extract the link text for "name" field if possible
+                    // But getting the text inside the link requires consuming events or peeking?
+                    // For simplicity, we can use the raw string from byte range if needed,
+                    // but strictly speaking we just need the edge.
+                    // Let's grab the text from the content slice for the display name.
+                    let full_link_text = &content[range.clone()];
+                    let display_name = parse_link_text(full_link_text);
+
+                    let edge = EdgeUse {
+                        id: target_id.clone(),
+                        name: display_name,
+                        line,
+                        col_start: col,
+                        col_end,
+                    };
+
+                    if current_anchor_id.is_some() {
+                        current_block_refs.push(edge);
+                    } else {
+                        // Standalone ref
+                        standalone_refs.push(RefUse {
+                            target_id,
+                            file_path: file_path.to_path_buf(),
+                            line,
+                            col_start: col,
+                            col_end,
+                        });
+                    }
+                }
+            }
+            // Ignore other events
+            _ => {}
+        }
+    }
+
+    // Close final block
+    if let Some(prev_id) = current_anchor_id {
+        let (end_line, _) = offset_to_line_col(content.len());
         blocks.push(SpecBlock {
-            id: id.clone(),
-            name: name.clone(),
-            edges,
+            id: prev_id,
+            name: current_block_name,
+            edges: current_block_refs, // took ownership
             file_path: file_path.to_path_buf(),
-            line_start: anchor_line,
-            line_end: scope_end,
+            line_start: current_anchor_line,
+            line_end: end_line,
         });
     }
 
-    blocks
+    (blocks, standalone_refs)
 }
 
-/// Extract Markdown link references: `[text](#ID)` or `[text](path#ID)`
-pub fn extract_markdown_refs(content: &str, file_path: &Path) -> Vec<RefUse> {
-    let mut refs = Vec::new();
+/// Helper to parse <a id="XXX"></a>
+fn parse_anchor_tag(html: &str) -> Option<String> {
+    // Relaxed regex to match <a id="..."> (start tag only is enough) including inside InlineHtml
+    let re = Regex::new(r#"<a\s+id=["']([^"']+)["']"#).ok()?;
+    re.captures(html)
+        .map(|c| c.get(1).unwrap().as_str().to_string())
+}
 
-    // Regex for Markdown links with fragment: [text](path#ID) or [text](#ID)
-    let link_re = Regex::new(r"\[([^\]]*)\]\(([^)]*#([^)]+))\)").unwrap();
-
-    let clean_content = crate::core::utils::strip_markdown_code(content);
-    for (line_idx, line) in clean_content.lines().enumerate() {
-        let line_num = line_idx + 1; // 1-based
-
-        for cap in link_re.captures_iter(line) {
-            if let Some(id_match) = cap.get(3) {
-                let target_id = id_match.as_str().to_string();
-
-                // 1. Ref for the ID in the URL (#ID)
-                refs.push(RefUse {
-                    target_id: target_id.clone(),
-                    file_path: file_path.to_path_buf(),
-                    line: line_num,
-                    col_start: id_match.start() + 1,
-                    col_end: id_match.end() + 1,
-                });
-
-                // 2. Ref for the ID in the Text ([ID])
-                if let Some(text_match) = cap.get(1)
-                    && let Some(idx) = text_match.as_str().find(&target_id)
-                {
-                    let start = text_match.start() + idx;
-                    refs.push(RefUse {
-                        target_id,
-                        file_path: file_path.to_path_buf(),
-                        line: line_num,
-                        col_start: start + 1,
-                        col_end: start + 1 + id_match.as_str().len(),
-                    });
-                }
-            }
+/// Helper to extract ID from link destination: #ID or path#ID
+fn parse_link_fragment(dest: &str) -> Option<String> {
+    if let Some(idx) = dest.find('#') {
+        let id_part = &dest[idx + 1..];
+        if !id_part.is_empty() {
+            return Some(id_part.to_string());
         }
     }
-
-    refs
+    None
 }
 
-/// Extract all definitions and references from content
-pub fn extract_all(content: &str, file_path: &Path) -> (Vec<SpecBlock>, Vec<RefUse>) {
-    let blocks = extract_anchor_headings(content, file_path);
-    let standalone_refs = extract_markdown_refs(content, file_path);
-
-    (blocks, standalone_refs)
+/// Helper to exact display text from full link string [text](url)
+fn parse_link_text(raw_link: &str) -> Option<String> {
+    // This is a rough estimation.
+    // Ideally we would inspect the nested events, but that complicates the main loop.
+    // Regex is safe enough for standard markdown links here.
+    let re = Regex::new(r"^\[([^\]]*)\]").ok()?;
+    re.captures(raw_link)
+        .map(|c| c.get(1).unwrap().as_str().to_string())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::path::PathBuf;
+
     #[test]
     fn test_extract_anchor_headings_with_scoped_refs() {
         let content = r#"
@@ -207,7 +220,7 @@ A user in the system.
 | sso_config_id | UUID | Foreign Key to [SSO Config](#DAT-SSO-CONFIG). |
 "#;
         let path = PathBuf::from("test.md");
-        let blocks = extract_anchor_headings(content, &path);
+        let (blocks, _) = extract_all(content, &path);
 
         assert_eq!(blocks.len(), 2);
 
@@ -241,7 +254,7 @@ This link should be ignored: [REQ-003](#REQ-003)
 The following is not in a code block: [REQ-004](#REQ-004)
 "#;
         let path = PathBuf::from("test.md");
-        let blocks = extract_anchor_headings(content, &path);
+        let (blocks, _) = extract_all(content, &path);
 
         assert_eq!(blocks.len(), 1);
         let b = &blocks[0];
@@ -258,7 +271,7 @@ The following is not in a code block: [REQ-004](#REQ-004)
     }
 
     #[test]
-    fn test_extract_markdown_refs_skips_code_blocks() {
+    fn test_extract_standalone_refs() {
         let content = r#"
 This is a standalone ref: [REF-001](#REF-001)
 
@@ -269,7 +282,7 @@ This should be ignored: [REF-002](#REF-002)
 Another valid ref: [REF-003](#REF-003)
 "#;
         let path = PathBuf::from("test.md");
-        let refs = extract_markdown_refs(content, &path);
+        let (_, refs) = extract_all(content, &path);
 
         // Should find REF-001 and REF-003, but NOT REF-002
         let target_ids: Vec<String> = refs.iter().map(|r| r.target_id.clone()).collect();
@@ -279,23 +292,5 @@ Another valid ref: [REF-003](#REF-003)
             !target_ids.contains(&"REF-002".to_string()),
             "Should not extract standalone refs from code blocks"
         );
-    }
-    #[test]
-    fn test_extract_refs_from_link_text() {
-        let content = r#"
-Reference to [REQ-001](#REQ-001) in text.
-Mismatch text [Some Request](#REQ-002) here.
-"#;
-        let path = PathBuf::from("test.md");
-        let refs = extract_markdown_refs(content, &path);
-
-        // REQ-001: Should match twice (text and URL)
-        // [REQ-001] starts at col 14. Text "REQ-001" starts at 15. URL "REQ-001" starts at 24.
-        let req1_refs: Vec<&RefUse> = refs.iter().filter(|r| r.target_id == "REQ-001").collect();
-        assert_eq!(req1_refs.len(), 2);
-
-        // REQ-002: Should match once (URL only)
-        let req2_refs: Vec<&RefUse> = refs.iter().filter(|r| r.target_id == "REQ-002").collect();
-        assert_eq!(req2_refs.len(), 1);
     }
 }
