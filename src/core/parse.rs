@@ -87,7 +87,7 @@ pub fn extract_all(content: &str, file_path: &Path) -> (Vec<SpecBlock>, Vec<RefU
                         .unwrap_or(&heading_text)
                         .to_string();
 
-                    if !clean_name.is_empty() {
+                    if current_block_name.is_none() && !clean_name.is_empty() {
                         current_block_name = Some(clean_name);
                     }
                 }
@@ -292,5 +292,26 @@ Another valid ref: [REF-003](#REF-003)
             !target_ids.contains(&"REF-002".to_string()),
             "Should not extract standalone refs from code blocks"
         );
+    }
+    #[test]
+    fn test_extract_anchor_multiple_headings() {
+        let content = r#"
+<a id="IF_CONFIG"></a>
+
+## docgraph.toml Configuration
+
+### Sub-heading
+
+Some content.
+"#;
+        let path = PathBuf::from("test.md");
+        let (blocks, _) = extract_all(content, &path);
+
+        assert_eq!(blocks.len(), 1);
+        let b = &blocks[0];
+        assert_eq!(b.id, "IF_CONFIG");
+        
+        // Should capture the FIRST heading
+        assert_eq!(b.name.as_deref(), Some("docgraph.toml Configuration"));
     }
 }
