@@ -1,8 +1,8 @@
-use crate::lsp::backend::Backend;
-use tower_lsp::jsonrpc::Result;
-use tower_lsp::lsp_types::*;
+use crate::lsp::Backend;
+use anyhow::Result;
+use lsp_types::*;
 
-pub async fn prepare_call_hierarchy(
+pub fn prepare_call_hierarchy(
     backend: &Backend,
     params: CallHierarchyPrepareParams,
 ) -> Result<Option<Vec<CallHierarchyItem>>> {
@@ -12,7 +12,8 @@ pub async fn prepare_call_hierarchy(
     let col = position.character as usize + 1;
 
     if let Ok(path) = uri.to_file_path() {
-        let blocks = backend.blocks.lock().await;
+        let path = std::fs::canonicalize(&path).unwrap_or(path);
+        let blocks = backend.blocks.lock().unwrap();
 
         // Delegate to Core
         if let Some(target_id) =
@@ -56,7 +57,7 @@ pub async fn prepare_call_hierarchy(
     Ok(None)
 }
 
-pub async fn incoming_calls(
+pub fn incoming_calls(
     backend: &Backend,
     params: CallHierarchyIncomingCallsParams,
 ) -> Result<Option<Vec<CallHierarchyIncomingCall>>> {
@@ -66,7 +67,7 @@ pub async fn incoming_calls(
         return Ok(None);
     }
 
-    let blocks = backend.blocks.lock().await;
+    let blocks = backend.blocks.lock().unwrap();
 
     // Delegate to Core
     // Incoming calls = References to this ID
@@ -158,7 +159,7 @@ pub async fn incoming_calls(
     Ok(Some(calls))
 }
 
-pub async fn outgoing_calls(
+pub fn outgoing_calls(
     backend: &Backend,
     params: CallHierarchyOutgoingCallsParams,
 ) -> Result<Option<Vec<CallHierarchyOutgoingCall>>> {
@@ -168,7 +169,7 @@ pub async fn outgoing_calls(
         return Ok(None);
     }
 
-    let blocks = backend.blocks.lock().await;
+    let blocks = backend.blocks.lock().unwrap();
 
     // Delegate to Core
     let _outgoing_edges = crate::core::locate::find_outgoing_edges(&blocks, &source_id);

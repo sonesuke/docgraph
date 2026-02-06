@@ -7,7 +7,7 @@ use tempfile::tempdir;
 #[tokio::test]
 async fn e2e_document_symbols() -> anyhow::Result<()> {
     let dir = tempdir()?;
-    let root_path = dir.path().to_path_buf();
+    let root_path = std::fs::canonicalize(dir.path())?;
 
     fs::write(
         root_path.join("docgraph.toml"),
@@ -39,6 +39,20 @@ desc = "Requirement""#,
     .await?;
     c.send_notification("initialized", json!({})).await?;
 
+    let text = fs::read_to_string(&file_path)?;
+    c.send_notification(
+        "textDocument/didOpen",
+        json!({
+            "textDocument": {
+                "uri": file_uri,
+                "languageId": "markdown",
+                "version": 1,
+                "text": text
+            }
+        }),
+    )
+    .await?;
+
     let res: serde_json::Value = c
         .send_request(
             "textDocument/documentSymbol",
@@ -64,7 +78,7 @@ desc = "Requirement""#,
 #[tokio::test]
 async fn e2e_workspace_symbols() -> anyhow::Result<()> {
     let dir = tempdir()?;
-    let root_path = dir.path().to_path_buf();
+    let root_path = std::fs::canonicalize(dir.path())?;
 
     fs::write(
         root_path.join("docgraph.toml"),
@@ -91,6 +105,38 @@ desc = "Requirement""#,
     )
     .await?;
     c.send_notification("initialized", json!({})).await?;
+
+    // Open text1.md
+    let text1 = fs::read_to_string(root_path.join("test1.md"))?;
+    let uri1 = format!("file://{}", root_path.join("test1.md").to_str().unwrap());
+    c.send_notification(
+        "textDocument/didOpen",
+        json!({
+            "textDocument": {
+                "uri": uri1,
+                "languageId": "markdown",
+                "version": 1,
+                "text": text1
+            }
+        }),
+    )
+    .await?;
+
+    // Open test2.md
+    let text2 = fs::read_to_string(root_path.join("test2.md"))?;
+    let uri2 = format!("file://{}", root_path.join("test2.md").to_str().unwrap());
+    c.send_notification(
+        "textDocument/didOpen",
+        json!({
+            "textDocument": {
+                "uri": uri2,
+                "languageId": "markdown",
+                "version": 1,
+                "text": text2
+            }
+        }),
+    )
+    .await?;
 
     // Search by ID fragment
     let res: serde_json::Value = c

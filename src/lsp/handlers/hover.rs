@@ -1,5 +1,5 @@
-use tower_lsp::jsonrpc::Result;
-use tower_lsp::lsp_types::*;
+use anyhow::Result;
+use lsp_types::*;
 
 pub fn hover(
     blocks: &[crate::core::types::SpecBlock],
@@ -12,6 +12,7 @@ pub fn hover(
     let col = position.character as usize + 1;
 
     if let Ok(path) = uri.to_file_path() {
+        let path = std::fs::canonicalize(&path).unwrap_or(path);
         // Delegate to Core Logic
         if let Some(target_id) =
             crate::core::locate::locate_id_at_position(blocks, refs, &path, line, col)

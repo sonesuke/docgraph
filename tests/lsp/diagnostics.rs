@@ -9,7 +9,7 @@ use tokio::time::Duration;
 async fn e2e_diagnostics_and_hover() -> anyhow::Result<()> {
     // 1. Setup workspace
     let dir = tempdir()?;
-    let root_path = dir.path().to_path_buf();
+    let root_path = std::fs::canonicalize(dir.path())?;
 
     // Create config
     let config_path = root_path.join("docgraph.toml");

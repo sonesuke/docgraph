@@ -310,7 +310,7 @@ Some content.
         assert_eq!(blocks.len(), 1);
         let b = &blocks[0];
         assert_eq!(b.id, "IF_CONFIG");
-        
+
         // Should capture the FIRST heading
         assert_eq!(b.name.as_deref(), Some("docgraph.toml Configuration"));
     }
