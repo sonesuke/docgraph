@@ -67,7 +67,7 @@ mod tests {
         let (blocks, _) = extract_all(content, &path);
 
         assert_eq!(blocks.len(), 1);
-        let diags = check_broken_links(&[path.clone()], &blocks, &[]);
+        let diags = check_broken_links(std::slice::from_ref(&path), &blocks, &[]);
         assert_eq!(diags.len(), 1);
         assert!(diags[0].message.contains("UNKNOWN"));
     }
@@ -81,7 +81,7 @@ mod tests {
         let (blocks, refs) = extract_all(content, &path);
 
         assert_eq!(blocks.len(), 0);
-        let diags = check_broken_links(&[path.clone()], &blocks, &refs);
+        let diags = check_broken_links(std::slice::from_ref(&path), &blocks, &refs);
         assert_eq!(diags.len(), 1);
         assert!(diags[0].message.contains("UNKNOWN"));
     }
