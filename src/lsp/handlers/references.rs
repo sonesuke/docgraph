@@ -1,5 +1,5 @@
-use tower_lsp::jsonrpc::Result;
-use tower_lsp::lsp_types::*;
+use anyhow::Result;
+use lsp_types::*;
 
 pub fn references(
     blocks: &[crate::core::types::SpecBlock],
@@ -12,6 +12,7 @@ pub fn references(
     let col = position.character as usize + 1;
 
     if let Ok(path) = uri.to_file_path() {
+        let path = std::fs::canonicalize(&path).unwrap_or(path);
         // Delegate to Core Logic
         if let Some(target_id) =
             crate::core::locate::locate_id_at_position(blocks, refs, &path, line, col)
@@ -59,7 +60,8 @@ mod tests {
             writeln!(temp_file).unwrap();
         } // filler
         writeln!(temp_file, "<a id=\"FR-01\"></a>").unwrap();
-        let path = temp_file.path().to_path_buf();
+        writeln!(temp_file, "<a id=\"FR-01\"></a>").unwrap();
+        let path = std::fs::canonicalize(temp_file.path()).unwrap();
 
         let blocks = vec![
             SpecBlock {
@@ -142,7 +144,7 @@ mod tests {
             writeln!(temp_file).unwrap();
         }
         writeln!(temp_file, "<a id=\"FR-01\"></a>").unwrap();
-        let path = temp_file.path().to_path_buf();
+        let path = std::fs::canonicalize(temp_file.path()).unwrap();
 
         let blocks = vec![
             SpecBlock {
@@ -203,11 +205,12 @@ mod tests {
     fn test_references_with_standalone_refs() {
         let mut temp_file1 = NamedTempFile::new().unwrap();
         writeln!(temp_file1, "<a id=\"FR-01\"></a>").unwrap();
-        let path = temp_file1.path().to_path_buf();
+        let path = std::fs::canonicalize(temp_file1.path()).unwrap();
 
         let mut temp_file2 = NamedTempFile::new().unwrap();
         writeln!(temp_file2, "Ref to [FR-01]").unwrap();
-        let path2 = temp_file2.path().to_path_buf();
+        writeln!(temp_file2, "Ref to [FR-01]").unwrap();
+        let path2 = std::fs::canonicalize(temp_file2.path()).unwrap();
 
         let blocks = vec![SpecBlock {
             id: "FR-01".to_string(),

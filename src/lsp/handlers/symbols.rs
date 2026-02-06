@@ -1,5 +1,5 @@
-use tower_lsp::jsonrpc::Result;
-use tower_lsp::lsp_types::*;
+use anyhow::Result;
+use lsp_types::*;
 
 pub fn document_symbol(
     blocks: &[crate::core::types::SpecBlock],
@@ -7,6 +7,7 @@ pub fn document_symbol(
 ) -> Result<Option<DocumentSymbolResponse>> {
     let uri = params.text_document.uri;
     if let Ok(path) = uri.to_file_path() {
+        let path = std::fs::canonicalize(&path).unwrap_or(path);
         let symbols: Vec<DocumentSymbol> = blocks
             .iter()
             .filter(|b| b.file_path == path)

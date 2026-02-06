@@ -1,5 +1,5 @@
-use tower_lsp::jsonrpc::Result;
-use tower_lsp::lsp_types::*;
+use anyhow::Result;
+use lsp_types::*;
 
 pub fn completion(
     blocks: &[crate::core::types::SpecBlock],

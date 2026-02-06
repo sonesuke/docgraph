@@ -6,12 +6,12 @@ use args::{Cli, Commands};
 use clap::Parser;
 use std::process::ExitCode;
 
-pub async fn run() -> ExitCode {
+pub fn run() -> ExitCode {
     let args = Cli::parse();
 
     match args.command {
         Commands::Lsp => {
-            lsp::run_server().await;
+            lsp::run_server();
             ExitCode::SUCCESS
         }
         Commands::Check {
