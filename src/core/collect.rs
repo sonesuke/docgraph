@@ -57,7 +57,8 @@ mod tests {
 
         assert_eq!(blocks.len(), 1);
         assert_eq!(blocks[0].id, "ID-1");
-        assert_eq!(refs.len(), 1);
-        assert_eq!(refs[0].target_id, "ID-2");
+        assert_eq!(blocks[0].edges.len(), 1);
+        assert_eq!(blocks[0].edges[0].id, "ID-2");
+        assert_eq!(refs.len(), 0);
     }
 }

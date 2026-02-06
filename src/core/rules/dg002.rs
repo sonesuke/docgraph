@@ -1,157 +1,66 @@
-use regex::Regex;
-use rumdl_lib::lint_context::LintContext;
-use rumdl_lib::rule::{CrossFileScope, LintError, LintResult, LintWarning, Rule, Severity};
-use rumdl_lib::workspace_index::{FileIndex, HeadingIndex, WorkspaceIndex};
-use std::path::Path;
+use crate::core::types::{Diagnostic, Range, Severity, SpecBlock};
+use std::collections::HashMap;
+use std::path::PathBuf;
 
-#[derive(Debug, Clone, Default)]
-pub struct DG002;
+pub fn check_duplicate_ids(_files: &[PathBuf], blocks: &[SpecBlock]) -> Vec<Diagnostic> {
+    let mut diagnostics = Vec::new();
+    let mut id_map: HashMap<String, Vec<&SpecBlock>> = HashMap::new();
 
-impl Rule for DG002 {
-    fn name(&self) -> &'static str {
-        "DG002"
+    // Group blocks by ID
+    for block in blocks {
+        id_map.entry(block.id.clone()).or_default().push(block);
     }
 
-    fn description(&self) -> &'static str {
-        "Duplicate anchor ID found in workspace"
-    }
-
-    fn check(&self, _ctx: &LintContext) -> LintResult {
-        Ok(Vec::new())
-    }
-
-    fn contribute_to_index(&self, ctx: &LintContext, file_index: &mut FileIndex) {
-        // Extract <a id="..."> tags and add them as headings with custom anchors
-        // This allows them to be indexed for cross-file checks
-        let anchor_re = Regex::new(r#"<a\s+id=["']([^"']+)["']\s*>\s*</a>"#).unwrap();
-
-        // Strip code blocks and inline code to avoid false positives
-        let clean_content = crate::core::utils::strip_markdown_code(ctx.content);
-
-        for (i, line) in clean_content.lines().enumerate() {
-            for caps in anchor_re.captures_iter(line) {
-                if let Some(cap_id) = caps.get(1) {
-                    let id = cap_id.as_str().to_string();
-                    file_index.add_heading(HeadingIndex {
-                        text: String::new(),
-                        auto_anchor: String::new(),
-                        custom_anchor: Some(id),
-                        line: i + 1,
-                    });
-                }
+    // Check for duplicates
+    for (id, occurrences) in id_map {
+        if occurrences.len() > 1 {
+            for block in occurrences {
+                diagnostics.push(Diagnostic {
+                    code: "DG002".to_string(),
+                    message: format!("Duplicate anchor ID '{}' found", id),
+                    path: block.file_path.clone(),
+                    range: Range {
+                        start_line: block.line_start,
+                        start_col: 1,
+                        end_line: block.line_start,
+                        end_col: 1,
+                    },
+                    severity: Severity::Error,
+                });
             }
         }
     }
 
-    fn cross_file_scope(&self) -> CrossFileScope {
-        CrossFileScope::Workspace
-    }
-
-    fn cross_file_check(
-        &self,
-        current_path: &Path,
-        file_index: &FileIndex,
-        workspace_index: &WorkspaceIndex,
-    ) -> LintResult {
-        let mut warnings = Vec::new();
-
-        // Check explicit anchors (now stored as headings with custom_anchor)
-        for heading in &file_index.headings {
-            if let Some(id) = &heading.custom_anchor {
-                // Check against all other files
-                for (other_path, other_index) in workspace_index.files() {
-                    if other_path == current_path {
-                        continue;
-                    }
-
-                    if other_index.has_anchor(id) {
-                        warnings.push(LintWarning {
-                            message: format!(
-                                "Duplicate anchor ID '{}' found. Also defined in {}",
-                                id,
-                                other_path.display()
-                            ),
-                            line: heading.line,
-                            column: 1, // We don't track column in HeadingIndex unfortunately, defaulting to 1
-                            end_line: heading.line,
-                            end_column: 1,
-                            severity: Severity::Error,
-                            fix: None,
-                            rule_name: Some("DG002".to_string()),
-                        });
-                        break; // Report once per duplicate per file
-                    }
-                }
-            }
-        }
-
-        Ok(warnings)
-    }
-
-    fn fix(&self, _ctx: &LintContext) -> Result<String, LintError> {
-        Ok(String::new())
-    }
-
-    fn as_any(&self) -> &dyn std::any::Any {
-        self
-    }
+    diagnostics
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rumdl_lib::config::MarkdownFlavor;
+    use crate::core::parse::extract_all;
 
-    fn index_content(content: &str, path: &Path) -> FileIndex {
-        let rule = DG002;
-        let rules: Vec<Box<dyn rumdl_lib::rule::Rule>> = vec![Box::new(rule)];
-        let (_, index) = rumdl_lib::lint_and_index(
-            content,
-            &rules,
-            false,
-            MarkdownFlavor::Standard,
-            Some(path.to_path_buf()),
-            None,
-        );
-        index
+    #[test]
+    fn test_dg002_duplicates() {
+        let content = r#"<a id="DUP"></a>
+<a id="DUP"></a>"#;
+        let path = PathBuf::from("test.md");
+        let (blocks, _) = extract_all(content, &path);
+
+        assert_eq!(blocks.len(), 2);
+        let diags = check_duplicate_ids(&[path.clone()], &blocks);
+        assert_eq!(diags.len(), 2); // Both occurrences reported
+        assert_eq!(diags[0].code, "DG002");
     }
 
     #[test]
-    fn test_dg002_unique_ids() {
-        let file1 = r#"<a id="ID-1"></a>"#;
-        let file2 = r#"<a id="ID-2"></a>"#;
-        let path1 = Path::new("file1.md");
-        let path2 = Path::new("file2.md");
+    fn test_dg002_unique() {
+        let content = r#"<a id="ID-1"></a>
+<a id="ID-2"></a>"#;
+        let path = PathBuf::from("test.md");
+        let (blocks, _) = extract_all(content, &path);
 
-        let idx1 = index_content(file1, path1);
-        let idx2 = index_content(file2, path2);
-
-        let mut ws = WorkspaceIndex::new();
-        ws.insert_file(path1.to_path_buf(), idx1.clone());
-        ws.insert_file(path2.to_path_buf(), idx2.clone());
-
-        let rule = DG002;
-        let warnings = rule.cross_file_check(path1, &idx1, &ws).unwrap();
-        assert!(warnings.is_empty());
-    }
-
-    #[test]
-    fn test_dg002_duplicate_across_files() {
-        let file1 = r#"<a id="ID-SAME"></a>"#;
-        let file2 = r#"<a id="ID-SAME"></a>"#;
-        let path1 = Path::new("file1.md");
-        let path2 = Path::new("file2.md");
-
-        let idx1 = index_content(file1, path1);
-        let idx2 = index_content(file2, path2);
-
-        let mut ws = WorkspaceIndex::new();
-        ws.insert_file(path1.to_path_buf(), idx1.clone());
-        ws.insert_file(path2.to_path_buf(), idx2.clone());
-
-        let rule = DG002;
-        let warnings = rule.cross_file_check(path1, &idx1, &ws).unwrap();
-        assert_eq!(warnings.len(), 1);
-        assert!(warnings[0].message.contains("Duplicate anchor ID"));
+        assert_eq!(blocks.len(), 2);
+        let diags = check_duplicate_ids(&[path.clone()], &blocks);
+        assert_eq!(diags.len(), 0);
     }
 }

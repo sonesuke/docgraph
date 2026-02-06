@@ -63,7 +63,7 @@ fn bench_collect_1000_nodes(c: &mut Criterion) {
 
     c.bench_function("collect_1000_nodes_100_files", |b| {
         b.iter(|| {
-            let (blocks, _refs) = collect_workspace_all(dir.path(), &[]);
+            let (blocks, _refs) = collect_workspace_all(dir.path(), &[], None);
             assert!(
                 blocks.len() >= 1000,
                 "Expected 1000+ nodes, got {}",
@@ -82,7 +82,7 @@ fn bench_lint_1000_nodes(c: &mut Criterion) {
 
     c.bench_function("lint_1000_nodes_100_files", |b| {
         b.iter(|| {
-            let diagnostics = check_workspace(dir.path(), false, None, true, &config);
+            let diagnostics = check_workspace(dir.path(), false, None, true, &config, None);
             // Just run the check, verify diagnostic count to ensure rules are running
             assert!(!diagnostics.is_empty());
         })
