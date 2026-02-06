@@ -39,7 +39,7 @@ Some text but no heading."#;
         let (blocks, _) = extract_all(content, &path);
 
         assert_eq!(blocks.len(), 1);
-        let diags = check_anchor_headings(&[path.clone()], &blocks);
+        let diags = check_anchor_headings(std::slice::from_ref(&path), &blocks);
         assert_eq!(diags.len(), 1);
         assert_eq!(diags[0].code, "DG001");
     }
@@ -53,7 +53,7 @@ Some text but no heading."#;
         let (blocks, _) = extract_all(content, &path);
 
         assert_eq!(blocks.len(), 1);
-        let diags = check_anchor_headings(&[path.clone()], &blocks);
+        let diags = check_anchor_headings(std::slice::from_ref(&path), &blocks);
         assert_eq!(diags.len(), 0);
     }
 }

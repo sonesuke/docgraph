@@ -47,7 +47,7 @@ mod tests {
         let (blocks, _) = extract_all(content, &path);
 
         assert_eq!(blocks.len(), 2);
-        let diags = check_duplicate_ids(&[path.clone()], &blocks);
+        let diags = check_duplicate_ids(std::slice::from_ref(&path), &blocks);
         assert_eq!(diags.len(), 2); // Both occurrences reported
         assert_eq!(diags[0].code, "DG002");
     }
@@ -60,7 +60,7 @@ mod tests {
         let (blocks, _) = extract_all(content, &path);
 
         assert_eq!(blocks.len(), 2);
-        let diags = check_duplicate_ids(&[path.clone()], &blocks);
+        let diags = check_duplicate_ids(std::slice::from_ref(&path), &blocks);
         assert_eq!(diags.len(), 0);
     }
 }
