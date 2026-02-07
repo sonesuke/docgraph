@@ -42,7 +42,10 @@ jobs:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
-          runCmd: "true"
+          runCmd: |
+            pwd
+            ls -ld /workspaces/* || true
+            env | grep CARGO
 
       - name: Rust Format Check
         uses: devcontainers/ci@v0.3
