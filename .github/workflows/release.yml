@@ -19,7 +19,7 @@ jobs:
           git config --global init.defaultBranch main
           git config --global advice.detachedHead false
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - id: check
@@ -62,7 +62,7 @@ jobs:
           git config --global init.defaultBranch main
           git config --global advice.detachedHead false
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -85,7 +85,7 @@ jobs:
           Compress-Archive -Path ${{ matrix.artifact_name }} -DestinationPath ../../../${{ matrix.asset_name }}
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.asset_name }}
           path: ${{ matrix.asset_name }}
@@ -100,7 +100,7 @@ jobs:
           git config --global init.defaultBranch main
           git config --global advice.detachedHead false
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -116,7 +116,7 @@ jobs:
           npx vsce package -o ../docgraph.vsix
 
       - name: Upload VSIX
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: docgraph.vsix
           path: docgraph.vsix
@@ -131,10 +131,10 @@ jobs:
           git config --global init.defaultBranch main
           git config --global advice.detachedHead false
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: artifacts
           merge-multiple: true
