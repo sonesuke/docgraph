@@ -16,14 +16,12 @@ permissions:
 
 jobs:
   build:
-    name: Build & Verify
+    name: Build Dev Container
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Set git default branch
-        run: |
-          git config --global init.defaultBranch main
-          git config --global advice.detachedHead false
-
       - uses: actions/checkout@v6
 
       - name: Log in to GitHub Container Registry
@@ -33,75 +31,57 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Rust Format Check
+      - name: Build and Push Dev Container
         uses: devcontainers/ci@v0.3
-        env:
-          CI: true
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          imageTag: sha-${{ github.sha }}
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: cargo fmt -- --check
+          push: always
+
+  verify:
+    name: Verify
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}/docgraph-dev:sha-${{ github.sha }}
+      options: --user vscode
+    steps:
+      - name: Set git default branch
+        run: |
+          git config --global init.defaultBranch main
+          git config --global advice.detachedHead false
+
+      - uses: actions/checkout@v6
+
+      - name: Rust Format Check
+        run: cargo fmt -- --check
 
       - name: Cargo Clippy
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: cargo clippy -- -D warnings
+        run: cargo clippy -- -D warnings
 
       - name: Security Audit (Rust)
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: |
-            cargo audit
-            (cd zed-extension && cargo audit)
+        run: |
+          cargo audit
+          (cd zed-extension && cargo audit)
 
       - name: VSIX Lint & Audit
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: |
-            npm install --prefix vsix
-            npm run lint --prefix vsix
-            npm audit --prefix vsix
+        run: |
+          npm install --prefix vsix
+          npm run lint --prefix vsix
+          npm audit --prefix vsix
 
       - name: Tests & Coverage
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+        run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
 
       - name: Docgraph Check
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: cargo run -- check ./doc
+        run: cargo run -- check ./doc
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v6
         with:
           name: coverage-report
           path: lcov.info
+
 
 
