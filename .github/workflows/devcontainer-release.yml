@@ -18,6 +18,11 @@ jobs:
       packages: write
 
     steps:
+      - name: Set git default branch
+        run: |
+          git config --global init.defaultBranch main
+          git config --global advice.detachedHead false
+
       - name: Checkout repository
         uses: actions/checkout@v6
 
@@ -30,6 +35,8 @@ jobs:
 
       - name: Build and push Dev Container
         uses: devcontainers/ci@v0.3
+        env:
+          CI: true
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev

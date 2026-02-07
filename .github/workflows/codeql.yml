@@ -28,6 +28,11 @@ jobs:
             build-mode: none
 
     steps:
+      - name: Set git default branch
+        run: |
+          git config --global init.defaultBranch main
+          git config --global advice.detachedHead false
+
       - name: Checkout repository
         uses: actions/checkout@v6
 

@@ -14,6 +14,11 @@ jobs:
     outputs:
       on_main: ${{ steps.check.outputs.on_main }}
     steps:
+      - name: Set git default branch
+        run: |
+          git config --global init.defaultBranch main
+          git config --global advice.detachedHead false
+
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
@@ -52,6 +57,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Set git default branch
+        run: |
+          git config --global init.defaultBranch main
+          git config --global advice.detachedHead false
+
       - uses: actions/checkout@v6
 
       - name: Install Rust
@@ -85,6 +95,11 @@ jobs:
     if: needs.check-branch.outputs.on_main == 'true'
     runs-on: ubuntu-latest
     steps:
+      - name: Set git default branch
+        run: |
+          git config --global init.defaultBranch main
+          git config --global advice.detachedHead false
+
       - uses: actions/checkout@v6
 
       - name: Install Node.js
@@ -111,6 +126,11 @@ jobs:
     needs: [build-rust, build-vsix]
     runs-on: ubuntu-latest
     steps:
+      - name: Set git default branch
+        run: |
+          git config --global init.defaultBranch main
+          git config --global advice.detachedHead false
+
       - uses: actions/checkout@v6
 
       - name: Download all artifacts

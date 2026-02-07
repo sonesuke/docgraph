@@ -18,6 +18,11 @@ jobs:
     name: Lint & Security
     runs-on: ubuntu-latest
     steps:
+      - name: Set git default branch
+        run: |
+          git config --global init.defaultBranch main
+          git config --global advice.detachedHead false
+
       - uses: actions/checkout@v6
 
       - name: Log in to GitHub Container Registry
@@ -29,6 +34,8 @@ jobs:
 
       - name: Build and Run Dev Container (Lint)
         uses: devcontainers/ci@v0.3
+        env:
+          CI: true
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -57,6 +64,8 @@ jobs:
 
       - name: Build and Run Dev Container (Test)
         uses: devcontainers/ci@v0.3
+        env:
+          CI: true
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
