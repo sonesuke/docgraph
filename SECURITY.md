@@ -27,5 +27,3 @@ We use automated tools to monitor our dependencies for known vulnerabilities:
 - **Dependabot**: Automatically scans for outdated or vulnerable crates.
 - **Cargo Audit**: Integrated into our CI pipeline to block merges that introduce known security risks.
 
-### Known Issues
-As of January 2026, we are aware of vulnerabilities in `serde_yml` (a transitive dependency). We are actively monitoring the upstream linter for a fix and planning a migration if necessary.

@@ -39,6 +39,7 @@ jobs:
             cargo audit
             npm install --prefix vsix
             npm run lint --prefix vsix
+            npm audit --prefix vsix
 
   test:
     name: Test & Coverage
