@@ -1,5 +1,6 @@
 use anyhow::Result;
 use lsp_types::*;
+use url::Url;
 
 pub fn rename(
     blocks: &[crate::core::types::SpecBlock],

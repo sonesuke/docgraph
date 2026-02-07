@@ -2,7 +2,7 @@ use crossbeam_channel::Sender;
 use dashmap::DashMap;
 use lsp_server::{Connection, Message, Notification, RequestId, Response};
 use lsp_types::{
-    Diagnostic, InitializeParams, Position, PublishDiagnosticsParams, Range, Url, WorkspaceFolder,
+    Diagnostic, InitializeParams, Position, PublishDiagnosticsParams, Range, WorkspaceFolder,
     notification::{
         DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument,
         Initialized, Notification as _, PublishDiagnostics,
@@ -13,6 +13,7 @@ use lsp_types::{
         WorkspaceSymbolRequest,
     },
 };
+use url::Url;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 

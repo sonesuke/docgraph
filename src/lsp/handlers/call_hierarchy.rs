@@ -1,6 +1,7 @@
 use crate::lsp::Backend;
 use anyhow::Result;
 use lsp_types::*;
+use url::Url;
 
 pub fn prepare_call_hierarchy(
     backend: &Backend,
