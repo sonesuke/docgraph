@@ -13,6 +13,7 @@ pub fn extract_all(content: &str, file_path: &Path) -> (Vec<SpecBlock>, Vec<RefU
     let mut current_anchor_line: usize = 0;
     let mut current_block_refs: Vec<EdgeUse> = Vec::new();
     let mut current_block_name: Option<String> = None;
+    let mut current_block_start_offset: usize = 0;
 
     // We need to track the *byte offset* to *line/column* mapping manually or helper
     // pulldown-cmark gives byte offsets.
@@ -43,13 +44,24 @@ pub fn extract_all(content: &str, file_path: &Path) -> (Vec<SpecBlock>, Vec<RefU
                     // If we were already in a block, close it
                     if let Some(prev_id) = current_anchor_id.take() {
                         let (end_line, _) = offset_to_line_col(range.start);
+                        let block_content =
+                            content[current_block_start_offset..range.start].to_string();
+                        // Extract Node Type: "UC-001" -> "UC"
+                        let node_type = prev_id
+                            .split(['-', '_'])
+                            .next()
+                            .unwrap_or(&prev_id)
+                            .to_string();
+
                         blocks.push(SpecBlock {
                             id: prev_id,
+                            node_type,
                             name: current_block_name.take(),
                             edges: std::mem::take(&mut current_block_refs),
                             file_path: file_path.to_path_buf(),
                             line_start: current_anchor_line,
                             line_end: end_line, // Ends at start of new anchor
+                            content: block_content,
                         });
                     }
 
@@ -57,6 +69,9 @@ pub fn extract_all(content: &str, file_path: &Path) -> (Vec<SpecBlock>, Vec<RefU
                     current_anchor_id = Some(id);
                     let (start_line, _) = offset_to_line_col(range.start);
                     current_anchor_line = start_line;
+                    // We need to track start_offset of the block content (after the anchor tag)
+                    // range.end is the end of the anchor tag.
+                    current_block_start_offset = range.end;
                 }
             }
 
@@ -147,13 +162,22 @@ pub fn extract_all(content: &str, file_path: &Path) -> (Vec<SpecBlock>, Vec<RefU
     // Close final block
     if let Some(prev_id) = current_anchor_id {
         let (end_line, _) = offset_to_line_col(content.len());
+        let block_content = content[current_block_start_offset..].to_string();
+        let node_type = prev_id
+            .split(['-', '_'])
+            .next()
+            .unwrap_or(&prev_id)
+            .to_string();
+
         blocks.push(SpecBlock {
             id: prev_id,
+            node_type,
             name: current_block_name,
             edges: current_block_refs, // took ownership
             file_path: file_path.to_path_buf(),
             line_start: current_anchor_line,
             line_end: end_line,
+            content: block_content,
         });
     }
 
@@ -227,13 +251,16 @@ A user in the system.
         // First block: DAT-SSO-CONFIG
         let b1 = &blocks[0];
         assert_eq!(b1.id, "DAT-SSO-CONFIG");
+        assert_eq!(b1.node_type, "DAT");
         assert_eq!(b1.name.as_deref(), Some("SSO Configuration"));
         assert_eq!(b1.edges.len(), 2); // Two refs to DAT-TENANT
         assert!(b1.edges.iter().all(|e| e.id == "DAT-TENANT"));
+        assert!(b1.content.contains("Stores the Identity Provider details"));
 
         // Second block: DAT-USER
         let b2 = &blocks[1];
         assert_eq!(b2.id, "DAT-USER");
+        assert_eq!(b2.node_type, "DAT");
         assert_eq!(b2.name.as_deref(), Some("User"));
         assert_eq!(b2.edges.len(), 1);
         assert_eq!(b2.edges[0].id, "DAT-SSO-CONFIG");

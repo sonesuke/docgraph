@@ -211,6 +211,8 @@ mod tests {
                     col_end: 1,
                 })
                 .collect(),
+            content: String::new(),
+            node_type: id.split(['-', '_']).next().unwrap_or(id).to_string(),
         }
     }
 

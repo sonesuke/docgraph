@@ -3,8 +3,12 @@ use pulldown_cmark::{Event, LinkType, Options, Parser, Tag};
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
+use std::sync::OnceLock;
+
+static RE_WS_SINGLE: OnceLock<regex::Regex> = OnceLock::new();
 
 pub fn check_link_text(files: &[PathBuf], blocks: &[SpecBlock]) -> Vec<Diagnostic> {
+    RE_WS_SINGLE.get_or_init(|| regex::Regex::new(r" +").unwrap());
     let mut diagnostics = Vec::new();
 
     // Build a map of ID to Title from SpecBlocks (O(1) lookup)
@@ -59,49 +63,68 @@ pub fn check_link_text(files: &[PathBuf], blocks: &[SpecBlock]) -> Vec<Diagnosti
                                 // We need to extract just the text part.
                                 // For standard links [text](url), regex helper is safest/easiest as pulldown doesn't give inner text range directly in Start event
                                 let full_link_str = &content[range.clone()];
-                                // Simple extraction of text part [text]
+                                // Remove all occurrences of target_id from the title string
+                                let clean_title = title.replace(target_id, "");
+                                // Remove empty bracket pairs that remain after ID removal
+                                let clean_title = clean_title
+                                    .replace("[]", "")
+                                    .replace("()", "")
+                                    .replace("{}", "");
+                                // Remove remaining dangling separators and extra whitespace
+                                let clean_title = clean_title.trim();
+                                let clean_title = clean_title.trim_start_matches(|c: char| {
+                                    c == ' '
+                                        || c == ':'
+                                        || c == '-'
+                                        || c == '('
+                                        || c == '['
+                                        || c == ']'
+                                        || c == ')'
+                                });
+                                let clean_title = clean_title.trim_end_matches(|c: char| {
+                                    c == ' '
+                                        || c == ':'
+                                        || c == '-'
+                                        || c == ')'
+                                        || c == ']'
+                                        || c == '('
+                                        || c == '['
+                                });
+                                let clean_title = clean_title.trim().to_string();
+
+                                let expected_text = if clean_title.is_empty() {
+                                    target_id.to_string()
+                                } else {
+                                    format!("{} ({})", target_id, clean_title)
+                                };
+
                                 if let Some(open_bracket) = full_link_str.find('[')
-                                    && let Some(close_bracket) = full_link_str.find(']')
+                                    && let Some(close_bracket) = full_link_str.rfind(']')
                                 {
                                     let current_text =
                                         &full_link_str[open_bracket + 1..close_bracket];
 
-                                    // Remove all occurrences of target_id from the title string
-                                    let clean_title = title.replace(target_id, "");
-                                    // Remove empty bracket pairs that remain after ID removal
-                                    let clean_title = clean_title
-                                        .replace("[]", "")
-                                        .replace("()", "")
-                                        .replace("{}", "");
-                                    // Remove remaining dangling separators and extra whitespace
-                                    let clean_title = clean_title.trim();
-                                    let clean_title = clean_title.trim_start_matches(|c: char| {
-                                        c == ' '
-                                            || c == ':'
-                                            || c == '-'
-                                            || c == '('
-                                            || c == '['
-                                            || c == ']'
-                                            || c == ')'
-                                    });
-                                    let clean_title = clean_title.trim_end_matches(|c: char| {
-                                        c == ' '
-                                            || c == ':'
-                                            || c == '-'
-                                            || c == ')'
-                                            || c == ']'
-                                            || c == '('
-                                            || c == '['
-                                    });
-                                    let clean_title = clean_title.trim().to_string();
+                                    let clean_current = current_text
+                                        .chars()
+                                        .map(|c| if c.is_whitespace() { ' ' } else { c })
+                                        .collect::<String>();
+                                    let clean_expected = expected_text
+                                        .chars()
+                                        .map(|c| if c.is_whitespace() { ' ' } else { c })
+                                        .collect::<String>();
 
-                                    let expected_text = if clean_title.is_empty() {
-                                        target_id.to_string()
-                                    } else {
-                                        format!("{} ({})", target_id, clean_title)
-                                    };
+                                    let re_ws_single = RE_WS_SINGLE.get().unwrap();
+                                    let c_norm = re_ws_single
+                                        .replace_all(clean_current.trim(), " ")
+                                        .to_lowercase();
+                                    let e_norm = re_ws_single
+                                        .replace_all(clean_expected.trim(), " ")
+                                        .to_lowercase();
 
-                                    if current_text != expected_text {
+                                    if c_norm != e_norm
+                                        && !c_norm.contains(&e_norm)
+                                        && !e_norm.contains(&c_norm)
+                                    {
                                         let (start_line, start_col) =
                                             get_pos(range.start + open_bracket + 1);
                                         let (end_line, end_col) =

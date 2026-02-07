@@ -138,3 +138,19 @@ Rules:
 ```
 
 **Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+
+<a id="FR_CLI_VERSION"></a>
+
+## Version Command
+
+The `version` command shall display the current version of the `docgraph` tool.
+
+**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+
+<a id="FR_CLI_HELP"></a>
+
+## Help Command
+
+The `help` command shall display usage information for `docgraph` and its subcommands.
+
+**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)

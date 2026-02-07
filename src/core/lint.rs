@@ -63,6 +63,12 @@ pub fn check_workspace(
         diagnostics.extend(dg003_diags);
     }
 
+    // DG007: Template Validation
+    if should_run("DG007") {
+        let dg007_diags = crate::core::rules::dg007::check_templates(path, &spec_blocks, config);
+        diagnostics.extend(dg007_diags);
+    }
+
     diagnostics
 }
 

@@ -4,11 +4,13 @@ use std::path::PathBuf;
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub struct SpecBlock {
     pub id: String,
+    pub node_type: String, // Extracted from ID prefix (e.g. "UC")
     pub name: Option<String>,
     pub edges: Vec<EdgeUse>,
     pub file_path: PathBuf,
     pub line_start: usize, // 1-based
     pub line_end: usize,   // 1-based
+    pub content: String,   // Raw markdown content
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]

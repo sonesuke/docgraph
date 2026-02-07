@@ -18,6 +18,7 @@ pub struct Config {
 #[derive(Debug, Deserialize, Default, Clone)]
 pub struct NodeType {
     pub desc: String,
+    pub template: Option<std::path::PathBuf>,
 }
 
 #[derive(Debug, Deserialize, Default, Clone)]
