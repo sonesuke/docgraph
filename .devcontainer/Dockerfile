@@ -21,11 +21,9 @@ ENV PATH=/usr/local/cargo/bin:$PATH
 
 # No pre-build (cache is disabled by user request)
 
-# Install cargo-binstall as root (installs to /usr/local/cargo/bin)
-RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-
-# Install cargo tools and components as root
-RUN rustup component add rustfmt clippy llvm-tools-preview \
+# Install cargo-binstall and other rust tools as root (installs to /usr/local/cargo/bin)
+RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash \
+    && rustup component add rustfmt clippy llvm-tools-preview \
     && cargo binstall -y cargo-audit cargo-llvm-cov
 
 # Install Claude CLI as root
