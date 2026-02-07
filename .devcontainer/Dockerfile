@@ -25,8 +25,6 @@ USER vscode
 # and add it to PATH
 # ENV CARGO_HOME=/home/vscode/.cargo (Deferred until runtime)
 ENV PATH=$CARGO_HOME/bin:$PATH
-# Set CARGO_TARGET_DIR to a location in user home that is safe from volume mounts
-ENV CARGO_TARGET_DIR=/home/vscode/.cargo-target
 
 # No pre-build (cache is disabled by user request)
 
