@@ -44,6 +44,9 @@ jobs:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
+          env: |
+            CI=true
+            GITHUB_ACTIONS=true
           runCmd: "true"
 
       - name: Cargo Build
