@@ -2,6 +2,8 @@
 
 # Choice of Plain Markdown and HTML Anchors
 
+Standardizes the Markdown format for documentation, using specific headers and anchor tags for traceability.
+
 ## Decision
 
 We will use **Plain Markdown** with **HTML anchor tags** (`<a id="..."></a>`) placed immediately before headings to define document IDs.

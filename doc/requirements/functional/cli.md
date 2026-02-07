@@ -18,7 +18,6 @@ The `graph` command shall output the graph structure in JSON format.
 
 ### Realized by
 
-
 - [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
 - [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 

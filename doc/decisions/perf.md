@@ -2,6 +2,8 @@
 
 # Performance Logic
 
+Establishes performance goals and benchmarking strategies for the Docgraph workspace validation.
+
 ## Decision
 
 We use `criterion` for micro-benchmarks and set performance targets:

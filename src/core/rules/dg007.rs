@@ -319,7 +319,7 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                 }
                 
                 if !found {
-                    // Text patterns are not strictly required
+                    return Err(format!("Missing required text pattern: '{}'", pattern));
                 }
             }
         }
@@ -650,6 +650,52 @@ This should be detected as unexpected.
         if let Err(e) = result {
             assert!(e.contains("Extra H2 Section") || e.contains("extra") || e.contains("unexpected"), 
                 "Error message should mention the extra section, got: {}", e);
+        }
+    }
+    #[test]
+    fn test_missing_text_should_be_detected() {
+        // Initialize regex patterns
+        RE_WS.get_or_init(|| Regex::new(r" +").unwrap());
+        RE_PLACEHOLDER.get_or_init(|| Regex::new(r"\\\{[^}]+\\\}").unwrap());
+
+        // Template: H1 -> Text({Description}) -> H2
+        let template_content = r#"<a id="ADR_*"></a>
+
+# {Title}
+
+{Description}
+
+## Decision
+"#;
+
+        // Document: H1 -> (Missing Text) -> H2
+        let block_content = r#"<a id="ADR_001"></a>
+
+# My Title
+
+## Decision
+"#;
+
+        let template = parse_template(template_content).expect("Failed to parse template");
+        
+        let block = SpecBlock {
+            id: "ADR_001".to_string(),
+            node_type: "ADR".to_string(),
+            name: Some("My Title".to_string()),
+            edges: vec![],
+            file_path: "adr.md".into(),
+            line_start: 1,
+            line_end: 10,
+            content: block_content.to_string(),
+        };
+
+        // Should detect missing text
+        let result = validate_block(&block, &template);
+        assert!(result.is_err(), "Should detect missing text, but validation passed");
+        
+        if let Err(e) = result {
+            assert!(e.contains("Missing required text") || e.contains("Pattern not found"), 
+                "Error message should mention missing text, got: {}", e);
         }
     }
 }

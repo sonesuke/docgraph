@@ -2,6 +2,8 @@
 
 # Single Responsibility Principle
 
+Applies the Single Responsibility Principle to Docgraph modules, ensuring each module has one reason to change.
+
 ## Decision
 
 We adopt the **Single Responsibility Principle (SRP)**: each module should have one, and only one, reason to change. In practice, this means each file/module is responsible for exactly one thing.

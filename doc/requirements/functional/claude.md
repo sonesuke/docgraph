@@ -58,7 +58,6 @@ The plugin SHALL support distribution via the Claude marketplace mechanism. This
 
 ### Realized by
 
-
 - [MOD_PLUGIN (Claude Code Plugin)](../../architecture/view/module.md#MOD_PLUGIN)
 - [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
@@ -69,7 +68,6 @@ The plugin SHALL support distribution via the Claude marketplace mechanism. This
 The plugin SHALL be installable via the Claude Desktop `/plugin` commands. Specifically, it SHALL support being added as a marketplace and then installed as a local plugin.
 
 ### Realized by
-
 
 - [MOD_PLUGIN (Claude Code Plugin)](../../architecture/view/module.md#MOD_PLUGIN)
 - [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)

@@ -2,6 +2,8 @@
 
 # Testing
 
+Defines the testing strategy, including unit tests, integration tests, and E2E tests for CLI and LSP.
+
 ## Decision
 
 We adopt a multi-layered testing approach:

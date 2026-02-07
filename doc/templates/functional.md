@@ -6,19 +6,16 @@
 
 ### Realized by
 
-- [MOD_* (*)](*#MOD_*)
-
+- [MOD* (*)](*#MOD_*)
 
 ### Qualified by (Optional)
 
-- [* (*)](*#*) {Reason}
-
+- [FR* (*)](*#FR_*) {Reason}
 
 ### Codified in (Optional)
 
-- [CC_* (*)](*#CC_*) {Reason}
-
+- [CC* (*)](*#CC_*) {Reason}
 
 ### Decided by (Optional)
 
-- [ADR_* (*)](*#ADR_*) {Reason}
+- [ADR* (*)](*#ADR_*) {Reason}

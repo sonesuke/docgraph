@@ -2,6 +2,8 @@
 
 # Security Architecture
 
+Outlines the security strategy for Docgraph, including dependency auditing and SAST integration.
+
 ## Decision
 
 We implement a comprehensive security strategy:
@@ -9,8 +11,8 @@ We implement a comprehensive security strategy:
 1. **SAST**: GitHub CodeQL for static analysis
 2. **Supply Chain**: Dependabot for automated updates
 3. **Vulnerability Scanning**:
-    - **Core & Zed Extension**: `cargo-audit` in CI/CD
-    - **VSIX**: `npm audit` in CI/CD
+   - **Core & Zed Extension**: `cargo-audit` in CI/CD
+   - **VSIX**: `npm audit` in CI/CD
 
 ## Rationale
 

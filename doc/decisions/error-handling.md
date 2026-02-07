@@ -2,6 +2,8 @@
 
 # Error Handling Strategy: thiserror for Core, anyhow for Binaries
 
+Defines the error handling strategy across the Docgraph architecture, using `thiserror` for the core library and `anyhow` for binary crates (CLI, LSP).
+
 ## Decision
 
 We adopt a **boundary-based error handling strategy**:
@@ -83,6 +85,8 @@ fn to_jsonrpc_error(err: anyhow::Error) -> jsonrpc::Error {
 ```
 
 ## Rationale
+
+We selected this hybrid approach to balance type safety in the core library with development velocity and error context in the application layers.
 
 ### 1. Core Library: thiserror (Typed Errors)
 

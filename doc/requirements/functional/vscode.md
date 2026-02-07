@@ -20,7 +20,6 @@ The extension SHALL provide a setting (`docgraph.binaryPath`) allowing the user 
 
 ### Realized by
 
-
 - [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
 
 <a id="FR_VSC_MARKDOWN_ACTIVATION"></a>
@@ -31,7 +30,6 @@ The extension SHALL activate automatically when a workspace contains Markdown fi
 
 ### Realized by
 
-
 - [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
 
 <a id="FR_VSC_SERVER_LIFECYCLE"></a>
@@ -41,6 +39,5 @@ The extension SHALL activate automatically when a workspace contains Markdown fi
 The extension SHALL provide a command to restart the `docgraph` language server manually, which is useful when the binary is updated or the configuration changes.
 
 ### Realized by
-
 
 - [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)

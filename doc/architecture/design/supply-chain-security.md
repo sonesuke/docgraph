@@ -18,6 +18,7 @@ We enforce strict controls on dependencies and build processes to prevent supply
 **Configuration**: `.github/dependabot.yml`
 
 Automatically scans for outdated or vulnerable packages:
+
 - **Cargo crates**: Weekly updates
 - **GitHub Actions**: Weekly updates
 - **NPM packages** (VSIX): Weekly updates

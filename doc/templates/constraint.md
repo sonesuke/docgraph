@@ -6,9 +6,8 @@
 
 ### Realized by (Optional)
 
-- [FR_* (*)](*#FR_*)
-
+- [FR* (*)](*#FR_*)
 
 ### Satisfied by (Optional)
 
-- [NFR_* (*)](*#NFR_*) {Reason}
+- [NFR* (*)](*#NFR_*) {Reason}

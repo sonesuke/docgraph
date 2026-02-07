@@ -11,8 +11,6 @@ The system must be highly performant to ensure a smooth user experience, even wi
 - Linting 1000 nodes should take less than 1 second.
 - Graph analysis operations should be O(N) where possible.
 
-
-
 ### codified in (Optional)
 
 - [CC_PERF_TESTING (4. Performance Testing)](../../architecture/design/testing.md#CC_PERF_TESTING) Defines performance testing standards

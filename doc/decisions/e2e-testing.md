@@ -2,6 +2,8 @@
 
 # Testing Strategy for CLI and LSP
 
+Validates the system behavior from an end-user perspective using CLI and LSP end-to-end tests.
+
 ## Decision
 
 We will adopt an End-to-End (E2E) testing strategy for both CLI and LSP interfaces.

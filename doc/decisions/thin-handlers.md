@@ -2,6 +2,8 @@
 
 # Thin Handlers
 
+Adopts the pattern of thin handlers that delegate business logic to the core library.
+
 ## Decision
 
 We adopt the **Thin Handlers** principle: handlers should contain no business logic. They serve only as adapters between the user interface and the Core layer.

@@ -6,8 +6,8 @@
 
 ### Decided by (Optional)
 
-- [ADR_* (*)](*#ADR_*) {Reason}
+- [ADR* (*)](*#ADR_*) {Reason}
 
 ### Realized by (Optional)
 
-- [MOD_* (*)](*#MOD_*)
+- [MOD* (*)](*#MOD_*)

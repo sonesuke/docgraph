@@ -6,15 +6,12 @@
 
 ### codified in (Optional)
 
-- [CC_* (*)](*#CC_*) {Reason}
-
+- [CC* (*)](*#CC_*) {Reason}
 
 ### Realized by (Optional)
 
-- [MOD_* (*)](*#MOD_*)
-
+- [MOD* (*)](*#MOD_*)
 
 ### Decided by (Optional)
 
-- [ADR_* (*)](*#ADR_*) {Reason}
-    
+- [ADR* (*)](*#ADR_*) {Reason}

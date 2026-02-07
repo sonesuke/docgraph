@@ -24,11 +24,11 @@ rules = [
 
 **Settings:**
 
-| Attribute | Type | Description |
-| :--- | :--- | :--- |
-| `doc_types` | `List<String>` | Node types that are exempt from strict relation checks. |
-| `[node_types]` | `Table` | Defines allowed prefixes for nodes. |
-| `[references]` | `Table` | Defines constraints on how different node types can connect. |
+| Attribute      | Type           | Description                                                  |
+| :------------- | :------------- | :----------------------------------------------------------- |
+| `doc_types`    | `List<String>` | Node types that are exempt from strict relation checks.      |
+| `[node_types]` | `Table`        | Defines allowed prefixes for nodes.                          |
+| `[references]` | `Table`        | Defines constraints on how different node types can connect. |
 
 **Note:** Strict node type and strict relation validation are always enabled and cannot be disabled.
 
@@ -70,6 +70,7 @@ The interface MUST expose the following capabilities to the AI agent:
 **Implementation:**
 
 The implementation is defined in:
+
 - [plugin.json (Plugin Definition)](../../../docgraph-plugin/.claude-plugin/plugin.json)
 - [SKILL.md (Plugin Skill Definition)](../../../docgraph-plugin/skills/docgraph/SKILL.md)
 

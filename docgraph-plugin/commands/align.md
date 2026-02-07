@@ -1,9 +1,11 @@
 ---
 description: Ensure ID naming conventions, consistency, and correct file placement
 ---
+
 1. List elements within the target scope
+
    ```bash
-   docgraph list "{{TARGET_QUERY}}" 
+   docgraph list "{{TARGET_QUERY}}"
    # e.g., "FR-*" or path like "doc/requirements/"
    ```
 

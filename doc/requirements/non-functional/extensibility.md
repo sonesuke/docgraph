@@ -6,8 +6,6 @@
 
 The system architecture must be modular to facilitate future extensions, such as new linter rules or graph analysis algorithms.
 
-
-
 ### codified in (Optional)
 
 - [CC_LAYERED_ARCH (Layered Architecture)](../architecture/design/layered-architecture.md#CC_LAYERED_ARCH) Defines modular architecture

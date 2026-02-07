@@ -8,16 +8,13 @@
 
 {Decision}
 
-
 ## Rationale
 
 {Rationale}
 
-
 ## Context
 
 {Context}
-
 
 ## Related (Optional)
 

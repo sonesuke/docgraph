@@ -2,12 +2,14 @@
 
 # CI Environment Parity
 
+Enforces parity between the CI environment and the local Dev Container to ensure consistent build and test results.
+
 ## Decision
 
 We will use the **Dev Container** as the single source of truth for the development and testing environment.
 
 - **Local Development**: Developers use the `.devcontainer` configuration.
-- **CI Pipeline**: The CI workflow will use the `devcontainers/ci` action to build and run tests *inside* the exact same container image defined in `.devcontainer/devcontainer.json`.
+- **CI Pipeline**: The CI workflow will use the `devcontainers/ci` action to build and run tests _inside_ the exact same container image defined in `.devcontainer/devcontainer.json`.
 
 ## Rationale
 

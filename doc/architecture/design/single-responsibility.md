@@ -15,6 +15,7 @@ Core modules in `src/core` are responsible ONLY for domain logic and validation.
 **Rule Modules:**
 
 Each validation rule (`src/core/rules/dg*.rs`) implements a single check logic.
+
 - `config.rs`: Load and manage configuration
 
 - `dg001.rs`: Anchor must be followed by heading

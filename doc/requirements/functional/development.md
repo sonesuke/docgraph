@@ -6,7 +6,6 @@
 
 The system SHALL provide an automated validation pipeline to ensure document graph integrity on every change.
 
-
 ### Realized by
 
 - [MOD_CICD (CI/CD Pipelines)](../../architecture/view/module.md#MOD_CICD)
@@ -19,7 +18,6 @@ The system SHALL provide an automated validation pipeline to ensure document gra
 ### Decided by (Optional)
 
 - [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY) Decision to align CI and dev environments
-
 
 <a id="FR_DEV_STANDARDS"></a>
 
@@ -34,7 +32,7 @@ The project SHALL adhere to standardized development practices to ensure maintai
 
 - [MOD_CICD (CI/CD Pipelines)](../../architecture/view/module.md#MOD_CICD)
 
-### Qualified by (Optional)
+### Codified in (Optional)
 
 - [CC_CONVENTIONAL_COMMITS (Commit Messages)](../../architecture/design/development-norm.md#CC_CONVENTIONAL_COMMITS) Standardizes commit message format
 - [CC_SEMANTIC_VERSIONING (Versioning)](../../architecture/design/development-norm.md#CC_SEMANTIC_VERSIONING) Defines versioning strategy

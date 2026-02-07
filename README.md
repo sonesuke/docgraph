@@ -28,16 +28,18 @@ Follow these steps to set up `docgraph` for your project.
 `docgraph` requires the CLI binary to be installed on your system for all use cases (CLI, AI, and IDE).
 
 **macOS / Linux:**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/sonesuke/docgraph/main/install.sh | bash
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 powershell -c "irm https://raw.githubusercontent.com/sonesuke/docgraph/main/install.ps1 | iex"
 ```
 
-*Or build from source:* `cargo install --path .`
+_Or build from source:_ `cargo install --path .`
 
 ### Step 2: Configure (`docgraph.toml`)
 
@@ -68,6 +70,7 @@ Choose how you want to interact with `docgraph`:
 2. The AI agent will now automatically use the installed `docgraph` binary to analyze your documentation.
 
    **Example Claude Interaction:**
+
    > **You**: "Build a knowledge graph from the current directory."
    > **Claude**: "Building knowledge graph... Done. Found 15 nodes and 24 relationships."
    >
@@ -125,8 +128,6 @@ docgraph trace UC_LOGIN FR_EMAIL_LOGIN
 - `trace <from> <to>`: Trace and visualize relationship paths.
 - `describe <id>`: Show bidirectional relationships for a specific node.
 - `lsp`: Start the Language Server for IDE support.
-
-
 
 ---
 

@@ -2,6 +2,8 @@
 
 # Layered Architecture
 
+Defines the high-level layered architecture of the Docgraph system, separating concerns into Core, CLI, and LSP layers.
+
 ## Decision
 
 We adopt a 3-layer architecture:
@@ -19,6 +21,8 @@ We adopt a 3-layer architecture:
    - Calls Core logic and formats LSP responses
 
 ## Rationale
+
+We selected this 3-layer architecture to maximize separation of concerns and reusability.
 
 ### 1. Separation of Concerns
 

@@ -20,7 +20,6 @@ The Continuous Integration and Continuous Delivery (CI/CD) pipeline ensures that
 
 - [MOD_CICD (CI/CD Pipelines)](../view/module.md#MOD_CICD)
 
-
 Triggered when PR is merged to `main`.
 
 - **Publish**: (Planned) Publish binary or crate to registry.
