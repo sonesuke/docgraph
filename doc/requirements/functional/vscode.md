@@ -6,7 +6,7 @@ The `docgraph` VS Code extension acts as a bridge between the editor and the `do
 
 ## LSP Client Integration
 
-The extension SHALL implement a Language Server Protocol (LSP) client that establishes communication with the `docgraph` binary running in LSP mode (`docgraph lsp`).
+The extension, distributed via [VS Code Marketplace](../../requirements/interfaces/interfaces.md#IF_VSCODE_MARKETPLACE), SHALL implement a Language Server Protocol (LSP) client that establishes communication with the `docgraph` binary running in LSP mode (`docgraph lsp`) and exposes features via [VS Code UI](../../requirements/interfaces/interfaces.md#IF_VSCODE_UI).
 
 ### Realized by
 

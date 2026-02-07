@@ -4,7 +4,7 @@
 
 {Description}
 
-### codified in (Optional)
+### Codified in (Optional)
 
 - [CC* (*)](*#CC_*) {Reason}
 

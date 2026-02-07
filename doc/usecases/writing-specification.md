@@ -18,6 +18,8 @@ The developer writes specifications in Markdown using anchor heading format.
 
 - [FR_CORE_UNIQUE (Unique Node IDs)](../requirements/functional/core.md#FR_CORE_UNIQUE) Preventing ambiguity in requirement references
 - [FR_CORE_VALID_REF (Valid References)](../requirements/functional/core.md#FR_CORE_VALID_REF) Ensuring internal consistency of the documentation graph
+- [FR_CORE_TEMPLATE_VALIDATION (Template Validation)](../requirements/functional/core.md#FR_CORE_TEMPLATE_VALIDATION) Ensuring documentation follows defined structural templates
+- [FR_CORE_CONFIGURATION (Configuration)](../requirements/functional/core.md#FR_CORE_CONFIGURATION) Customizing workspace behavior via docgraph.toml
 
 ### Flow
 

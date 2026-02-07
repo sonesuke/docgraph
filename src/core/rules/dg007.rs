@@ -160,9 +160,9 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                 // Look ahead to find a header at the expected level
                 let mut found_idx = None;
                 let mut header_text = String::new();
-
-                for (i, event) in events.iter().enumerate().skip(event_idx) {
-                    if let Event::Start(Tag::Heading { level: l, .. }) = event {
+                
+                for i in event_idx..events.len() {
+                    if let Event::Start(Tag::Heading { level: l, .. }) = &events[i] {
                         if *l == *level {
                             // Extract the header text
                             let mut j = i + 1;
@@ -187,8 +187,7 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                 }
 
                 if let Some(idx) = found_idx {
-                    let normalized_header =
-                        header_text.replace("(Optional)", "").trim().to_string();
+                    let normalized_header = header_text.replace("(Optional)", "").trim().to_string();
                     if match_text(text_pattern, &normalized_header) {
                         // Header matches - consume events up to and including this header
                         section_missing = false;
@@ -228,11 +227,11 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                 if section_missing {
                     continue;
                 }
-
+                
                 // Look for a list
                 let mut found_idx = None;
-                for (i, event) in events.iter().enumerate().skip(event_idx) {
-                    match event {
+                for i in event_idx..events.len() {
+                    match &events[i] {
                         Event::Start(Tag::List(_)) => {
                             found_idx = Some(i);
                             break;
@@ -244,7 +243,7 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
 
                 if let Some(idx) = found_idx {
                     event_idx = idx + 1; // Skip Start(List)
-
+                    
                     while event_idx < events.len() {
                         match &events[event_idx] {
                             Event::Start(Tag::Item) => {
@@ -258,9 +257,7 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                                             event_idx += 1;
                                             while event_idx < events.len() {
                                                 match &events[event_idx] {
-                                                    Event::Text(t) | Event::Code(t) => {
-                                                        item_text.push_str(t)
-                                                    }
+                                                    Event::Text(t) | Event::Code(t) => item_text.push_str(t),
                                                     Event::End(TagEnd::Link) => break,
                                                     _ => {}
                                                 }
@@ -275,7 +272,7 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                                     }
                                     event_idx += 1;
                                 }
-
+                                
                                 if !item_patterns.is_empty() {
                                     let matched = item_patterns
                                         .iter()
@@ -304,11 +301,11 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                 if section_missing {
                     continue;
                 }
-
+                
                 // Look for matching text
                 let mut found = false;
-                for (i, event) in events.iter().enumerate().skip(event_idx) {
-                    match event {
+                for i in event_idx..events.len() {
+                    match &events[i] {
                         Event::Text(t) | Event::Code(t) => {
                             if match_text(pattern, t) {
                                 found = true;
@@ -320,7 +317,7 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                         _ => {}
                     }
                 }
-
+                
                 if !found {
                     return Err(format!("Missing required text pattern: '{}'", pattern));
                 }
@@ -462,7 +459,7 @@ Test description.
 "#;
 
         let template = parse_template(template_content).expect("Failed to parse template");
-
+        
         let block = SpecBlock {
             id: "TEST_001".to_string(),
             node_type: "TEST".to_string(),
@@ -476,11 +473,7 @@ Test description.
 
         // Should allow skipping the optional section
         let result = validate_block(&block, &template);
-        assert!(
-            result.is_ok(),
-            "Optional header should be skippable, but got error: {:?}",
-            result.err()
-        );
+        assert!(result.is_ok(), "Optional header should be skippable, but got error: {:?}", result.err());
     }
 
     #[test]
@@ -526,7 +519,7 @@ Description.
 "#;
 
         let template = parse_template(template_content).expect("Failed to parse template");
-
+        
         let block = SpecBlock {
             id: "FR_001".to_string(),
             node_type: "FR".to_string(),
@@ -540,11 +533,7 @@ Description.
 
         // Should allow skipping "Qualified by (Optional)" section
         let result = validate_block(&block, &template);
-        assert!(
-            result.is_ok(),
-            "Should allow skipping optional 'Qualified by' section, but got error: {:?}",
-            result.err()
-        );
+        assert!(result.is_ok(), "Should allow skipping optional 'Qualified by' section, but got error: {:?}", result.err());
     }
 
     #[test]
@@ -586,7 +575,7 @@ This is an exposed capabilities section.
 "#;
 
         let template = parse_template(template_content).expect("Failed to parse template");
-
+        
         let block = SpecBlock {
             id: "IF_TEST".to_string(),
             node_type: "IF".to_string(),
@@ -600,17 +589,11 @@ This is an exposed capabilities section.
 
         // Should detect extra sections not defined in template
         let result = validate_block(&block, &template);
-        assert!(
-            result.is_err(),
-            "Should detect extra sections not in template, but validation passed"
-        );
-
+        assert!(result.is_err(), "Should detect extra sections not in template, but validation passed");
+        
         if let Err(e) = result {
-            assert!(
-                e.contains("Overview") || e.contains("extra") || e.contains("unexpected"),
-                "Error message should mention the extra section, got: {}",
-                e
-            );
+            assert!(e.contains("Overview") || e.contains("extra") || e.contains("unexpected"), 
+                "Error message should mention the extra section, got: {}", e);
         }
     }
     #[test]
@@ -648,7 +631,7 @@ This should be detected as unexpected.
 "#;
 
         let template = parse_template(template_content).expect("Failed to parse template");
-
+        
         let block = SpecBlock {
             id: "IF_TEST_H2".to_string(),
             node_type: "IF".to_string(),
@@ -662,17 +645,11 @@ This should be detected as unexpected.
 
         // Should detect extra H2 sections not defined in template
         let result = validate_block(&block, &template);
-        assert!(
-            result.is_err(),
-            "Should detect extra H2 sections not in template, but validation passed"
-        );
-
+        assert!(result.is_err(), "Should detect extra H2 sections not in template, but validation passed");
+        
         if let Err(e) = result {
-            assert!(
-                e.contains("Extra H2 Section") || e.contains("extra") || e.contains("unexpected"),
-                "Error message should mention the extra section, got: {}",
-                e
-            );
+            assert!(e.contains("Extra H2 Section") || e.contains("extra") || e.contains("unexpected"), 
+                "Error message should mention the extra section, got: {}", e);
         }
     }
     #[test]
@@ -700,7 +677,7 @@ This should be detected as unexpected.
 "#;
 
         let template = parse_template(template_content).expect("Failed to parse template");
-
+        
         let block = SpecBlock {
             id: "ADR_001".to_string(),
             node_type: "ADR".to_string(),
@@ -714,17 +691,11 @@ This should be detected as unexpected.
 
         // Should detect missing text
         let result = validate_block(&block, &template);
-        assert!(
-            result.is_err(),
-            "Should detect missing text, but validation passed"
-        );
-
+        assert!(result.is_err(), "Should detect missing text, but validation passed");
+        
         if let Err(e) = result {
-            assert!(
-                e.contains("Missing required text") || e.contains("Pattern not found"),
-                "Error message should mention missing text, got: {}",
-                e
-            );
+            assert!(e.contains("Missing required text") || e.contains("Pattern not found"), 
+                "Error message should mention missing text, got: {}", e);
         }
     }
 }
