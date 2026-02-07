@@ -8,7 +8,8 @@
     "remoteUser": "vscode",
     "containerUser": "vscode",
     "remoteEnv": {
-        "Z_AI_API_KEY": "${localEnv:Z_AI_API_KEY}"
+        "Z_AI_API_KEY": "${localEnv:Z_AI_API_KEY}",
+        "CI": "${localEnv:CI}"
     },
     "customizations": {
         "vscode": {
