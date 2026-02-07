@@ -40,9 +40,10 @@ rules = [
 ]
 
 [references.IF]
-# Interface is derived from Use Case and may reference other specs or data
+# Interface is derived from Use Case and Functional Requirement
 rules = [
-  { dir = "from", targets = ["UC"], min = 0, desc = "Exposed interfaces should be justified by business use cases" },
+  { dir = "from", targets = ["UC"], min = 1, desc = "Exposed interfaces must be justified by at least one business use case" },
+  { dir = "from", targets = ["FR"], min = 1, desc = "Interfaces must be defined by at least one functional requirement" },
   { dir = "to", targets = ["MOD"], min = 1, desc = "Interface specifications must be realized by at least one module (MOD) to ensure implementation" }
 ]
 
