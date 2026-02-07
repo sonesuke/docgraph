@@ -1,6 +1,5 @@
 use anyhow::Result;
 use lsp_types::*;
-use url::Url;
 
 pub fn references(
     blocks: &[crate::core::types::SpecBlock],

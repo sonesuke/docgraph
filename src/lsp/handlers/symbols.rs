@@ -1,6 +1,5 @@
 use anyhow::Result;
 use lsp_types::*;
-use url::Url;
 
 pub fn document_symbol(
     blocks: &[crate::core::types::SpecBlock],
