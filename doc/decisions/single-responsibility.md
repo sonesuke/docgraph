@@ -2,13 +2,7 @@
 
 # Single Responsibility Principle
 
-## Status
-
-Accepted
-
-## Context
-
-As the `docgraph` codebase grows, we need a clear principle for organizing code into modules and files. Without a guiding principle, modules can become bloated with multiple responsibilities, making the code harder to understand, test, and maintain.
+Applies the Single Responsibility Principle to Docgraph modules, ensuring each module has one reason to change.
 
 ## Decision
 
@@ -16,37 +10,21 @@ We adopt the **Single Responsibility Principle (SRP)**: each module should have 
 
 ## Rationale
 
-### Easier to Understand
+- **Easier to Understand**: When reading `check.rs`, developers only need to understand the `check` command logic. No other command logic is mixed in, reducing cognitive load.
+- **Limited Change Impact**: When modifying the `check` command, developers only need to edit `check.rs`. Other commands are unaffected, minimizing the risk of unintended side effects.
+- **Clear Ownership**: Each file has a clear purpose, making it obvious where to add new functionality or fix bugs. This improves developer productivity and code navigation.
+- **Better Testing**: Each module can be tested independently with focused test cases, improving test clarity and reducing test complexity.
 
-When reading `check.rs`, developers only need to understand the `check` command logic. No other command logic is mixed in, reducing cognitive load.
-
-#### Limited Change Impact
-
-When modifying the `check` command, developers only need to edit `check.rs`. Other commands are unaffected, minimizing the risk of unintended side effects.
-
-#### Clear Ownership
-
-Each file has a clear purpose, making it obvious where to add new functionality or fix bugs. This improves developer productivity and code navigation.
-
-#### Better Testing
-
-Each module can be tested independently with focused test cases, improving test clarity and reducing test complexity.
-
-## Consequences
-
-### Positive
-
-- Code is easier to understand and navigate
-- Changes have limited impact on other parts of the system
-- Testing is more focused and effective
-- Clear ownership of functionality
-
-#### Negative
+### Trade-offs
 
 - More files to manage (one per responsibility)
 - May require more navigation between files when working on related features
 
-## Anti-Pattern Example
+## Context
+
+As the `docgraph` codebase grows, we need a clear principle for organizing code into modules and files. Without a guiding principle, modules can become bloated with multiple responsibilities, making the code harder to understand, test, and maintain.
+
+### Anti-Pattern Example
 
 **Bad** - Multiple responsibilities in one file:
 
@@ -74,4 +52,4 @@ Each file has exactly one reason to change (changes to that specific command).
 
 ## Related
 
-- [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./layered-architecture.md#ADR_LAYERED_ARCH)
+- [ADR_LAYERED_ARCH (Layered Architecture)](./layered-architecture.md#ADR_LAYERED_ARCH)

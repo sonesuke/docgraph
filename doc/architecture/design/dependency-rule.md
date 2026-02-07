@@ -1,45 +1,22 @@
 <a id="CC_DEPENDENCY_RULE"></a>
 
-# Cross-Cutting Concept: Dependency Rule
+## The Dependency Rule
 
-## Overview
+Dependencies must point inwards, towards high-level policies.
 
-The Dependency Rule is a fundamental architectural principle in `docgraph`: **dependencies always point inward toward the Core layer**.
+**Direction:**
 
-## The Rule
+- **Outer Layers** (Infrastructure, adapters) depend on **Inner Layers** (Use Cases, Entities).
+- **Inner Layers** MUST NOT depend on **Outer Layers**.
 
-```text
-CLI Handlers → Core ← LSP Handlers
-```
+**Core Layer Independence:**
 
-- **Core** has no knowledge of outer layers (CLI, LSP)
-- **Handlers** depend on Core, but Core does not depend on Handlers
-- This allows Core to be reused across multiple interfaces
+The `src/core/` module contains only domain types and business logic. It has NO references to CLI or LSP types.
 
-## Implementation
+**Handler Layer Dependency:**
 
-### Core Layer Independence
+CLI and LSP handlers import from Core, but Core never imports from handlers.
 
-The `src/core/` module contains only:
+### Decided by
 
-- Domain types (`Node`, `Diagnostic`, etc.)
-- Business logic (parsing, validation, graph building)
-- No references to CLI or LSP types
-
-### Handler Layer Dependency
-
-CLI and LSP handlers import from Core:
-
-```rust
-// src/cli/handlers/check.rs
-use crate::core::{config, lint};
-
-// src/lsp/handlers/hover.rs
-use crate::core::{parse, types};
-```
-
-But Core never imports from handlers.
-
-## Related
-
-- [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](../../decisions/layered-architecture.md#ADR_LAYERED_ARCH)
+- [ADR_LAYERED_ARCH (Layered Architecture)](../../decisions/layered-architecture.md#ADR_LAYERED_ARCH) To enforce directional dependency.

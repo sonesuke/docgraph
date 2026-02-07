@@ -7,11 +7,13 @@ Determine if the input `{{TARGET}}` is a TYPE_ID (e.g., FR, SYS, ACT, UC) or a N
 ## Case 1: Input is a TYPE_ID
 
 1. Show type definition
+
    ```bash
    docgraph type {{TARGET}}
    ```
 
 2. List all elements of this type
+
    ```bash
    docgraph list "{{TARGET}}*"
    ```
@@ -21,7 +23,7 @@ Determine if the input `{{TARGET}}` is a TYPE_ID (e.g., FR, SYS, ACT, UC) or a N
    - Run `docgraph describe {{NODE_ID}}`
    - Check for SRP (Single Responsibility)
    - Check for Realizability (Sufficient dependencies)
-   - Refine/Fix individual nodes *before* proceeding to holistic analysis.
+   - Refine/Fix individual nodes _before_ proceeding to holistic analysis.
 
 4. Analyze for MECE (Mutually Exclusive, Collectively Exhaustive)
    Verify if the listed elements accurately reflect the type definition shown in step 1.
@@ -31,6 +33,7 @@ Determine if the input `{{TARGET}}` is a TYPE_ID (e.g., FR, SYS, ACT, UC) or a N
    - Are there gaps in coverage?
 
    If overlaps are found, list them in pairs or groups like this:
+
    ```
    ID_A, ID_B
    ID_C, ID_D
@@ -45,6 +48,7 @@ Determine if the input `{{TARGET}}` is a TYPE_ID (e.g., FR, SYS, ACT, UC) or a N
 ## Case 2: Input is a NODE_ID
 
 1. Show detailed information
+
    ```bash
    docgraph describe {{TARGET}}
    ```

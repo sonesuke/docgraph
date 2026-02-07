@@ -2,23 +2,7 @@
 
 # Error Handling Strategy: thiserror for Core, anyhow for Binaries
 
-## Status
-
-Accepted
-
-## Context
-
-The `docgraph` project has a layered architecture with:
-
-- **Core library** (`src/core/`, `src/lib.rs`) - Reusable logic exposed to other crates
-- **CLI binary** (`src/main.rs`, `src/cli/`) - Command-line interface
-- **LSP server** (`src/lsp/`) - Language Server Protocol implementation
-
-We need a consistent error handling strategy that:
-
-1. Provides typed errors for library APIs
-2. Offers rich context for end-user error messages
-3. Converts errors appropriately at layer boundaries
+Defines the error handling strategy across the Docgraph architecture, using `thiserror` for the core library and `anyhow` for binary crates (CLI, LSP).
 
 ## Decision
 
@@ -28,7 +12,81 @@ We adopt a **boundary-based error handling strategy**:
 2. **CLI binary**: Use `anyhow` for contextual error reporting
 3. **LSP server**: Use `anyhow` internally, convert to JSON-RPC errors at the boundary
 
+### Implementation Example
+
+#### Core Module
+
+```rust
+// src/core/error.rs
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub enum Error {
+    #[error("io error")]
+    Io(#[from] std::io::Error),
+
+    #[error("parse error: {0}")]
+    Parse(String),
+}
+
+pub type Result<T> = std::result::Result<T, Error>;
+```
+
+```rust
+// src/core/parse.rs
+use crate::core::error::{Error, Result};
+
+pub fn parse_file(path: &Path) -> Result<Vec<Block>> {
+    let content = std::fs::read_to_string(path)?; // io::Error auto-converts
+    parse_content(&content)
+        .map_err(|e| Error::Parse(e.to_string()))
+}
+```
+
+#### CLI Handler
+
+```rust
+// src/cli/handlers/check.rs
+use anyhow::Context;
+
+pub fn handle_check(...) -> anyhow::Result<()> {
+    let config = config::Config::load(&path)
+        .context("failed to load config")?; // core::Error → anyhow::Error
+
+    let diagnostics = lint::check_workspace(...)
+        .context("workspace check failed")?;
+
+    Ok(())
+}
+```
+
+#### LSP Handler
+
+```rust
+// src/lsp/handlers/hover.rs
+use anyhow::Context;
+use tower_lsp::jsonrpc;
+
+pub async fn handle_hover(...) -> Result<Option<Hover>, jsonrpc::Error> {
+    let blocks = parse::extract_spec_blocks(&content)
+        .context("failed to parse blocks")
+        .map_err(to_jsonrpc_error)?; // Convert at boundary
+
+    Ok(Some(hover))
+}
+
+fn to_jsonrpc_error(err: anyhow::Error) -> jsonrpc::Error {
+    jsonrpc::Error {
+        code: jsonrpc::ErrorCode::InternalError,
+        message: err.to_string(),
+        data: None,
+    }
+}
+```
+
 ## Rationale
+
+We selected this hybrid approach to balance type safety in the core library with development velocity and error context in the application layers.
 
 ### 1. Core Library: thiserror (Typed Errors)
 
@@ -123,94 +181,26 @@ async fn handle_hover(...) -> Result<Option<Hover>, jsonrpc::Error> {
 }
 ```
 
-## Consequences
-
-### Positive
-
-- **Clear boundaries**: Error types change at architectural boundaries
-- **Type safety where needed**: Core library errors are typed and matchable
-- **Rich context where needed**: CLI and LSP errors have full context chains
-- **Automatic conversion**: `?` operator works seamlessly across boundaries
-- **Better debugging**: `anyhow` provides backtraces in binaries
-
-#### Negative
+### Trade-offs
 
 - **Two error crates**: Need to maintain both `thiserror` and `anyhow`
 - **Conversion overhead**: LSP needs explicit conversion to JSON-RPC errors
 - **Learning curve**: Developers need to understand when to use which crate
 
-## Implementation Example
+## Context
 
-### Core Module
+The `docgraph` project has a layered architecture with:
 
-```rust
-// src/core/error.rs
-use thiserror::Error;
+- **Core library** (`src/core/`, `src/lib.rs`) - Reusable logic exposed to other crates
+- **CLI binary** (`src/main.rs`, `src/cli/`) - Command-line interface
+- **LSP server** (`src/lsp/`) - Language Server Protocol implementation
 
-#[derive(Debug, Error)]
-pub enum Error {
-    #[error("io error")]
-    Io(#[from] std::io::Error),
+We need a consistent error handling strategy that:
 
-    #[error("parse error: {0}")]
-    Parse(String),
-}
-
-pub type Result<T> = std::result::Result<T, Error>;
-```
-
-```rust
-// src/core/parse.rs
-use crate::core::error::{Error, Result};
-
-pub fn parse_file(path: &Path) -> Result<Vec<Block>> {
-    let content = std::fs::read_to_string(path)?; // io::Error auto-converts
-    parse_content(&content)
-        .map_err(|e| Error::Parse(e.to_string()))
-}
-```
-
-#### CLI Handler
-
-```rust
-// src/cli/handlers/check.rs
-use anyhow::Context;
-
-pub fn handle_check(...) -> anyhow::Result<()> {
-    let config = config::Config::load(&path)
-        .context("failed to load config")?; // core::Error → anyhow::Error
-
-    let diagnostics = lint::check_workspace(...)
-        .context("workspace check failed")?;
-
-    Ok(())
-}
-```
-
-#### LSP Handler
-
-```rust
-// src/lsp/handlers/hover.rs
-use anyhow::Context;
-use tower_lsp::jsonrpc;
-
-pub async fn handle_hover(...) -> Result<Option<Hover>, jsonrpc::Error> {
-    let blocks = parse::extract_spec_blocks(&content)
-        .context("failed to parse blocks")
-        .map_err(to_jsonrpc_error)?; // Convert at boundary
-
-    Ok(Some(hover))
-}
-
-fn to_jsonrpc_error(err: anyhow::Error) -> jsonrpc::Error {
-    jsonrpc::Error {
-        code: jsonrpc::ErrorCode::InternalError,
-        message: err.to_string(),
-        data: None,
-    }
-}
-```
+1. Provides typed errors for library APIs
+2. Offers rich context for end-user error messages
+3. Converts errors appropriately at layer boundaries
 
 ## Related
 
-- [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./layered-architecture.md#ADR_LAYERED_ARCH)
+- [ADR_LAYERED_ARCH (Layered Architecture)](./layered-architecture.md#ADR_LAYERED_ARCH)

@@ -12,9 +12,10 @@ Testing strategy:
 - **E2E tests**: Verify CLI behavior, error messages, and file I/O
 - **Integration tests**: Test component interactions
 
-Realized by:
+### codified in (Optional)
 
-- [CC_TESTING_STRATEGY (Testing Strategy)](../../architecture/design/testing.md#CC_TESTING_STRATEGY)
-- [CC_UNIT_TESTING (1. Unit Testing Standards)](../../architecture/design/testing.md#CC_UNIT_TESTING)
-- [CC_E2E_TESTING (2. E2E Testing Design)](../../architecture/design/testing.md#CC_E2E_TESTING)
-- [CC_COVERAGE (3. Code Coverage Standards)](../../architecture/design/testing.md#CC_COVERAGE)
+- [CC_TESTING_STRATEGY (Testing Strategy)](../../architecture/design/testing.md#CC_TESTING_STRATEGY) Defines overall testing approach
+- [CC_UNIT_TESTING (Unit Testing)](../../architecture/design/testing.md#CC_UNIT_TESTING) Ensures component correctness
+- [CC_E2E_TESTING (End-to-End (E2E) Testing)](../../architecture/design/testing.md#CC_E2E_TESTING) Validates system behavior
+  Defines E2E test approach
+- [CC_COVERAGE (3. Code Coverage Standards)](../../architecture/design/testing.md#CC_COVERAGE) Sets coverage targets

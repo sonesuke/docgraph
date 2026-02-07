@@ -6,7 +6,9 @@
 
 The core engine MUST validate that all internal links reference existing node IDs.
 
-**Realized by**: [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
+### Realized by
+
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
 ---
 
@@ -16,7 +18,9 @@ The core engine MUST validate that all internal links reference existing node ID
 
 The system MUST ensure that every node ID in the documentation remains unique across the entire workspace.
 
-**Realized by**: [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
+### Realized by
+
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
 ---
 
@@ -26,7 +30,9 @@ The system MUST ensure that every node ID in the documentation remains unique ac
 
 The system MUST record all validation results and structural changes in a persistent audit log for traceability and compliance.
 
-**Realized by**: [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
+### Realized by
+
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
 ---
 
@@ -36,4 +42,6 @@ The system MUST record all validation results and structural changes in a persis
 
 The system SHOULD provide mechanisms to authenticate users before allowing certain operations, especially when interacting with remote marketplaces.
 
-**Realized by**: [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
+### Realized by
+
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)

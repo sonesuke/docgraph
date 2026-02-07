@@ -6,13 +6,18 @@
 
 The system SHALL provide an automated validation pipeline to ensure document graph integrity on every change.
 
-**Derived From:**
+### Realized by
 
-- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY)
-- [CC_CICD (CI/CD Pipeline)](../../architecture/design/cicd.md#CC_CICD)
-- [CC_DEV_ENV (Development Environment)](../../architecture/design/development-norm.md#CC_DEV_ENV)
+- [MOD_CICD (CI/CD Pipelines)](../../architecture/view/module.md#MOD_CICD)
 
-**Realized by**: [MOD_CICD (CI/CD Modules)](../../architecture/view/module.md#MOD_CICD)
+### Codified in (Optional)
+
+- [CC_CICD (CI/CD Pipeline)](../../architecture/design/cicd.md#CC_CICD) Ensures automated validation
+- [CC_DEV_ENV (Development Environment)](../../architecture/design/development-norm.md#CC_DEV_ENV) Defines development environment standards
+
+### Decided by (Optional)
+
+- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY) Decision to align CI and dev environments
 
 <a id="FR_DEV_STANDARDS"></a>
 
@@ -23,8 +28,11 @@ The project SHALL adhere to standardized development practices to ensure maintai
 - **Commit Messages**: MUST follow the Conventional Commits specification.
 - **Versioning**: MUST follow Semantic Versioning (SemVer).
 
-**Realized by**:
+### Realized by
 
-- [CC_CONVENTIONAL_COMMITS (Commit Messages)](../../architecture/design/development-norm.md#CC_CONVENTIONAL_COMMITS)
-- [CC_SEMANTIC_VERSIONING (Versioning)](../../architecture/design/development-norm.md#CC_SEMANTIC_VERSIONING)
-- [MOD_CICD (CI/CD Modules)](../../architecture/view/module.md#MOD_CICD)
+- [MOD_CICD (CI/CD Pipelines)](../../architecture/view/module.md#MOD_CICD)
+
+### Codified in (Optional)
+
+- [CC_CONVENTIONAL_COMMITS (Commit Messages)](../../architecture/design/development-norm.md#CC_CONVENTIONAL_COMMITS) Standardizes commit message format
+- [CC_SEMANTIC_VERSIONING (Versioning)](../../architecture/design/development-norm.md#CC_SEMANTIC_VERSIONING) Defines versioning strategy

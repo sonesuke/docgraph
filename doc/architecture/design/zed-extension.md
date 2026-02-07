@@ -36,9 +36,7 @@ To explicitly enable the `docgraph` language server in a project, a `.zed/settin
 {
   "languages": {
     "Markdown": {
-      "language_servers": [
-        "docgraph"
-      ]
+      "language_servers": ["docgraph"]
     }
   }
 }

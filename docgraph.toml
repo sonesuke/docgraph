@@ -8,19 +8,19 @@ ignore = ["README.md", "SECURITY.md", ".claude", ".claude-plugin", "docgraph-plu
 [node_types]
 # Core specification types
 UC  = { desc = "Use Case", template = "doc/templates/usecases.md" }
-FR  = { desc = "Functional Requirement" }
-NFR = { desc = "Non-Functional Requirement" }
-CON = { desc = "Constraint" }
-MOD = { desc = "Module" }
+FR  = { desc = "Functional Requirement", template = "doc/templates/functional.md" }
+NFR = { desc = "Non-Functional Requirement", template = "doc/templates/non-functional.md" }
+CON = { desc = "Constraint", template = "doc/templates/constraint.md" }
+MOD = { desc = "Module", template = "doc/templates/module.md" }
 
 # Architecture types (Core Dependency Model)
-CC  = { desc = "Cross-cutting Concept" }
+CC  = { desc = "Cross-cutting Concept", template = "doc/templates/cross-cutting.md" }
 
 # Documentation types (can be referenced by all core types)
 ACT  = { desc = "Actor", template = "doc/templates/actors.md" }
 DAT  = { desc = "Data Entity" }
-IF   = { desc = "Interface Specification" }
-ADR  = { desc = "Architecture Decision Record" }
+IF   = { desc = "Interface Specification", template = "doc/templates/interface.md" }
+ADR  = { desc = "Architecture Decision Record", template = "doc/templates/decision.md" }
 
 # ========== Business Relations ==========
 

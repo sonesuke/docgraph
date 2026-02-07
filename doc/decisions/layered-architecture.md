@@ -1,14 +1,8 @@
 <a id="ADR_LAYERED_ARCH"></a>
 
-# Layered Architecture: Core, CLI Handlers, LSP Handlers
+# Layered Architecture
 
-## Status
-
-Accepted
-
-## Context
-
-`docgraph` is a tool for building and validating knowledge graphs from Markdown files. It needs to support multiple interfaces (CLI, LSP) while sharing the same core logic, avoiding code duplication, and maintaining high maintainability.
+Defines the high-level layered architecture of the Docgraph system, separating concerns into Core, CLI, and LSP layers.
 
 ## Decision
 
@@ -27,6 +21,8 @@ We adopt a 3-layer architecture:
    - Calls Core logic and formats LSP responses
 
 ## Rationale
+
+We selected this 3-layer architecture to maximize separation of concerns and reusability.
 
 ### 1. Separation of Concerns
 
@@ -74,21 +70,16 @@ This provides:
 - **Change Isolation**: UI changes don't affect business logic (changing CLI output format only modifies `src/cli/handlers/`)
 - **Core Stability**: Core validation logic remains stable across interface changes
 
-## Consequences
-
-### Positive
-
-- **Maintainability**: Each layer's responsibility is clear, change impact is limited
-- **Testability**: Core logic is independent of I/O and can be unit tested; handlers are thin and sufficient for integration testing
-- **Extensibility**: Adding new interfaces (e.g., Web API) requires no Core changes; adding new commands or LSP features is easy
-- **Reusability**: CLI and LSP share the same Core logic, code duplication is minimized
-
-#### Negative
+### Trade-offs
 
 - Small changes may require modifications to multiple files
 - New developers may need time to understand the file structure
 
-## Example: `check` Command Flow
+## Context
+
+`docgraph` is a tool for building and validating knowledge graphs from Markdown files. It needs to support multiple interfaces (CLI, LSP) while sharing the same core logic, avoiding code duplication, and maintaining high maintainability.
+
+### Example: `check` Command Flow
 
 The following diagram illustrates how the layered architecture works in practice:
 

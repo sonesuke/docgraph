@@ -1,29 +1,24 @@
+# CI/CD
+
 <a id="CC_CICD"></a>
 
-# CI/CD Pipeline
+## CI/CD Pipeline
 
-The project uses GitHub Actions for Continuous Integration and Deployment. We utilize the `devcontainers/ci` action to run tests inside the Dev Container, ensuring environment parity.
+The Continuous Integration and Continuous Delivery (CI/CD) pipeline ensures that all code changes are automatically validated, tested, and released.
 
-**Realized By:**
+**Strategies:**
 
-- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY)
+1.  **Parity**: The CI environment must match the development environment (`.devcontainer`).
+2.  **Automation**: All tests and validation steps must be automated.
+3.  **Traceability**: All releases must be traceable to specific commits and requirements.
 
-## Pipeline Structure
+### Decided by
 
-### 1. Verification (On Pull Request)
+- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY) To minimize environmental discrepancies.
 
-Triggered on every PR targeting `main`. Defined in [.github/workflows/ci.yml](../../../.github/workflows/ci.yml).
+### Realized by
 
-- **Lint & Security**:
-  - `cargo fmt` and `cargo clippy`.
-  - `cargo audit` (Dependency Security).
-  - Biome Lint for VSIX (`npm run lint`).
-- **Test & Coverage**:
-  - `cargo llvm-cov` (Unit/Integration coverage).
-  - `docgraph check ./doc` (Integration test).
-- **CodeQL**: SAST analysis (via [.github/workflows/codeql.yml](../../../.github/workflows/codeql.yml)).
-
-### 2. Deployment (On Push to Main)
+- [MOD_CICD (CI/CD Pipelines)](../view/module.md#MOD_CICD)
 
 Triggered when PR is merged to `main`.
 
@@ -32,4 +27,4 @@ Triggered when PR is merged to `main`.
 
 **Realization:**
 
-- [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](../../decisions/layered-architecture.md#ADR_LAYERED_ARCH)
+- [ADR_LAYERED_ARCH (Layered Architecture)](../../decisions/layered-architecture.md#ADR_LAYERED_ARCH)

@@ -1,64 +1,62 @@
-<a id="CC_TESTING_STRATEGY"></a>
-
 # Testing Strategy
 
-We prioritize code quality and correctness through a multi-layered testing approach. This document outlines our strategies for Unit, E2E, Performance testing, and Code Coverage.
+<a id="CC_TESTING_STRATEGY"></a>
 
-**Derived from:** [ADR_TESTING (Context)](../../decisions/testing.md#ADR_TESTING)
+## Testing Strategy
+
+We employ a pyramid testing strategy to ensure reliability and velocity.
+
+**Pyramid:**
+
+1.  **Unit Tests (Bottom)**: Fast, isolated, high coverage.
+2.  **Integration Tests (Middle)**: Verify component interactions.
+3.  **E2E Tests (Top)**: Verify full system behavior via LSP.
+
+### Realized by
+
+- [MOD_TEST_INFRA (Test Infrastructure)](../view/module.md#MOD_TEST_INFRA)
 
 ---
 
 <a id="CC_UNIT_TESTING"></a>
 
-## 1. Unit Testing Standards
+## Unit Testing
+
+Unit tests should cover all public functions and complex private logic.
 
 **Principles:**
 
-- **Isolation**: Tests should run independently.
-- **Speed**: Unit tests must be fast to encourage frequent execution.
-- **Coverage**: Core logic must have high validation coverage.
+- **Isolation**: Tests must not depend on external systems (filesystem, network).
+- **Speed**: Tests must run per commit.
+- **Coverage**: Aim for high branch coverage in core logic.
 
-**Implementation:**
+### Realized by
 
-- **Unit Tests**: Located within source files (usually in `#[cfg(test)]` modules). Use for parsing unique patterns or validating specific rule logic.
-- **Integration Tests**: Located in `tests/`. Test the behavior of CLI and core components as a whole set.
-
-**Running Tests:**
-
-```bash
-cargo test
-```
+- [MOD_CORE_RULES (Validation Rules)](../view/module.md#MOD_CORE_RULES)
+- [MOD_CORE_GRAPH (Graph Logic)](../view/module.md#MOD_CORE_GRAPH)
 
 ---
 
 <a id="CC_E2E_TESTING"></a>
 
-## 2. E2E Testing Design
+## End-to-End (E2E) Testing
 
-**Overview:**
+E2E tests verify the system from the user's perspective (LSP client).
 
-This outlines the design for End-to-End testing of the Docgraph CLI and LSP server using `tests/` directory structure.
+**Scope:**
 
-**Directory Structure:**
+- **LSP Lifecycle**: Initialize, Shutdown, Exit.
+- **Diagnostics**: Verify reporting of graph errors.
+- **Resilience**: Verify recovery from invalid states.
 
-```text
-tests/
-  cli.rs        # CLI test entry point
-  cli/          # CLI test modules
-  lsp.rs        # LSP test entry point
-  lsp/          # LSP test modules
-```
+**Tools:**
 
-**CLI Testing:**
+- Rust standard test framework with a mock LSP client.
 
-- Uses `assert_cmd` to test the CLI binary.
-- Each test runs in a temporary directory with fresh configuration.
+### Realized by
 
-**LSP Testing:**
-
-- Spawns LSP server as a child process.
-- Communicates via `LspClient` harness over stdio.
-- Scenarios cover completion, diagnostics, rename, etc.
+- [MOD_LSP_SERVER (LSP Server)](../view/module.md#MOD_LSP_SERVER)
+- [MOD_TEST_INFRA (Test Infrastructure)](../view/module.md#MOD_TEST_INFRA)
 
 ---
 
@@ -68,7 +66,7 @@ tests/
 
 We use `cargo-llvm-cov` to measure test effectiveness.
 
-**Realized by**: [MOD_LSP (LSP Modules)](../../architecture/view/module.md#MOD_LSP)
+**Realized by**: [MOD_LSP (LSP Library)](../../architecture/view/module.md#MOD_LSP)
 
 **Running Coverage Locally:**
 
@@ -91,7 +89,7 @@ Every PR includes a `Cargo llvm-cov` step. We strive for high coverage in `core`
 
 ## 4. Performance Testing
 
-**Derived from:** [ADR_PERF (Context)](../../decisions/perf.md#ADR_PERF)
+**Derived from:** [ADR_PERF (Performance Logic)](../../decisions/perf.md#ADR_PERF)
 
 **Strategy:**
 

@@ -6,7 +6,9 @@
 
 The `lint` command shall parse all Markdown files in the target directory, build the graph, and report any violations of validation rules.
 
-**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+### Realized by
+
+- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
 
 <a id="FR_CLI_GRAPH"></a>
 
@@ -14,10 +16,10 @@ The `lint` command shall parse all Markdown files in the target directory, build
 
 The `graph` command shall output the graph structure in JSON format.
 
-**Realized by:**
+### Realized by
 
-- [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
-- [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
+- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
 <a id="FR_CLI_LIST"></a>
 
@@ -40,7 +42,9 @@ docgraph list FR
 ID : Description
 ```
 
-**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+### Realized by
+
+- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
 
 <a id="FR_CLI_TRACE"></a>
 
@@ -68,7 +72,9 @@ ID1 -> ID2 -> ID3
 
 (Using `<-` for `up` direction)
 
-**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+### Realized by
+
+- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
 
 <a id="FR_CLI_DESCRIBE"></a>
 
@@ -98,7 +104,9 @@ source_id: source_name
 ...
 ```
 
-**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+### Realized by
+
+- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
 
 <a id="FR_CLI_TYPE"></a>
 
@@ -137,7 +145,9 @@ Rules:
   to [MOD] min=1 max=-: Each functional requirement must be realized by at least one module
 ```
 
-**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+### Realized by
+
+- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
 
 <a id="FR_CLI_VERSION"></a>
 
@@ -145,7 +155,9 @@ Rules:
 
 The `version` command shall display the current version of the `docgraph` tool.
 
-**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+### Realized by
+
+- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
 
 <a id="FR_CLI_HELP"></a>
 
@@ -153,4 +165,6 @@ The `version` command shall display the current version of the `docgraph` tool.
 
 The `help` command shall display usage information for `docgraph` and its subcommands.
 
-**Realized by:** [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+### Realized by
+
+- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)

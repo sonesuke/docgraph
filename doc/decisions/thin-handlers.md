@@ -2,13 +2,7 @@
 
 # Thin Handlers
 
-## Status
-
-Accepted
-
-## Context
-
-In a layered architecture with Core and Handler layers, we need to decide how much logic should reside in handlers versus the Core. Putting too much logic in handlers leads to duplication across interfaces (CLI, LSP) and makes testing harder.
+Adopts the pattern of thin handlers that delegate business logic to the core library.
 
 ## Decision
 
@@ -20,37 +14,9 @@ Handlers perform exactly three tasks:
 2. **Core invocation**: Call Core logic functions
 3. **Output transformation**: Convert Core types back to UI-specific types
 
-## Rationale
+### Examples
 
-### Easy Testing
-
-Handlers are thin enough that integration tests are sufficient. Complex logic is tested in Core unit tests, which are faster and more reliable.
-
-#### Centralized Logic
-
-All business logic lives in Core, making it easy to find and modify. Developers don't need to search through multiple handler files to understand validation rules or parsing logic.
-
-#### Interface Independence
-
-The same Core logic can be called from CLI, LSP, or any future interface without duplication. Adding a new interface requires only writing a thin adapter layer.
-
-## Consequences
-
-### Positive
-
-- Business logic is centralized and easy to test
-- No code duplication across interfaces
-- New interfaces are easy to add
-- Clear separation between UI concerns and business logic
-
-#### Negative
-
-- Requires discipline to avoid adding logic to handlers
-- May feel verbose for simple operations
-
-## Examples
-
-### CLI Handler
+#### CLI Handler
 
 ```rust
 // src/cli/handlers/check.rs
@@ -105,9 +71,9 @@ pub async fn handle_hover(
 }
 ```
 
-## Anti-Patterns
+### Anti-Patterns
 
-### Business Logic in Handler
+#### Business Logic in Handler
 
 **Bad**:
 
@@ -153,6 +119,21 @@ pub fn handle_check(...) {
 }
 ```
 
+## Rationale
+
+- **Easy Testing**: Handlers are thin enough that integration tests are sufficient. Complex logic is tested in Core unit tests, which are faster and more reliable.
+- **Centralized Logic**: All business logic lives in Core, making it easy to find and modify. Developers don't need to search through multiple handler files to understand validation rules or parsing logic.
+- **Interface Independence**: The same Core logic can be called from CLI, LSP, or any future interface without duplication. Adding a new interface requires only writing a thin adapter layer.
+
+### Trade-offs
+
+- Requires discipline to avoid adding logic to handlers
+- May feel verbose for simple operations
+
+## Context
+
+In a layered architecture with Core and Handler layers, we need to decide how much logic should reside in handlers versus the Core. Putting too much logic in handlers leads to duplication across interfaces (CLI, LSP) and makes testing harder.
+
 ## Related
 
-- [ADR_LAYERED_ARCH (Layered Architecture: Core, CLI Handlers, LSP Handlers)](./layered-architecture.md#ADR_LAYERED_ARCH)
+- [ADR_LAYERED_ARCH (Layered Architecture)](./layered-architecture.md#ADR_LAYERED_ARCH)

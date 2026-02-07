@@ -8,25 +8,27 @@ This document defines standardized development practices and environments for th
 
 We provide a standardized development environment using VS Code Dev Containers to ensure consistency across all contributors and the CI pipeline.
 
-**Derived From:**
-
-- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY)
-
-**Realized by:** [MOD_DEV_CONTAINER (Dev Container Modules)](../view/module.md#MOD_DEV_CONTAINER)
-
 Defined in [.devcontainer/devcontainer.json](../../../.devcontainer/devcontainer.json).
 
-### Coding Standards
+**Coding Standards:**
 
 - **Formatting**: `cargo fmt` (Rust), `npm run format` (VSIX).
 - **Linting**: `cargo clippy` (Rust), `npm run lint` (VSIX).
 - **Security**: `cargo audit`.
 
-### Performance
+**Performance:**
 
 - **Image Size**: The Dev Container image should be kept as small as possible to ensure fast CI/CD execution and minimize local disk usage.
   - Use minimal base images (e.g., `slim` variants).
   - Remove unnecessary build artifacts and caches (e.g., `apt-get clean`).
+
+### Decided by
+
+- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY) To ensure consistent development experience.
+
+### Realized by
+
+- [MOD_DEV_CONTAINER (Dev Container)](../view/module.md#MOD_DEV_CONTAINER)
 
 ---
 
@@ -36,7 +38,7 @@ Defined in [.devcontainer/devcontainer.json](../../../.devcontainer/devcontainer
 
 We follow the **Conventional Commits** specification for all commit messages. This enables automated changelog generation and versioning.
 
-### Format
+**Format:**
 
 `<type>[optional scope]: <description>`
 
@@ -49,7 +51,9 @@ We follow the **Conventional Commits** specification for all commit messages. Th
 - **test**: Adding missing tests or correcting existing tests
 - **chore**: Changes to the build process or auxiliary tools and libraries
 
-**Realized by:** [MOD_CICD (CI/CD Modules)](../view/module.md#MOD_CICD) (via automated releases)
+### Realized by
+
+- [MOD_CICD (CI/CD Pipelines)](../view/module.md#MOD_CICD)
 
 ---
 
@@ -59,7 +63,7 @@ We follow the **Conventional Commits** specification for all commit messages. Th
 
 The project follows **Semantic Versioning (SemVer)**.
 
-### Rules
+**Rules:**
 
 Given a version number **MAJOR.MINOR.PATCH**, increment the:
 
@@ -67,4 +71,6 @@ Given a version number **MAJOR.MINOR.PATCH**, increment the:
 2. **MINOR** version when you add functionality in a backwards compatible manner.
 3. **PATCH** version when you make backwards compatible bug fixes.
 
-**Realized by:** [MOD_CICD (CI/CD Modules)](../view/module.md#MOD_CICD) (via automated releases)
+### Realized by
+
+- [MOD_CICD (CI/CD Pipelines)](../view/module.md#MOD_CICD)
