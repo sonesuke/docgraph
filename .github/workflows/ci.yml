@@ -15,7 +15,7 @@ permissions:
   packages: read
 
 jobs:
-  build:
+  verify:
     name: Build & Verify
     runs-on: ubuntu-latest
     steps:
@@ -33,10 +33,39 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build & Initialize Dev Container
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: cargo build
+
+      - name: Docgraph Check
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: cargo run -- check ./doc
+
       - name: Rust Format Check
         uses: devcontainers/ci@v0.3
         env:
           CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -47,6 +76,9 @@ jobs:
         uses: devcontainers/ci@v0.3
         env:
           CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -57,6 +89,9 @@ jobs:
         uses: devcontainers/ci@v0.3
         env:
           CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -69,6 +104,9 @@ jobs:
         uses: devcontainers/ci@v0.3
         env:
           CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -82,26 +120,22 @@ jobs:
         uses: devcontainers/ci@v0.3
         env:
           CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
           runCmd: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
 
-      - name: Docgraph Check
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: cargo run -- check ./doc
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v6
         with:
           name: coverage-report
           path: lcov.info
+
+
 
 

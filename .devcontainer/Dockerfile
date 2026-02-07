@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/rust:1-bullseye
+FROM mcr.microsoft.com/devcontainers/rust:1-bookworm
 
 # Install Node.js and other dependencies as root
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
@@ -21,12 +21,8 @@ RUN chown -R vscode:vscode /usr/local/cargo /usr/local/rustup
 # Switch to vscode user
 USER vscode
 
-# Set CARGO_HOME to a location in user home to avoid permission issues in CI
-# and add it to PATH
-# ENV CARGO_HOME=/home/vscode/.cargo (Deferred until runtime)
-ENV PATH=$CARGO_HOME/bin:$PATH
-# Set CARGO_TARGET_DIR to a location in user home that is safe from volume mounts
-ENV CARGO_TARGET_DIR=/home/vscode/.cargo-target
+# Ensure pre-installed tools are always in PATH even if CARGO_HOME is overridden at runtime
+ENV PATH=/usr/local/cargo/bin:$PATH
 
 # No pre-build (cache is disabled by user request)
 
