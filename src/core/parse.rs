@@ -44,9 +44,14 @@ pub fn extract_all(content: &str, file_path: &Path) -> (Vec<SpecBlock>, Vec<RefU
                     // If we were already in a block, close it
                     if let Some(prev_id) = current_anchor_id.take() {
                         let (end_line, _) = offset_to_line_col(range.start);
-                        let block_content = content[current_block_start_offset..range.start].to_string();
+                        let block_content =
+                            content[current_block_start_offset..range.start].to_string();
                         // Extract Node Type: "UC-001" -> "UC"
-                        let node_type = prev_id.split(['-', '_']).next().unwrap_or(&prev_id).to_string();
+                        let node_type = prev_id
+                            .split(['-', '_'])
+                            .next()
+                            .unwrap_or(&prev_id)
+                            .to_string();
 
                         blocks.push(SpecBlock {
                             id: prev_id,
@@ -158,7 +163,11 @@ pub fn extract_all(content: &str, file_path: &Path) -> (Vec<SpecBlock>, Vec<RefU
     if let Some(prev_id) = current_anchor_id {
         let (end_line, _) = offset_to_line_col(content.len());
         let block_content = content[current_block_start_offset..].to_string();
-        let node_type = prev_id.split(['-', '_']).next().unwrap_or(&prev_id).to_string();
+        let node_type = prev_id
+            .split(['-', '_'])
+            .next()
+            .unwrap_or(&prev_id)
+            .to_string();
 
         blocks.push(SpecBlock {
             id: prev_id,
