@@ -13,6 +13,7 @@ The developer edits documentation in an LSP-compatible editor with real-time fee
 ### Interfaces
 
 - [IF_CLI (Command Line Interface)](../requirements/interfaces/interfaces.md#IF_CLI)
+- [IF_VSCODE_UI (VS Code UI)](../requirements/interfaces/interfaces.md#IF_VSCODE_UI)
 
 ### Requirements
 
