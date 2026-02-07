@@ -15,9 +15,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
 # Install vsce for VSIX packaging (global install needs root)
 RUN npm install -g @vscode/vsce
 
-# Ensure vscode user has ownership of cargo and rustup directories before switching
-RUN chown -R vscode:vscode /usr/local/cargo /usr/local/rustup
-
 # Switch to vscode user
 USER vscode
 
