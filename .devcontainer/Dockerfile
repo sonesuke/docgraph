@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/rust:1-bookworm
+FROM rust:1-slim-bookworm
 
 # Install Node.js and other dependencies as root
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
@@ -6,32 +6,25 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     curl \
     git \
     pkg-config \
-    libssl-dev
+    libssl-dev \
+    ripgrep \
+    vim \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js LTS manually
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-    && apt-get install -y nodejs
-
-# Install vsce for VSIX packaging (global install needs root)
-RUN npm install -g @vscode/vsce
-
-# Ensure vscode user has ownership of cargo and rustup directories before switching
-RUN chown -R vscode:vscode /usr/local/cargo /usr/local/rustup
-
-# Switch to vscode user
-USER vscode
+    && apt-get install -y nodejs \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Ensure pre-installed tools are always in PATH even if CARGO_HOME is overridden at runtime
 ENV PATH=/usr/local/cargo/bin:$PATH
 
-# No pre-build (cache is disabled by user request)
 
-# Install cargo-binstall as vscode
-RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
-# Install cargo tools and components as vscode
-RUN rustup component add llvm-tools-preview \
+# Install cargo-binstall and other rust tools as root (installs to /usr/local/cargo/bin)
+RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash \
+    && rustup component add rustfmt clippy llvm-tools-preview \
     && cargo binstall -y cargo-audit cargo-llvm-cov
 
-# Install Claude CLI as vscode
+# Install Claude CLI as root
 RUN curl -fsSL https://claude.ai/install.sh | bash

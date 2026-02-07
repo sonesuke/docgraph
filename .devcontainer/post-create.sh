@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-# Fix permissions for CI environment where volume mounts may be root-owned
-sudo chown -R vscode:vscode /usr/local/cargo
+if [ -z "$CI" ] && [ -z "$GITHUB_ACTIONS" ]; then
+    # Fix permissions for local development where CARGO_HOME is root-owned by the base image
+    sudo chown -R vscode:vscode /usr/local/cargo
 
-if [ -z "$CI" ]; then
     echo "Installing VSIX dependencies..."
     npm install --prefix vsix
     (cd vsix && npx vsce package -o ../docgraph.vsix)

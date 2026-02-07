@@ -22,6 +22,12 @@ Defined in [.devcontainer/devcontainer.json](../../../.devcontainer/devcontainer
 - **Linting**: `cargo clippy` (Rust), `npm run lint` (VSIX).
 - **Security**: `cargo audit`.
 
+### Performance
+
+- **Image Size**: The Dev Container image should be kept as small as possible to ensure fast CI/CD execution and minimize local disk usage.
+  - Use minimal base images (e.g., `slim` variants).
+  - Remove unnecessary build artifacts and caches (e.g., `apt-get clean`).
+
 ---
 
 <a id="CC_CONVENTIONAL_COMMITS"></a>

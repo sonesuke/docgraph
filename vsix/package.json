@@ -10,7 +10,7 @@
   },
   "license": "MIT",
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.109.0"
   },
   "categories": [
     "Programming Languages",
@@ -52,7 +52,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.3.14",
     "@types/node": "25.x",
-    "@types/vscode": "^1.75.0",
+    "@types/vscode": "^1.109.0",
     "@vscode/vsce": "^3.7.1",
     "typescript": "^5.9.3"
   },
