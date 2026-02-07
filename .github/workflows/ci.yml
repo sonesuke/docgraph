@@ -43,9 +43,9 @@ jobs:
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
           runCmd: |
-            pwd
-            ls -ld /workspaces/* || true
-            env | grep CARGO
+            mkdir -p target
+            touch target/persistent_check
+            echo "Created target/persistent_check"
 
       - name: Rust Format Check
         uses: devcontainers/ci@v0.3
@@ -56,7 +56,14 @@ jobs:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
-          runCmd: cargo fmt -- --check
+          runCmd: |
+            if [ -f target/persistent_check ]; then
+              echo "SUCCESS: target/persistent_check found!"
+            else
+              echo "FAILURE: target/persistent_check NOT found!"
+              ls -la target || true
+            fi
+            cargo fmt -- --check
 
       - name: Cargo Clippy
         uses: devcontainers/ci@v0.3
