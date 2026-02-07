@@ -65,3 +65,40 @@ The system MUST validate that documentation nodes conform to the structure defin
 
 - [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
+---
+
+<a id="FR_CORE_CONFIGURATION"></a>
+
+## Configuration
+
+The system MUST allow users to customize behavior via a configuration file (`docgraph.toml`) at the project root.
+The structure and available settings are defined in [IF_CONFIG](../../requirements/interfaces/interfaces.md#IF_CONFIG).
+
+**Settings Requirements:**
+
+The configuration MUST support the following settings:
+
+| Attribute      | Type           | Description                                                  |
+| :------------- | :------------- | :----------------------------------------------------------- |
+| `doc_types`    | `List<String>` | Node types that are exempt from strict relation checks.      |
+| `[node_types]` | `Table`        | Defines allowed prefixes for nodes and their templates.      |
+| `[references]` | `Table`        | Defines constraints on how different node types can connect. |
+
+**Structure Example:**
+
+```toml
+[graph]
+doc_types = ["ACT", "DAT", "IF", "ADR"]
+
+[node_types]
+UC = { desc = "Use Case" }
+
+[references.UC]
+rules = [
+  { dir = "to", targets = ["FR"], min = 1 }
+]
+```
+
+### Realized by
+
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
