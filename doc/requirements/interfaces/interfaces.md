@@ -6,9 +6,7 @@
 
 The `docgraph.toml` file at the project root defines the validation rules and workspace behavior, including node type definitions, relationship rules, and global graph settings.
 
-**Realized by**: [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
-
-### Configuration Structure
+**Configuration Structure:**
 
 ```toml
 [graph]
@@ -24,7 +22,7 @@ rules = [
 ]
 ```
 
-### Settings
+**Settings:**
 
 | Attribute | Type | Description |
 | :--- | :--- | :--- |
@@ -34,6 +32,10 @@ rules = [
 
 **Note:** Strict node type and strict relation validation are always enabled and cannot be disabled.
 
+### Realized by
+
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
+
 ---
 
 <a id="IF_CLI"></a>
@@ -42,7 +44,9 @@ rules = [
 
 The `docgraph` CLI provides commands for linting, graph generation, and analysis of Markdown documentation.
 
-**Realized by**: [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
+### Realized by
+
+- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
 
 ---
 
@@ -52,11 +56,9 @@ The `docgraph` CLI provides commands for linting, graph generation, and analysis
 
 The Docgraph Claude plugin provides a specialized interface for Claude Code, enabling the AI agent to perform complex documentation analysis and manipulation.
 
-### Overview
-
 The interface acts as a high-level wrapper around the Docgraph core functions, tailored for the agentic capabilities of Claude. It leverages the Model Context Protocol (MCP) to expose tools and resources.
 
-### Exposed Capabilities
+**Exposed Capabilities:**
 
 The interface MUST expose the following capabilities to the AI agent:
 
@@ -65,15 +67,15 @@ The interface MUST expose the following capabilities to the AI agent:
 3. **Linting & Fixing**: Tools to run validation rules and apply automated fixes.
 4. **Rule Explanation**: Tools to retrieve human-readable descriptions of architectural rules.
 
-### Implementation Details
+**Implementation:**
 
-The interface is realized through the MCP server defined in the `docgraph-plugin` directory.
-
-**Realized by:**
-
-- [MOD_PLUGIN (Claude Code Plugin)](../../architecture/view/module.md#MOD_PLUGIN)
+The implementation is defined in:
 - [plugin.json (Plugin Definition)](../../../docgraph-plugin/.claude-plugin/plugin.json)
 - [SKILL.md (Plugin Skill Definition)](../../../docgraph-plugin/skills/docgraph/SKILL.md)
+
+### Realized by
+
+- [MOD_PLUGIN (Claude Code Plugin)](../../architecture/view/module.md#MOD_PLUGIN)
 
 ---
 
@@ -83,7 +85,9 @@ The interface is realized through the MCP server defined in the `docgraph-plugin
 
 The distribution platform for Claude Desktop plugins.
 
-**Realized by**: [MOD_PLUGIN (Claude Code Plugin)](../../architecture/view/module.md#MOD_PLUGIN)
+### Realized by
+
+- [MOD_PLUGIN (Claude Code Plugin)](../../architecture/view/module.md#MOD_PLUGIN)
 
 ---
 
@@ -93,7 +97,9 @@ The distribution platform for Claude Desktop plugins.
 
 The distribution platform for Visual Studio Code extensions.
 
-**Realized by**: [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
+### Realized by
+
+- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
 
 ---
 
@@ -103,7 +109,9 @@ The distribution platform for Visual Studio Code extensions.
 
 The user interface of Visual Studio Code, including commands, views, and settings.
 
-**Realized by**: [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
+### Realized by
+
+- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
 
 ---
 
@@ -113,13 +121,15 @@ The user interface of Visual Studio Code, including commands, views, and setting
 
 The system interacts with GitHub Releases to distribute pre-compiled binaries and extension packages.
 
-**Realized by**: [MOD_CLI (CLI Modules)](../../architecture/view/module.md#MOD_CLI)
-
-### Specifications
+**Specifications:**
 
 1. **Host**: `github.com`
 2. **Access**: Public anonymous access for downloads.
 3. **Format**: Compressed archives (`.tar.gz`, `.zip`) and VSIX packages.
+
+### Realized by
+
+- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
 
 ---
 
@@ -129,4 +139,6 @@ The system interacts with GitHub Releases to distribute pre-compiled binaries an
 
 The user interface of the Zed editor, including the command palette and settings.
 
-**Realized by**: [MOD_EXT_ZED (Zed Editor Extension)](../../architecture/view/module.md#MOD_EXT_ZED)
+### Realized by
+
+- [MOD_EXT_ZED (Zed Editor Extension)](../../architecture/view/module.md#MOD_EXT_ZED)

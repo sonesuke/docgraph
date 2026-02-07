@@ -1,12 +1,10 @@
-<a id="CC_SAST"></a>
-
 # Static Application Security Testing (SAST) & Dependency Scanning
+
+<a id="CC_SAST"></a>
 
 ## SAST (CodeQL)
 
 We use GitHub CodeQL to automatically analyze the codebase for security vulnerabilities and coding errors.
-
-**Derived from:** [ADR_SECURITY (Context)](../../decisions/security.md#ADR_SECURITY)
 
 **Configuration:**
 
@@ -19,7 +17,7 @@ We use GitHub CodeQL to automatically analyze the codebase for security vulnerab
 - Pull Requests targeting main
 - Schedule (Weekly)
 
-## Dependency Scanning
+**Dependency Scanning:**
 
 We use automated tools to block merges that introduce known vulnerabilities in dependencies.
 
@@ -31,3 +29,7 @@ We use automated tools to block merges that introduce known vulnerabilities in d
 **Execution:**
 
 - CI Pipeline (`lint` job) on every Pull Request.
+
+### Decided by
+
+- [ADR_SECURITY (Security Architecture)](../../decisions/security.md#ADR_SECURITY) To ensure secure code lifecycle.

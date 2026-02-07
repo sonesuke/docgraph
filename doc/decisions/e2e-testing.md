@@ -2,15 +2,6 @@
 
 # Testing Strategy for CLI and LSP
 
-## Status
-
-Accepted
-
-## Context
-
-Docgraph has two main interfaces: the CLI and the LSP server. Both interact significantly with the file system and external inputs (args, stdio).
-Previously, we attempted to test internal handlers using unit tests, but this required mocking complex contexts and often duplicated the logic found in integration tests.
-
 ## Decision
 
 We will adopt an End-to-End (E2E) testing strategy for both CLI and LSP interfaces.
@@ -19,7 +10,7 @@ We will adopt an End-to-End (E2E) testing strategy for both CLI and LSP interfac
 - **LSP Tests**: Located in `tests/lsp/`. We use a custom `LspClient` harness (over stdio) to spawn the server binary and communicate via JSON-RPC.
 - **Core Unit Tests**: Core logic (parsing, graph construction, rules) will still be tested via unit tests in `src/core/`.
 
-## Consequences
+## Rationale
 
 - **Pros**:
   - Tests reflect real-world usage.
@@ -28,3 +19,8 @@ We will adopt an End-to-End (E2E) testing strategy for both CLI and LSP interfac
 - **Cons**:
   - Tests are slightly slower than unit tests (process spawning).
   - Debugging failures requires inspecting process output or logs.
+
+## Context
+
+Docgraph has two main interfaces: the CLI and the LSP server. Both interact significantly with the file system and external inputs (args, stdio).
+Previously, we attempted to test internal handlers using unit tests, but this required mocking complex contexts and often duplicated the logic found in integration tests.

@@ -1,10 +1,6 @@
-# Testing Strategy
-
 <a id="ADR_TESTING"></a>
 
-## Context
-
-We need a comprehensive testing strategy to ensure code quality and correctness across the entire codebase.
+# Testing
 
 ## Decision
 
@@ -15,8 +11,14 @@ We adopt a multi-layered testing approach:
 3. **Performance Testing**: Benchmarks for critical paths
 4. **Code Coverage**: Using `cargo-llvm-cov` for measurement
 
-## Consequences
+## Rationale
+
+### Consequences
 
 - **Isolation**: Tests run independently and quickly
 - **Coverage Target**: 85%+ for core business logic, 70%+ overall
 - **Tools**: `cargo test`, `cargo bench`, `cargo llvm-cov`
+
+## Context
+
+We need a comprehensive testing strategy to ensure code quality and correctness across the entire codebase.

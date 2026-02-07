@@ -1,12 +1,20 @@
 <a id="CC_ERROR_HANDLING"></a>
 
-# Error Handling Boundaries
+## Error Handling Strategy
 
-## Overview
+The system uses a unified error handling strategy based on the `Result` type and structured error enums.
+
+**Principles:**
+
+- **Explicit Errors**: All errors must be explicitly defined in error enums.
+- **Context**: Errors must carry sufficient context for debugging.
+- **No Panic**: The core logic must not panic.
+
+**Overview:**
 
 Error handling in `docgraph` follows a **boundary-based strategy**: typed errors in the core library, contextual errors in binaries.
 
-## The Rule
+**The Rule:**
 
 ```text
 Core (lib)  : thiserror → typed errors
@@ -14,7 +22,7 @@ CLI (bin)   : anyhow    → contextual reporting
 LSP (server): anyhow    → convert to JSON-RPC at boundary
 ```
 
-## Core Library: thiserror
+**Core Library: thiserror**
 
 Use `thiserror` to define typed error enums:
 
@@ -31,7 +39,7 @@ pub enum Error {
 pub type Result<T> = std::result::Result<T, Error>;
 ```
 
-## CLI Binary: anyhow
+**CLI Binary: anyhow**
 
 Use `anyhow` with `.context()` for rich error messages:
 
@@ -45,7 +53,7 @@ fn main() -> anyhow::Result<()> {
 }
 ```
 
-## LSP Server: anyhow + Conversion
+**LSP Server: anyhow + Conversion**
 
 Use `anyhow` internally, convert to JSON-RPC errors at the handler boundary:
 
@@ -58,13 +66,17 @@ async fn handle_request(...) -> Result<Response, jsonrpc::Error> {
 }
 ```
 
-## Boundary Conversion
+**Boundary Conversion:**
 
 Errors automatically convert across boundaries:
 
 - `core::Error` → `anyhow::Error` (automatic via `?`)
 - `anyhow::Error` → `jsonrpc::Error` (explicit conversion)
 
-## Related
+### Decided by
 
-- [ADR_ERROR_HANDLING (Error Handling Strategy: thiserror for Core, anyhow for Binaries)](../../decisions/error-handling.md#ADR_ERROR_HANDLING)
+- [ADR_ERROR_HANDLING (Error Handling Strategy: thiserror for Core, anyhow for Binaries)](../../decisions/error-handling.md#ADR_ERROR_HANDLING) To unify error reporting.
+
+### Realized by
+
+- [MOD_CORE_ERRORS (Error Definitions)](../view/module.md#MOD_CORE_ERRORS)

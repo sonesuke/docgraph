@@ -6,7 +6,9 @@
 
 The agent SHALL use the document graph to perform Retrieval-Augmented Generation, fetching relevant context for user queries.
 
-**Realized by:** [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
+### Realized by
+
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
 <a id="FR_CLAUDE_SUGGEST"></a>
 
@@ -14,7 +16,9 @@ The agent SHALL use the document graph to perform Retrieval-Augmented Generation
 
 The agent SHALL suggest appropriate commands and workflows based on the current document context.
 
-**Realized by:** [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
+### Realized by
+
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
 <a id="FR_CLAUDE_FIX"></a>
 
@@ -22,7 +26,9 @@ The agent SHALL suggest appropriate commands and workflows based on the current 
 
 The agent SHALL be able to automatically apply fixes to the documentation, such as formatting and structural corrections.
 
-**Realized by:** [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
+### Realized by
+
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
 <a id="FR_CLAUDE_EXPLAIN"></a>
 
@@ -30,7 +36,9 @@ The agent SHALL be able to automatically apply fixes to the documentation, such 
 
 The agent SHALL be able to explain validation rules and errors to the user in natural language.
 
-**Realized by:** [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
+### Realized by
+
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
 <a id="FR_CLAUDE_WORKFLOW"></a>
 
@@ -38,7 +46,9 @@ The agent SHALL be able to explain validation rules and errors to the user in na
 
 The agent SHALL guide the user through the document-driven development workflow, prompting for next steps.
 
-**Realized by:** [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
+### Realized by
+
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
 <a id="FR_CLAUDE_MARKETPLACE"></a>
 
@@ -46,10 +56,11 @@ The agent SHALL guide the user through the document-driven development workflow,
 
 The plugin SHALL support distribution via the Claude marketplace mechanism. This includes providing a valid `.claude-plugin/marketplace.json` file in the repository root that defines the plugin and its source.
 
-**Realized by:**
+### Realized by
+
 
 - [MOD_PLUGIN (Claude Code Plugin)](../../architecture/view/module.md#MOD_PLUGIN)
-- [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
 <a id="FR_CLAUDE_INSTALL"></a>
 
@@ -57,7 +68,8 @@ The plugin SHALL support distribution via the Claude marketplace mechanism. This
 
 The plugin SHALL be installable via the Claude Desktop `/plugin` commands. Specifically, it SHALL support being added as a marketplace and then installed as a local plugin.
 
-**Realized by:**
+### Realized by
+
 
 - [MOD_PLUGIN (Claude Code Plugin)](../../architecture/view/module.md#MOD_PLUGIN)
-- [MOD_CORE (Core Modules)](../../architecture/view/module.md#MOD_CORE)
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)

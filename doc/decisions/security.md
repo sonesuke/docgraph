@@ -1,10 +1,6 @@
-# Security Architecture
-
 <a id="ADR_SECURITY"></a>
 
-## Context
-
-Security is critical for a developer tool that processes user code. We need multiple layers of protection.
+# Security Architecture
 
 ## Decision
 
@@ -16,8 +12,14 @@ We implement a comprehensive security strategy:
     - **Core & Zed Extension**: `cargo-audit` in CI/CD
     - **VSIX**: `npm audit` in CI/CD
 
-## Consequences
+## Rationale
+
+### Consequences
 
 - CodeQL runs on push to main, PRs, and weekly schedule
 - Dependencies are updated weekly
 - Merges with known vulnerabilities in ANY component (Rust or Node.js) are blocked
+
+## Context
+
+Security is critical for a developer tool that processes user code. We need multiple layers of protection.

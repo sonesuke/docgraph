@@ -1,14 +1,6 @@
 <a id="ADR_LAYERED_ARCH"></a>
 
-# Layered Architecture: Core, CLI Handlers, LSP Handlers
-
-## Status
-
-Accepted
-
-## Context
-
-`docgraph` is a tool for building and validating knowledge graphs from Markdown files. It needs to support multiple interfaces (CLI, LSP) while sharing the same core logic, avoiding code duplication, and maintaining high maintainability.
+# Layered Architecture
 
 ## Decision
 
@@ -74,9 +66,9 @@ This provides:
 - **Change Isolation**: UI changes don't affect business logic (changing CLI output format only modifies `src/cli/handlers/`)
 - **Core Stability**: Core validation logic remains stable across interface changes
 
-## Consequences
+### Consequences
 
-### Positive
+#### Positive
 
 - **Maintainability**: Each layer's responsibility is clear, change impact is limited
 - **Testability**: Core logic is independent of I/O and can be unit tested; handlers are thin and sufficient for integration testing
@@ -88,7 +80,11 @@ This provides:
 - Small changes may require modifications to multiple files
 - New developers may need time to understand the file structure
 
-## Example: `check` Command Flow
+## Context
+
+`docgraph` is a tool for building and validating knowledge graphs from Markdown files. It needs to support multiple interfaces (CLI, LSP) while sharing the same core logic, avoiding code duplication, and maintaining high maintainability.
+
+### Example: `check` Command Flow
 
 The following diagram illustrates how the layered architecture works in practice:
 

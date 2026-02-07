@@ -1,35 +1,21 @@
 <a id="CC_SINGLE_RESPONSIBILITY"></a>
 
-# Cross-Cutting Concept: Single Responsibility Principle
+## Single Responsibility Principle (SRP)
 
-## Overview
+Each module or struct should have one, and only one, reason to change.
 
-The Single Responsibility Principle (SRP) states that **each module should have one, and only one, reason to change**. In `docgraph`, this means each file/module is responsible for exactly one thing.
+**Handler Modules:**
 
-## Application in docgraph
+Handlers in `src/cli/handlers` and `src/lsp/handlers` are responsible ONLY for parsing arguments, calling Core, and formatting output. They handle exactly one command or request (e.g., `check.rs`, `hover.rs`).
 
-### Handler Modules
+**Core Modules:**
 
-Each handler handles exactly one command or request:
+Core modules in `src/core` are responsible ONLY for domain logic and validation. Each module has a single responsibility (e.g., `parse.rs` for Markdown parsing, `lint.rs` for validation).
 
-- `check.rs`: Only the `check` command
-- `rule.rs`: Only the `rule` command
-- `hover.rs`: Only hover requests
-- `completion.rs`: Only completion requests
+**Rule Modules:**
 
-### Core Modules
-
-Each core module has a single, well-defined responsibility:
-
-- `parse.rs`: Extract structure from Markdown
-- `collect.rs`: Gather Nodes across workspace
-- `lint.rs`: Orchestrate validation
-- `walk.rs`: Traverse file system
+Each validation rule (`src/core/rules/dg*.rs`) implements a single check logic.
 - `config.rs`: Load and manage configuration
-
-### Rule Modules
-
-Each rule validates exactly one aspect:
 
 - `dg001.rs`: Anchor must be followed by heading
 - `dg002.rs`: No duplicate anchor IDs
@@ -38,6 +24,6 @@ Each rule validates exactly one aspect:
 - `dg005.rs`: Known node type prefixes
 - `dg006.rs`: Strict relation enforcement
 
-## Related
+### Decided by
 
-- [ADR_SINGLE_RESPONSIBILITY (Single Responsibility Principle)](../../decisions/single-responsibility.md#ADR_SINGLE_RESPONSIBILITY)
+- [ADR_SINGLE_RESPONSIBILITY (Single Responsibility Principle)](../../decisions/single-responsibility.md#ADR_SINGLE_RESPONSIBILITY) To decouple modules.

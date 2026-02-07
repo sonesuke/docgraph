@@ -32,18 +32,35 @@ graph TD
 
 <a id="MOD_CORE"></a>
 
-## Core Modules
+### Core Library
 
 The `core` module contains the fundamental logic for analyzing documentation graphs.
 
 - **`types`**: Defines the data structures for `Node`, `RefUse`, and `Graph`.
 - **`parse`**: Responsible for extracting `{document}` blocks and HTML anchors from Markdown files.
 - **`collect`**: Orchestrates the scanning of directories and aggregation of nodes.
+
+<a id="MOD_CORE_RULES"></a>
+
+### Validation Rules
+
 - **`lint`**: Implements the validation engine and individual rules (DG001-DG006).
+
+<a id="MOD_CORE_GRAPH"></a>
+
+### Graph Logic
+
+- **`graph`**: Manages the construction and traversal of the dependency graph.
+
+<a id="MOD_CORE_ERRORS"></a>
+
+### Error Definitions
+
+- **`error`**: Defines the unified error types and handling strategies.
 
 <a id="MOD_CLI"></a>
 
-## CLI Modules
+### CLI Application
 
 The `cli` module handles user interaction via the terminal.
 
@@ -52,15 +69,25 @@ The `cli` module handles user interaction via the terminal.
 
 <a id="MOD_LSP"></a>
 
-## LSP Modules
+### LSP Library
 
 The `lsp` module provides the Language Server Protocol implementation.
+
+<a id="MOD_LSP_SERVER"></a>
+
+### LSP Server
+
+- **`server`**: Implements the main event loop and lifecycle management.
+
+<a id="MOD_LSP_HANDLERS"></a>
+
+### LSP Handlers
 
 - **`handlers`**: Implements LSP capabilities such as `textDocument/definition`, `textDocument/references`, and `textDocument/hover`.
 
 <a id="MOD_VSEX"></a>
 
-## VS Code Extension
+### VS Code Extension
 
 The `vsix` module is a TypeScript-based project that acts as the LSP client.
 
@@ -68,7 +95,7 @@ The `vsix` module is a TypeScript-based project that acts as the LSP client.
 
 <a id="MOD_EXT_ZED"></a>
 
-## Zed Editor Extension
+### Zed Editor Extension
 
 The `zed-extension` is a WASM-based extension for the Zed editor.
 
@@ -76,7 +103,7 @@ The `zed-extension` is a WASM-based extension for the Zed editor.
 
 <a id="MOD_CICD"></a>
 
-## CI/CD Modules
+### CI/CD Pipelines
 
 The `.github` directory contains the CI/CD pipeline configuration.
 
@@ -86,7 +113,7 @@ The `.github` directory contains the CI/CD pipeline configuration.
 
 <a id="MOD_PLUGIN"></a>
 
-## Claude Code Plugin
+### Claude Code Plugin
 
 The `docgraph-plugin` provides a Model Context Protocol (MCP) server for Claude Code.
 
@@ -95,10 +122,19 @@ The `docgraph-plugin` provides a Model Context Protocol (MCP) server for Claude 
 
 <a id="MOD_DEV_CONTAINER"></a>
 
-## Dev Container Modules
+### Dev Container
 
 The `.devcontainer` directory contains the development environment configuration.
 
 - **`devcontainer.json`**: Defines the container image, features, and tool installations.
 - **`postCreateCommand`**: Installs additional tools (docgraph, Claude Code).
 - **Extensions**: Pre-configured VS Code extensions for Rust, TOML, debugging, and AI assistance.
+
+<a id="MOD_TEST_INFRA"></a>
+
+### Test Infrastructure
+
+The `tests` directory and test utilities.
+
+- **`tests/`**: Integration and E2E tests.
+- **`src/test_utils`**: Helper functions and mocks for testing.
