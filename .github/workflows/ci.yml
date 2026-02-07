@@ -33,102 +33,37 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install Dev Container CLI
+        run: npm install -g @devcontainers/cli
+
       - name: Build & Initialize Dev Container
-        uses: devcontainers/ci@v0.3
+        run: |
+          devcontainer up --workspace-folder .
         env:
           CI: true
-          CARGO_HOME: /workspaces/docgraph/.cargo
-          CARGO_TARGET_DIR: /workspaces/docgraph/target
-          CARGO_INCREMENTAL: 1
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: |
-            cargo fetch
 
       - name: Rust Format Check
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-          CARGO_HOME: /workspaces/docgraph/.cargo
-          CARGO_TARGET_DIR: /workspaces/docgraph/target
-          CARGO_INCREMENTAL: 1
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: cargo fmt -- --check
+        run: devcontainer exec --workspace-folder . cargo fmt -- --check
 
       - name: Cargo Clippy
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-          CARGO_HOME: /workspaces/docgraph/.cargo
-          CARGO_TARGET_DIR: /workspaces/docgraph/target
-          CARGO_INCREMENTAL: 1
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: cargo clippy -- -D warnings
+        run: devcontainer exec --workspace-folder . cargo clippy -- -D warnings
 
       - name: Security Audit (Rust)
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-          CARGO_HOME: /workspaces/docgraph/.cargo
-          CARGO_TARGET_DIR: /workspaces/docgraph/target
-          CARGO_INCREMENTAL: 1
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: |
-            cargo audit
-            (cd zed-extension && cargo audit)
+        run: |
+          devcontainer exec --workspace-folder . cargo audit
+          devcontainer exec --workspace-folder . bash -c "cd zed-extension && cargo audit"
 
       - name: VSIX Lint & Audit
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-          CARGO_HOME: /workspaces/docgraph/.cargo
-          CARGO_TARGET_DIR: /workspaces/docgraph/target
-          CARGO_INCREMENTAL: 1
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: |
-            npm install --prefix vsix
-            npm run lint --prefix vsix
-            npm audit --prefix vsix
+        run: |
+          devcontainer exec --workspace-folder . npm install --prefix vsix
+          devcontainer exec --workspace-folder . npm run lint --prefix vsix
+          devcontainer exec --workspace-folder . npm audit --prefix vsix
 
       - name: Tests & Coverage
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-          CARGO_HOME: /workspaces/docgraph/.cargo
-          CARGO_TARGET_DIR: /workspaces/docgraph/target
-          CARGO_INCREMENTAL: 1
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+        run: devcontainer exec --workspace-folder . cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
 
       - name: Docgraph Check
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-          CARGO_HOME: /workspaces/docgraph/.cargo
-          CARGO_TARGET_DIR: /workspaces/docgraph/target
-          CARGO_INCREMENTAL: 1
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: cargo run -- check ./doc
+        run: devcontainer exec --workspace-folder . cargo run -- check ./doc
 
 
       - name: Upload coverage report
