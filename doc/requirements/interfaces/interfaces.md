@@ -4,33 +4,12 @@
 
 ## docgraph.toml Configuration
 
-The `docgraph.toml` file at the project root defines the validation rules and workspace behavior, including node type definitions, relationship rules, and global graph settings.
+The `docgraph.toml` file at the project root defines the validation rules and workspace behavior.
 
-**Configuration Structure:**
+**Specifications:**
 
-```toml
-[graph]
-doc_types = ["ACT", "DAT", "IF", "ADR"]
-
-[node_types]
-UC = { desc = "Use Case" }
-FR = { desc = "Functional Requirement" }
-
-[references.UC]
-rules = [
-  { dir = "to", targets = ["FR"], min = 1, desc = "Use cases must derive functional requirements" }
-]
-```
-
-**Settings:**
-
-| Attribute      | Type           | Description                                                  |
-| :------------- | :------------- | :----------------------------------------------------------- |
-| `doc_types`    | `List<String>` | Node types that are exempt from strict relation checks.      |
-| `[node_types]` | `Table`        | Defines allowed prefixes for nodes.                          |
-| `[references]` | `Table`        | Defines constraints on how different node types can connect. |
-
-**Note:** Strict node type and strict relation validation are always enabled and cannot be disabled.
+- **File Path**: `docgraph.toml` (Project Root)
+- **Format**: TOML
 
 ### Realized by
 

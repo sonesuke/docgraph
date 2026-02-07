@@ -52,7 +52,7 @@ rules = [
 # Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
 rules = [
   { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Functional requirements are derived from business needs (UC) or constraints (CON) to clarify their existence" },
-  { dir = "to", targets = ["MOD", "NFR"], min = 1, desc = "Each functional requirement must be realized by at least one module (MOD) or derive a non-functional requirement (NFR) to ensure implementation" },
+  { dir = "to", targets = ["MOD", "NFR", "IF"], min = 1, desc = "Each functional requirement must be realized by at least one module (MOD), interface (IF) or derive a non-functional requirement (NFR)" },
   { dir = "to", targets = ["CC"], min = 0, desc = "Functional requirements may be reflected in cross-cutting concerns (CC)" }
 ]
 
