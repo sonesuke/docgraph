@@ -15,7 +15,9 @@ For a comprehensive guide on concepts, architecture, and specifications, please 
 ## Key Features
 
 - **Graph Validation**: Automated checks for broken links, duplicate IDs, and relationship rule violations defined in `docgraph.toml`.
+- **Template Validation**: Enforce consistent documentation structure using Markdown templates with wildcard support.
 - **Traceability Analysis**: Tools to search, trace, and describe complex node relationships.
+
 - **AI-Agent Ready**: Built-in support for GraphRAG knowledge construction. AI Agents can consume `docgraph` outputs to assist in documentation and development workflows.
 - **Modern IDE Integration**: A dedicated VS Code plugin with full LSP support.
 
@@ -47,8 +49,8 @@ Create a `docgraph.toml` file in your project root to define your documentation 
 
 ```toml
 [node_types]
-UC = { desc = "Use Case" }
-FR = { desc = "Functional Requirement" }
+UC = { desc = "Use Case", template = "doc/templates/use_case.md" }
+FR = { desc = "Functional Requirement", template = "doc/templates/functional.md" }
 
 [references.FR]
 rules = [

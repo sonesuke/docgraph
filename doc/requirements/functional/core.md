@@ -45,3 +45,23 @@ The system SHOULD provide mechanisms to authenticate users before allowing certa
 ### Realized by
 
 - [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
+
+---
+
+<a id="FR_CORE_TEMPLATE_VALIDATION"></a>
+
+## Template Validation
+
+The system MUST validate that documentation nodes conform to the structure defined in their associated Markdown templates.
+
+**Validation Rules:**
+
+- **Structure Matching**: The hierarchy of headers and lists in the document must strictly match the template.
+- **Text Patterns**: Use `{...}` placeholders in templates to match variable content. Fixed text outside placeholders must match exactly.
+- **Wildcards**: Supports `*` for ID matching and substring matching in links.
+- **Optional Sections**: Use `(Optional)` in headers to mark sections that can be omitted.
+
+### Realized by
+
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
+
