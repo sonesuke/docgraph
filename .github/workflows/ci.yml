@@ -15,13 +15,15 @@ permissions:
   packages: read
 
 jobs:
-  build:
-    name: Build Dev Container
+  verify:
+    name: Build & Verify
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
+      - name: Set git default branch
+        run: |
+          git config --global init.defaultBranch main
+          git config --global advice.detachedHead false
+
       - uses: actions/checkout@v6
 
       - name: Log in to GitHub Container Registry
@@ -31,57 +33,87 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Dev Container
+      - name: Build & Initialize Dev Container
         uses: devcontainers/ci@v0.3
+        env:
+          CI: true
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          imageTag: sha-${{ github.sha }}
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: always
-
-  verify:
-    name: Verify
-    needs: build
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/${{ github.repository }}/docgraph-dev:sha-${{ github.sha }}
-      options: --user vscode
-    steps:
-      - name: Set git default branch
-        run: |
-          git config --global init.defaultBranch main
-          git config --global advice.detachedHead false
-
-      - uses: actions/checkout@v6
+          push: never
+          runCmd: "true"
 
       - name: Rust Format Check
-        run: cargo fmt -- --check
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: cargo fmt -- --check
 
       - name: Cargo Clippy
-        run: cargo clippy -- -D warnings
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: cargo clippy -- -D warnings
 
       - name: Security Audit (Rust)
-        run: |
-          cargo audit
-          (cd zed-extension && cargo audit)
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: |
+            cargo audit
+            (cd zed-extension && cargo audit)
 
       - name: VSIX Lint & Audit
-        run: |
-          npm install --prefix vsix
-          npm run lint --prefix vsix
-          npm audit --prefix vsix
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: |
+            npm install --prefix vsix
+            npm run lint --prefix vsix
+            npm audit --prefix vsix
 
       - name: Tests & Coverage
-        run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
 
       - name: Docgraph Check
-        run: cargo run -- check ./doc
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: cargo run -- check ./doc
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v6
         with:
           name: coverage-report
           path: lcov.info
+
 
 
 
