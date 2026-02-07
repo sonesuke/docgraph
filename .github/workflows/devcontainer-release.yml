@@ -18,6 +18,9 @@ jobs:
       packages: write
 
     steps:
+      - name: Set git default branch
+        run: git config --global init.defaultBranch main
+
       - name: Checkout repository
         uses: actions/checkout@v4
 

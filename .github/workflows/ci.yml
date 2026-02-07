@@ -18,6 +18,9 @@ jobs:
     name: Lint & Security
     runs-on: ubuntu-latest
     steps:
+      - name: Set git default branch
+        run: git config --global init.defaultBranch main
+
       - uses: actions/checkout@v4
 
       - name: Log in to GitHub Container Registry
