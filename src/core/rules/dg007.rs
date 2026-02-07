@@ -1,15 +1,28 @@
-use std::path::Path;
-use pulldown_cmark::{Event, HeadingLevel, Parser, Tag, TagEnd};
-use std::fs;
 use crate::core::config::Config;
 use crate::core::types::{Diagnostic, Severity, SpecBlock};
+use pulldown_cmark::{Event, HeadingLevel, Parser, Tag, TagEnd};
 use regex::Regex;
+use std::fs;
+use std::path::Path;
+use std::sync::OnceLock;
+
+static RE_WS: OnceLock<Regex> = OnceLock::new();
+static RE_PLACEHOLDER: OnceLock<Regex> = OnceLock::new();
 
 #[derive(Debug, Clone)]
 enum TemplateElement {
-    Header { level: HeadingLevel, text_pattern: String, optional: bool },
-    Text { pattern: String },
-    List { item_patterns: Vec<String>, optional: bool },
+    Header {
+        level: HeadingLevel,
+        text_pattern: String,
+        optional: bool,
+    },
+    Text {
+        pattern: String,
+    },
+    List {
+        item_patterns: Vec<String>,
+        optional: bool,
+    },
 }
 
 struct Template {
@@ -17,49 +30,47 @@ struct Template {
     _root_anchor_pattern: Regex,
 }
 
-pub fn check_templates(
-    root: &Path,
-    spec_blocks: &[SpecBlock],
-    config: &Config,
-) -> Vec<Diagnostic> {
+pub fn check_templates(root: &Path, spec_blocks: &[SpecBlock], config: &Config) -> Vec<Diagnostic> {
+    RE_WS.get_or_init(|| Regex::new(r" +").unwrap());
+    RE_PLACEHOLDER.get_or_init(|| Regex::new(r"\\\{[^}]+\\\}").unwrap());
     let mut diagnostics = Vec::new();
 
     for (type_name, node_type) in &config.node_types {
         if let Some(template_path) = &node_type.template {
-             let full_template_path = if template_path.exists() {
-                 template_path.to_path_buf()
-             } else {
-                 root.join(template_path)
-             };
+            let full_template_path = if template_path.exists() {
+                template_path.to_path_buf()
+            } else {
+                root.join(template_path)
+            };
 
-             let template_content = match fs::read_to_string(&full_template_path) {
-                 Ok(c) => c,
-                 Err(_) => continue, 
-             };
-             
-             let template = match parse_template(&template_content) {
-                 Ok(t) => t,
-                 Err(_e) => continue,
-             };
+            let template_content = match fs::read_to_string(&full_template_path) {
+                Ok(c) => c,
+                Err(_) => continue,
+            };
 
-             for block in spec_blocks {
-                 if block.node_type == *type_name {
-                     if let Err(msg) = validate_block(block, &template) {
-                         diagnostics.push(Diagnostic {
-                             path: block.file_path.clone(),
-                             range: crate::core::types::Range {
-                                 start_line: block.line_start,
-                                 start_col: 1,
-                                 end_line: block.line_end,
-                                 end_col: 1,
-                             },
-                             code: "DG007".to_string(),
-                             message: format!("Template validation failed for {}: {}", block.id, msg),
-                             severity: Severity::Error,
-                         });
-                     }
-                 }
-             }
+            let template = match parse_template(&template_content) {
+                Ok(t) => t,
+                Err(_e) => continue,
+            };
+
+            for block in spec_blocks {
+                if block.node_type == *type_name
+                    && let Err(msg) = validate_block(block, &template)
+                {
+                    diagnostics.push(Diagnostic {
+                        path: block.file_path.clone(),
+                        range: crate::core::types::Range {
+                            start_line: block.line_start,
+                            start_col: 1,
+                            end_line: block.line_end,
+                            end_col: 1,
+                        },
+                        code: "DG007".to_string(),
+                        message: format!("Template validation failed for {}: {}", block.id, msg),
+                        severity: Severity::Error,
+                    });
+                }
+            }
         }
     }
 
@@ -72,12 +83,12 @@ fn parse_template(content: &str) -> Result<Template, String> {
     let mut root_anchor_pattern = Regex::new(".*").unwrap();
 
     if let Some(Event::Html(html)) = parser.next() {
-         let re = Regex::new(r#"<a\s+id=["']([^"']+)["']"#).unwrap();
-         if let Some(caps) = re.captures(&html) {
-             let id_pattern = caps.get(1).unwrap().as_str();
-             let pattern_str = format!("^{}$", regex::escape(id_pattern).replace("\\*", ".*"));
-             root_anchor_pattern = Regex::new(&pattern_str).map_err(|e| e.to_string())?;
-         }
+        let re = Regex::new(r#"<a\s+id=["']([^"']+)["']"#).unwrap();
+        if let Some(caps) = re.captures(&html) {
+            let id_pattern = caps.get(1).unwrap().as_str();
+            let pattern_str = format!("^{}$", regex::escape(id_pattern).replace("\\*", ".*"));
+            root_anchor_pattern = Regex::new(&pattern_str).map_err(|e| e.to_string())?;
+        }
     }
 
     while let Some(event) = parser.next() {
@@ -85,10 +96,10 @@ fn parse_template(content: &str) -> Result<Template, String> {
             Event::Start(Tag::Heading { level, .. }) => {
                 let text = get_event_text(&mut parser);
                 let optional = text.contains("(Optional)");
-                elements.push(TemplateElement::Header { 
-                    level, 
-                    text_pattern: text, 
-                    optional 
+                elements.push(TemplateElement::Header {
+                    level,
+                    text_pattern: text,
+                    optional,
                 });
             }
             Event::Start(Tag::List(_)) => {
@@ -102,36 +113,48 @@ fn parse_template(content: &str) -> Result<Template, String> {
                         Event::Start(Tag::List(_)) => depth += 1,
                         Event::End(TagEnd::List(_)) => {
                             depth -= 1;
-                            if depth == 0 { break; }
+                            if depth == 0 {
+                                break;
+                            }
                         }
                         _ => {}
                     }
                 }
-                elements.push(TemplateElement::List { item_patterns, optional: false });
+                elements.push(TemplateElement::List {
+                    item_patterns,
+                    optional: false,
+                });
             }
             Event::Text(t) => {
                 let s = t.trim();
                 if !s.is_empty() {
-                    elements.push(TemplateElement::Text { 
-                        pattern: s.to_string(), 
+                    elements.push(TemplateElement::Text {
+                        pattern: s.to_string(),
                     });
                 }
             }
             _ => {}
         }
     }
-    
-    Ok(Template { elements, _root_anchor_pattern: root_anchor_pattern })
+
+    Ok(Template {
+        elements,
+        _root_anchor_pattern: root_anchor_pattern,
+    })
 }
 
 fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> {
     let parser = Parser::new(&block.content);
     let mut block_events = parser.into_iter().peekable();
     let mut section_missing = false;
-    
+
     for expected in &template.elements {
         match expected {
-            TemplateElement::Header { level, text_pattern, optional } => {
+            TemplateElement::Header {
+                level,
+                text_pattern,
+                optional,
+            } => {
                 let mut found = false;
                 while let Some(e) = block_events.peek() {
                     match e {
@@ -139,16 +162,23 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                             found = true;
                             break;
                         }
-                        _ => { block_events.next(); }
+                        _ => {
+                            block_events.next();
+                        }
                     }
                 }
-                
+
                 if found {
                     section_missing = false;
                     block_events.next(); // Consume Start(Heading)
                     let text = get_event_text(&mut block_events);
                     if !match_text(text_pattern, &text) {
-                        return Err(format!("Header text mismatch for {}. Expected '{}', found '{}'", level_to_str(*level), text_pattern, text));
+                        return Err(format!(
+                            "Header text mismatch for {}. Expected '{}', found '{}'",
+                            level_to_str(*level),
+                            text_pattern,
+                            text
+                        ));
                     }
                 } else if !optional {
                     return Err(format!("Missing required Header: {}", level_to_str(*level)));
@@ -156,8 +186,13 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                     section_missing = true;
                 }
             }
-            TemplateElement::List { item_patterns, optional } => {
-                if section_missing { continue; }
+            TemplateElement::List {
+                item_patterns,
+                optional,
+            } => {
+                if section_missing {
+                    continue;
+                }
                 let mut found = false;
                 while let Some(e) = block_events.peek() {
                     match e {
@@ -166,7 +201,9 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                             break;
                         }
                         Event::Start(Tag::Heading { .. }) => break, // Hit next header
-                        _ => { block_events.next(); }
+                        _ => {
+                            block_events.next();
+                        }
                     }
                 }
 
@@ -177,11 +214,14 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                             Event::Start(Tag::Item) => {
                                 let item_text = get_event_text(&mut block_events);
                                 if !item_patterns.is_empty() {
-                                    let matched = item_patterns.iter().any(|pattern| {
-                                        match_text(pattern, &item_text)
-                                    });
+                                    let matched = item_patterns
+                                        .iter()
+                                        .any(|pattern| match_text(pattern, &item_text));
                                     if !matched {
-                                        return Err(format!("List item '{}' does not match any template pattern. Expected one of: {:?}", item_text, item_patterns));
+                                        return Err(format!(
+                                            "List item '{}' does not match any template pattern. Expected one of: {:?}",
+                                            item_text, item_patterns
+                                        ));
                                     }
                                 }
                             }
@@ -194,19 +234,23 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                 }
             }
             TemplateElement::Text { pattern } => {
-                if section_missing { continue; }
+                if section_missing {
+                    continue;
+                }
                 let mut found = false;
                 while let Some(e) = block_events.peek() {
                     match e {
                         Event::Text(t) | Event::Code(t) => {
-                            if match_text(pattern, &t) {
+                            if match_text(pattern, t) {
                                 found = true;
                                 break;
                             }
                             block_events.next();
                         }
                         Event::Start(Tag::Heading { .. }) => break,
-                        _ => { block_events.next(); }
+                        _ => {
+                            block_events.next();
+                        }
                     }
                 }
                 if found {
@@ -215,7 +259,7 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
             }
         }
     }
-    
+
     Ok(())
 }
 
@@ -230,7 +274,9 @@ fn get_event_text<'a>(iter: &mut impl Iterator<Item = Event<'a>>) -> String {
                 text.push_str(&dest_url);
                 text.push(')');
             }
-            Event::End(TagEnd::Link) | Event::End(TagEnd::Heading(_)) | Event::End(TagEnd::Item) => break,
+            Event::End(TagEnd::Link)
+            | Event::End(TagEnd::Heading(_))
+            | Event::End(TagEnd::Item) => break,
             _ => {}
         }
     }
@@ -249,22 +295,29 @@ fn level_to_str(level: HeadingLevel) -> &'static str {
 }
 
 fn match_text(pattern: &str, target: &str) -> bool {
-    let clean_p = pattern.chars().map(|c| if c.is_whitespace() { ' ' } else { c }).collect::<String>();
-    let clean_t = target.chars().map(|c| if c.is_whitespace() { ' ' } else { c }).collect::<String>();
-    
-    let re_ws = Regex::new(r" +").unwrap();
+    let clean_p = pattern
+        .chars()
+        .map(|c| if c.is_whitespace() { ' ' } else { c })
+        .collect::<String>();
+    let clean_t = target
+        .chars()
+        .map(|c| if c.is_whitespace() { ' ' } else { c })
+        .collect::<String>();
+
+    let re_ws = RE_WS.get().unwrap();
+    let re_placeholder = RE_PLACEHOLDER.get().unwrap();
+
     let p = re_ws.replace_all(clean_p.trim(), " ").to_string();
     let t = re_ws.replace_all(clean_t.trim(), " ").to_string();
-    
+
     let escaped = regex::escape(&p);
-    let re_placeholder = Regex::new(r"\\\{[^}]+\\\}").unwrap();
     let with_placeholders = re_placeholder.replace_all(&escaped, ".+");
-    
+
     // Support * as wildcard
     let final_pattern = with_placeholders.replace(r"\*", ".*");
-    
+
     let regex_pattern = format!("(?s)^{}$", final_pattern);
-    
+
     if let Ok(re) = Regex::new(&regex_pattern) {
         re.is_match(&t)
     } else {

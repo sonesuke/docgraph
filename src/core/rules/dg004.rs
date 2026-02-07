@@ -3,8 +3,12 @@ use pulldown_cmark::{Event, LinkType, Options, Parser, Tag};
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
+use std::sync::OnceLock;
+
+static RE_WS_SINGLE: OnceLock<regex::Regex> = OnceLock::new();
 
 pub fn check_link_text(files: &[PathBuf], blocks: &[SpecBlock]) -> Vec<Diagnostic> {
+    RE_WS_SINGLE.get_or_init(|| regex::Regex::new(r" +").unwrap());
     let mut diagnostics = Vec::new();
 
     // Build a map of ID to Title from SpecBlocks (O(1) lookup)
@@ -99,20 +103,33 @@ pub fn check_link_text(files: &[PathBuf], blocks: &[SpecBlock]) -> Vec<Diagnosti
                                 {
                                     let current_text =
                                         &full_link_str[open_bracket + 1..close_bracket];
-                                    
-                                    let clean_current = current_text.chars().map(|c| if c.is_whitespace() { ' ' } else { c }).collect::<String>();
-                                    let clean_expected = expected_text.chars().map(|c| if c.is_whitespace() { ' ' } else { c }).collect::<String>();
-                                    
-                                    let re_ws_single = regex::Regex::new(r" +").unwrap();
-                                    let c_norm = re_ws_single.replace_all(clean_current.trim(), " ").to_lowercase();
-                                    let e_norm = re_ws_single.replace_all(clean_expected.trim(), " ").to_lowercase();
 
-                                    if c_norm != e_norm && !c_norm.contains(&e_norm) && !e_norm.contains(&c_norm) {
+                                    let clean_current = current_text
+                                        .chars()
+                                        .map(|c| if c.is_whitespace() { ' ' } else { c })
+                                        .collect::<String>();
+                                    let clean_expected = expected_text
+                                        .chars()
+                                        .map(|c| if c.is_whitespace() { ' ' } else { c })
+                                        .collect::<String>();
+
+                                    let re_ws_single = RE_WS_SINGLE.get().unwrap();
+                                    let c_norm = re_ws_single
+                                        .replace_all(clean_current.trim(), " ")
+                                        .to_lowercase();
+                                    let e_norm = re_ws_single
+                                        .replace_all(clean_expected.trim(), " ")
+                                        .to_lowercase();
+
+                                    if c_norm != e_norm
+                                        && !c_norm.contains(&e_norm)
+                                        && !e_norm.contains(&c_norm)
+                                    {
                                         let (start_line, start_col) =
                                             get_pos(range.start + open_bracket + 1);
                                         let (end_line, end_col) =
                                             get_pos(range.start + close_bracket);
-                                        
+
                                         diagnostics.push(Diagnostic {
                                             code: "DG004".to_string(),
                                             message: format!(
