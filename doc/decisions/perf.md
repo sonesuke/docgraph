@@ -11,8 +11,6 @@ We use `criterion` for micro-benchmarks and set performance targets:
 
 ## Rationale
 
-### Consequences
-
 - Benchmarks located in `benches/` directory
 - Performance tests run in CI/CD pipeline
 - Critical paths in `core` logic are optimized
