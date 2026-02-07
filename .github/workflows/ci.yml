@@ -38,38 +38,35 @@ jobs:
         env:
           CI: true
           CARGO_HOME: /workspaces/docgraph/.cargo
+          CARGO_TARGET_DIR: /workspaces/docgraph/target
+          CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
           runCmd: |
-            mkdir -p target
-            touch target/persistent_check
-            echo "Created target/persistent_check"
+            cargo fetch
 
       - name: Rust Format Check
         uses: devcontainers/ci@v0.3
         env:
           CI: true
           CARGO_HOME: /workspaces/docgraph/.cargo
+          CARGO_TARGET_DIR: /workspaces/docgraph/target
+          CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
-          runCmd: |
-            if [ -f target/persistent_check ]; then
-              echo "SUCCESS: target/persistent_check found!"
-            else
-              echo "FAILURE: target/persistent_check NOT found!"
-              ls -la target || true
-            fi
-            cargo fmt -- --check
+          runCmd: cargo fmt -- --check
 
       - name: Cargo Clippy
         uses: devcontainers/ci@v0.3
         env:
           CI: true
           CARGO_HOME: /workspaces/docgraph/.cargo
+          CARGO_TARGET_DIR: /workspaces/docgraph/target
+          CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -81,6 +78,8 @@ jobs:
         env:
           CI: true
           CARGO_HOME: /workspaces/docgraph/.cargo
+          CARGO_TARGET_DIR: /workspaces/docgraph/target
+          CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -94,6 +93,8 @@ jobs:
         env:
           CI: true
           CARGO_HOME: /workspaces/docgraph/.cargo
+          CARGO_TARGET_DIR: /workspaces/docgraph/target
+          CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -108,6 +109,8 @@ jobs:
         env:
           CI: true
           CARGO_HOME: /workspaces/docgraph/.cargo
+          CARGO_TARGET_DIR: /workspaces/docgraph/target
+          CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -119,6 +122,8 @@ jobs:
         env:
           CI: true
           CARGO_HOME: /workspaces/docgraph/.cargo
+          CARGO_TARGET_DIR: /workspaces/docgraph/target
+          CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
