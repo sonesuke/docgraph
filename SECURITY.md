@@ -24,6 +24,7 @@ We aim to acknowledge receipt within 48 hours and provide a resolution plan shor
 
 We use automated tools to monitor our dependencies for known vulnerabilities:
 
-- **Dependabot**: Automatically scans for outdated or vulnerable crates.
-- **Cargo Audit**: Integrated into our CI pipeline to block merges that introduce known security risks.
+- **Dependabot**: Automatically scans for outdated or vulnerable crates and npm packages (including VSIX and Zed extension).
+- **Cargo Audit**: Integrated into our CI pipeline to block merges that introduce known security risks in Core and Zed extension.
+- **npm audit**: Integrated into our CI pipeline to block merges that introduce known security risks in VSIX.
 

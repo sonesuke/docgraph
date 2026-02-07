@@ -37,6 +37,7 @@ jobs:
             cargo fmt -- --check
             cargo clippy -- -D warnings
             cargo audit
+            (cd zed-extension && cargo audit)
             npm install --prefix vsix
             npm run lint --prefix vsix
             npm audit --prefix vsix
