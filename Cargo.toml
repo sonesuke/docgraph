@@ -23,7 +23,7 @@ crossbeam-channel = "0.5.15"
 tempfile = "3.24.0"
 assert_cmd = "2"
 predicates = "3"
-criterion = { version = "0.5", features = ["html_reports"] }
+criterion = { version = "0.8", features = ["html_reports"] }
 tokio = { version = "1.37.0", features = ["full"] }
 
 [[bench]]

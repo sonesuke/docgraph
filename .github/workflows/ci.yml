@@ -33,7 +33,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & Initialize Dev Container
+      - name: Build Dev Container
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: "true"
+
+      - name: Cargo Build
         uses: devcontainers/ci@v0.3
         env:
           CI: true
