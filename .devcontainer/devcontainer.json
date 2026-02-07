@@ -12,14 +12,7 @@
         "CI": "${localEnv:CI}"
     },
     "customizations": {
-        "vscode": {
-            "extensions": [
-                "rust-lang.rust-analyzer",
-                "tamasfe.even-better-toml",
-                "vadimcn.vscode-lldb",
-                "dbaeumer.vscode-eslint"
-            ]
-        }
+        "vscode": {}
     },
     "postCreateCommand": "bash .devcontainer/post-create.sh",
     "waitFor": "postCreateCommand"

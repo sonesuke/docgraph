@@ -33,9 +33,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Strip VS Code extensions for CI
+      - name: Strip postCreateCommand for CI
         run: |
-          jq 'del(.customizations.vscode.extensions) | del(.postCreateCommand) | del(.waitFor)' .devcontainer/devcontainer.json > .devcontainer/devcontainer.json.tmp
+          jq 'del(.postCreateCommand) | del(.waitFor)' .devcontainer/devcontainer.json > .devcontainer/devcontainer.json.tmp
           mv .devcontainer/devcontainer.json.tmp .devcontainer/devcontainer.json
 
       - name: Build Dev Container
