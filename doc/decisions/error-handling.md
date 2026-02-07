@@ -177,17 +177,7 @@ async fn handle_hover(...) -> Result<Option<Hover>, jsonrpc::Error> {
 }
 ```
 
-### Consequences
-
-#### Positive
-
-- **Clear boundaries**: Error types change at architectural boundaries
-- **Type safety where needed**: Core library errors are typed and matchable
-- **Rich context where needed**: CLI and LSP errors have full context chains
-- **Automatic conversion**: `?` operator works seamlessly across boundaries
-- **Better debugging**: `anyhow` provides backtraces in binaries
-
-#### Negative
+### Trade-offs
 
 - **Two error crates**: Need to maintain both `thiserror` and `anyhow`
 - **Conversion overhead**: LSP needs explicit conversion to JSON-RPC errors

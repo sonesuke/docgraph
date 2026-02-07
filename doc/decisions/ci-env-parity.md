@@ -11,16 +11,14 @@ We will use the **Dev Container** as the single source of truth for the developm
 
 ## Rationale
 
-### Consequences
+- **Parity**: Guaranteed environment consistency between local dev and CI.
+- **Maintainability**: Dependency updates (e.g., Rust version, Node.js version) only need to be configured in one place (`devcontainer.json`).
+- **Onboarding**: "It works in the container" implies it works in CI.
 
-- **Positive**
-  - **Parity**: Guaranteed environment consistency between local dev and CI.
-  - **Maintainability**: Dependency updates (e.g., Rust version, Node.js version) only need to be configured in one place (`devcontainer.json`).
-  - **Onboarding**: "It works in the container" implies it works in CI.
+### Trade-offs
 
-- **Negative**
-  - **Build Time**: CI jobs may take slightly longer to start as they need to build/pull the Dev Container image.
-  - **Complexity**: Debugging CI failures might require understanding Dev Container mechanics.
+- **Build Time**: CI jobs may take slightly longer to start as they need to build/pull the Dev Container image.
+- **Complexity**: Debugging CI failures might require understanding Dev Container mechanics.
 
 ## Context
 

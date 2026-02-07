@@ -13,8 +13,6 @@ We adopt a multi-layered testing approach:
 
 ## Rationale
 
-### Consequences
-
 - **Isolation**: Tests run independently and quickly
 - **Coverage Target**: 85%+ for core business logic, 70%+ overall
 - **Tools**: `cargo test`, `cargo bench`, `cargo llvm-cov`

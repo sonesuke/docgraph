@@ -12,10 +12,10 @@ We will use **Plain Markdown** with **HTML anchor tags** (`<a id="..."></a>`) pl
 - **Ease of Use**: Markdown is the industry standard for lightweight documentation, while reST has a higher learning curve.
 - **Tool Simplicity**: Parsing standard HTML tags is robust and doesn't require complex MyST-specific libraries for basic ID extraction.
 
-### Consequences
+### Trade-offs
 
-- The Docgraph parser must handle HTML tag extraction properly.
-- All documentation files must follow this convention to be included in the graph.
+- The Docgraph parser must implement HTML tag extraction correctly.
+- Strict convention required: All documentation files must use this ID format to be included in the graph.
 
 ## Context
 

@@ -8,32 +8,12 @@ We adopt the **Single Responsibility Principle (SRP)**: each module should have 
 
 ## Rationale
 
-### Easier to Understand
+- **Easier to Understand**: When reading `check.rs`, developers only need to understand the `check` command logic. No other command logic is mixed in, reducing cognitive load.
+- **Limited Change Impact**: When modifying the `check` command, developers only need to edit `check.rs`. Other commands are unaffected, minimizing the risk of unintended side effects.
+- **Clear Ownership**: Each file has a clear purpose, making it obvious where to add new functionality or fix bugs. This improves developer productivity and code navigation.
+- **Better Testing**: Each module can be tested independently with focused test cases, improving test clarity and reducing test complexity.
 
-When reading `check.rs`, developers only need to understand the `check` command logic. No other command logic is mixed in, reducing cognitive load.
-
-#### Limited Change Impact
-
-When modifying the `check` command, developers only need to edit `check.rs`. Other commands are unaffected, minimizing the risk of unintended side effects.
-
-#### Clear Ownership
-
-Each file has a clear purpose, making it obvious where to add new functionality or fix bugs. This improves developer productivity and code navigation.
-
-#### Better Testing
-
-Each module can be tested independently with focused test cases, improving test clarity and reducing test complexity.
-
-### Consequences
-
-#### Positive
-
-- Code is easier to understand and navigate
-- Changes have limited impact on other parts of the system
-- Testing is more focused and effective
-- Clear ownership of functionality
-
-#### Negative
+### Trade-offs
 
 - More files to manage (one per responsibility)
 - May require more navigation between files when working on related features

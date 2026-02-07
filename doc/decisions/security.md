@@ -14,8 +14,6 @@ We implement a comprehensive security strategy:
 
 ## Rationale
 
-### Consequences
-
 - CodeQL runs on push to main, PRs, and weekly schedule
 - Dependencies are updated weekly
 - Merges with known vulnerabilities in ANY component (Rust or Node.js) are blocked

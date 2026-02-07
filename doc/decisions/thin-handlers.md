@@ -119,28 +119,11 @@ pub fn handle_check(...) {
 
 ## Rationale
 
-### Easy Testing
+- **Easy Testing**: Handlers are thin enough that integration tests are sufficient. Complex logic is tested in Core unit tests, which are faster and more reliable.
+- **Centralized Logic**: All business logic lives in Core, making it easy to find and modify. Developers don't need to search through multiple handler files to understand validation rules or parsing logic.
+- **Interface Independence**: The same Core logic can be called from CLI, LSP, or any future interface without duplication. Adding a new interface requires only writing a thin adapter layer.
 
-Handlers are thin enough that integration tests are sufficient. Complex logic is tested in Core unit tests, which are faster and more reliable.
-
-#### Centralized Logic
-
-All business logic lives in Core, making it easy to find and modify. Developers don't need to search through multiple handler files to understand validation rules or parsing logic.
-
-#### Interface Independence
-
-The same Core logic can be called from CLI, LSP, or any future interface without duplication. Adding a new interface requires only writing a thin adapter layer.
-
-### Consequences
-
-#### Positive
-
-- Business logic is centralized and easy to test
-- No code duplication across interfaces
-- New interfaces are easy to add
-- Clear separation between UI concerns and business logic
-
-#### Negative
+### Trade-offs
 
 - Requires discipline to avoid adding logic to handlers
 - May feel verbose for simple operations

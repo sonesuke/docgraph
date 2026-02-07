@@ -66,16 +66,7 @@ This provides:
 - **Change Isolation**: UI changes don't affect business logic (changing CLI output format only modifies `src/cli/handlers/`)
 - **Core Stability**: Core validation logic remains stable across interface changes
 
-### Consequences
-
-#### Positive
-
-- **Maintainability**: Each layer's responsibility is clear, change impact is limited
-- **Testability**: Core logic is independent of I/O and can be unit tested; handlers are thin and sufficient for integration testing
-- **Extensibility**: Adding new interfaces (e.g., Web API) requires no Core changes; adding new commands or LSP features is easy
-- **Reusability**: CLI and LSP share the same Core logic, code duplication is minimized
-
-#### Negative
+### Trade-offs
 
 - Small changes may require modifications to multiple files
 - New developers may need time to understand the file structure
