@@ -2,6 +2,9 @@
 set -e
 
 if [ -z "$CI" ]; then
+    # Fix permissions for local development where CARGO_HOME is root-owned by the base image
+    sudo chown -R vscode:vscode /usr/local/cargo
+
     echo "Installing VSIX dependencies..."
     npm install --prefix vsix
     (cd vsix && npx vsce package -o ../docgraph.vsix)
