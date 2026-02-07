@@ -21,12 +21,12 @@ Defined in [.devcontainer/devcontainer.json](../../../.devcontainer/devcontainer
 - **Formatting**: `cargo fmt` (Rust), `npm run format` (VSIX).
 - **Linting**: `cargo clippy` (Rust), `npm run lint` (VSIX).
 - **Security**: `cargo audit`.
-24: 
-25: ### Performance
-26: 
-27: - **Image Size**: The Dev Container image should be kept as small as possible to ensure fast CI/CD execution and minimize local disk usage.
-28:   - Use minimal base images (e.g., `slim` variants).
-29:   - Remove unnecessary build artifacts and caches (e.g., `apt-get clean`).
+
+### Performance
+
+- **Image Size**: The Dev Container image should be kept as small as possible to ensure fast CI/CD execution and minimize local disk usage.
+  - Use minimal base images (e.g., `slim` variants).
+  - Remove unnecessary build artifacts and caches (e.g., `apt-get clean`).
 
 ---
 
