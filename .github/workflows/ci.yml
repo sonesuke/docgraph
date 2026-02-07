@@ -33,26 +33,101 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & All-in-One Verification (Diagnostic)
+      - name: Build & Initialize Dev Container
         uses: devcontainers/ci@v0.3
         env:
           CI: true
-          CARGO_HOME: /workspaces/docgraph/.cargo
-          CARGO_TARGET_DIR: /workspaces/docgraph/target
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: cargo build
+
+      - name: Docgraph Check
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: cargo run -- check ./doc
+
+      - name: Rust Format Check
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: cargo fmt -- --check
+
+      - name: Cargo Clippy
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: cargo clippy -- -D warnings
+
+      - name: Security Audit (Rust)
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
           CARGO_INCREMENTAL: 1
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
           runCmd: |
-            echo "--- FIRST BUILD ---"
-            cargo build
-            echo "--- FIRST CHECK (Should be fast) ---"
-            time cargo run -- check ./doc
-            echo "--- SECOND CHECK (Should be instant) ---"
-            time cargo run -- check ./doc
-            echo "--- CLIPPY ---"
-            cargo clippy -- -D warnings
+            cargo audit
+            (cd zed-extension && cargo audit)
+
+      - name: VSIX Lint & Audit
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: |
+            npm install --prefix vsix
+            npm run lint --prefix vsix
+            npm audit --prefix vsix
+
+      - name: Tests & Coverage
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+          CARGO_HOME: ${{ github.workspace }}/.cargo
+          CARGO_TARGET_DIR: ${{ github.workspace }}/target
+          CARGO_INCREMENTAL: 1
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
 
 
       - name: Upload coverage report
