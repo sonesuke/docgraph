@@ -6,7 +6,9 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     curl \
     git \
     pkg-config \
-    libssl-dev
+    libssl-dev \
+    ripgrep \
+    vim
 
 # Install Node.js LTS manually
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
