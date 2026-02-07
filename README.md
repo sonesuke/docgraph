@@ -51,10 +51,18 @@ Create a `docgraph.toml` file in your project root to define your documentation 
 [node_types]
 UC = { desc = "Use Case", template = "doc/templates/use_case.md" }
 FR = { desc = "Functional Requirement", template = "doc/templates/functional.md" }
+IF = { desc = "Interface", template = "doc/templates/interface.md" }
 
 [references.FR]
 rules = [
-  { dir = "from", targets = ["UC"], min = 1, desc = "Requirements must be derived from a use case" }
+  { dir = "from", targets = ["UC"], min = 1, desc = "Requirements must be derived from a use case" },
+  { dir = "to", targets = ["MOD"], min = 1, desc = "Requirements must be realized by a module" }
+]
+
+[references.IF]
+rules = [
+  { dir = "from", targets = ["UC"], min = 1, desc = "Interfaces must be justified by a use case" },
+  { dir = "from", targets = ["FR"], min = 1, desc = "Interfaces must be defined by a functional requirement" }
 ]
 ```
 
