@@ -4,8 +4,6 @@ set -e
 # Fix permissions for CI environment where volume mounts may be root-owned
 sudo chown -R vscode:vscode /usr/local/cargo
 
-echo "CI environment variable value: '$CI'"
-
 if [ -z "$CI" ]; then
     echo "Installing VSIX dependencies..."
     npm install --prefix vsix
