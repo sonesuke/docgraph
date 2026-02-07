@@ -12,10 +12,12 @@ We implement a comprehensive security strategy:
 
 1. **SAST**: GitHub CodeQL for static analysis
 2. **Supply Chain**: Dependabot for automated updates
-3. **Vulnerability Scanning**: cargo-audit in CI/CD
+3. **Vulnerability Scanning**:
+    - **Core & Zed Extension**: `cargo-audit` in CI/CD
+    - **VSIX**: `npm audit` in CI/CD
 
 ## Consequences
 
 - CodeQL runs on push to main, PRs, and weekly schedule
 - Dependencies are updated weekly
-- Merges with known vulnerabilities are blocked
+- Merges with known vulnerabilities in ANY component (Rust or Node.js) are blocked
