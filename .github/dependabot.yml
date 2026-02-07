@@ -16,3 +16,11 @@ updates:
     directory: "/vsix"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "cargo"
+    directory: "/zed-extension"
+    schedule:
+      interval: "weekly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
