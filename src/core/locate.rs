@@ -258,6 +258,8 @@ mod tests {
             file_path: path.clone(),
             line_start: 1,
             line_end: 1,
+            content: String::new(),
+            node_type: "FR".to_string(),
             ..Default::default()
         }];
         let refs = vec![];
@@ -296,6 +298,8 @@ mod tests {
             file_path: path.clone(),
             line_start: 1,
             line_end: 1,
+            content: String::new(),
+            node_type: "CC".to_string(),
             ..Default::default()
         }];
         let refs = vec![];
@@ -329,6 +333,8 @@ mod tests {
             line_start: 1,
             line_end: 10,
             edges: vec![edge.clone()],
+            content: String::new(),
+            node_type: "BLOCK".to_string(),
             ..Default::default()
         }];
 
@@ -350,6 +356,8 @@ mod tests {
             file_path: path.clone(),
             line_start: 1,
             line_end: 1,
+            content: String::new(),
+            node_type: "DEF".to_string(),
             ..Default::default()
         }];
 
@@ -370,10 +378,14 @@ mod tests {
         let blocks = vec![
             SpecBlock {
                 id: "A".to_string(),
+                content: String::new(),
+                node_type: "A".to_string(),
                 ..Default::default()
             },
             SpecBlock {
                 id: "B".to_string(),
+                content: String::new(),
+                node_type: "B".to_string(),
                 ..Default::default()
             },
         ];
@@ -385,6 +397,8 @@ mod tests {
     fn test_locate_target_id_method() {
         let block = SpecBlock {
             id: "BLK".to_string(),
+            content: String::new(),
+            node_type: "BLK".to_string(),
             ..Default::default()
         };
         let t1 = LocateTarget::Definition(block);

@@ -49,6 +49,8 @@ mod tests {
             line_start: 1,
             line_end: 1,
             edges: vec![],
+            content: String::new(),
+            node_type: id.split(['-', '_']).next().unwrap_or(id).to_string(),
         }
     }
 

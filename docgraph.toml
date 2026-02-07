@@ -3,11 +3,11 @@
 
 [graph]
 doc_types = ["ACT", "DAT", "IF", "ADR"]
-ignore = ["README.md", "SECURITY.md", ".claude", ".claude-plugin", "docgraph-plugin"]
+ignore = ["README.md", "SECURITY.md", ".claude", ".claude-plugin", "docgraph-plugin", "doc/templates"]
 
 [node_types]
 # Core specification types
-UC  = { desc = "Use Case" }
+UC  = { desc = "Use Case", template = "doc/templates/usecases.md" }
 FR  = { desc = "Functional Requirement" }
 NFR = { desc = "Non-Functional Requirement" }
 CON = { desc = "Constraint" }
@@ -17,7 +17,7 @@ MOD = { desc = "Module" }
 CC  = { desc = "Cross-cutting Concept" }
 
 # Documentation types (can be referenced by all core types)
-ACT  = { desc = "Actor" }
+ACT  = { desc = "Actor", template = "doc/templates/actors.md" }
 DAT  = { desc = "Data Entity" }
 IF   = { desc = "Interface Specification" }
 ADR  = { desc = "Architecture Decision Record" }

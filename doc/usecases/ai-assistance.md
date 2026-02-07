@@ -4,25 +4,33 @@
 
 ## AI-Assisted Documentation
 
-The [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT) leverages the Docgraph plugin to provide intelligent assistance for documentation development, including knowledge base construction, usage suggestions, automated fixes, rule explanations, and workflow guidance.
+The AI Agent leverages the Docgraph plugin to provide intelligent assistance for documentation development.
 
-**Capabilities:**
+### Actors
 
-- **Knowledge Graph**: Builds a GraphRAG knowledge base from the generated JSON graph.
-- **Usage Suggestions**: Suggests how to use the system based on the constructed knowledge.
-- **Automated Fixes**: Automatically fixes documentation errors (formatting issues, lint violations).
-- **Rule Explanation**: Explains validation rules and architectural constraints to ensure documentation quality.
-- **Workflow Guidance**: Assists in document-driven development by proposing missing requirements or next architectural steps.
+- [ACT_AGENT (AI Agent)](../actors/systems.md#ACT_AGENT)
 
-**Derives:**
+### Interfaces
 
 - [IF_CLAUDE_CODE (Interface: Claude Code Plugin)](../requirements/interfaces/interfaces.md#IF_CLAUDE_CODE)
 - [IF_CLAUDE_MARKETPLACE (Claude Marketplace)](../requirements/interfaces/interfaces.md#IF_CLAUDE_MARKETPLACE)
-- [FR_CLAUDE_RAG (Retrieval-Augmented Generation)](../requirements/functional/claude.md#FR_CLAUDE_RAG)
-- [FR_CLAUDE_SUGGEST (Usage Suggestions)](../requirements/functional/claude.md#FR_CLAUDE_SUGGEST)
-- [FR_CLAUDE_FIX (Automated Fixes)](../requirements/functional/claude.md#FR_CLAUDE_FIX)
-- [FR_CLAUDE_EXPLAIN (Rule Explanation)](../requirements/functional/claude.md#FR_CLAUDE_EXPLAIN)
-- [FR_CLAUDE_WORKFLOW (Workflow Assistance)](../requirements/functional/claude.md#FR_CLAUDE_WORKFLOW)
-- [FR_CLAUDE_MARKETPLACE (Claude Marketplace Support)](../requirements/functional/claude.md#FR_CLAUDE_MARKETPLACE)
-- [FR_CLAUDE_INSTALL (Claude Plugin Installation)](../requirements/functional/claude.md#FR_CLAUDE_INSTALL)
-- [FR_CLI_TYPE (Type Command)](../requirements/functional/cli.md#FR_CLI_TYPE)
+
+### Requirements
+
+- [FR_CLAUDE_RAG (Retrieval-Augmented Generation)](../requirements/functional/claude.md#FR_CLAUDE_RAG) Powering intelligent context-aware documentation search
+- [FR_CLAUDE_SUGGEST (Usage Suggestions)](../requirements/functional/claude.md#FR_CLAUDE_SUGGEST) Aiding developers in discovering relevant requirements
+- [FR_CLAUDE_FIX (Automated Fixes)](../requirements/functional/claude.md#FR_CLAUDE_FIX) Automating the resolution of documentation drift
+- [FR_CLAUDE_EXPLAIN (Rule Explanation)](../requirements/functional/claude.md#FR_CLAUDE_EXPLAIN) Providing clarity on complex validation rules
+- [FR_CLAUDE_WORKFLOW (Workflow Assistance)](../requirements/functional/claude.md#FR_CLAUDE_WORKFLOW) Guiding the entire specification development process
+- [FR_CLAUDE_MARKETPLACE (Claude Marketplace Support)](../requirements/functional/claude.md#FR_CLAUDE_MARKETPLACE) Ensuring seamless installation via Claude Desktop
+
+### Flow
+
+1. AI Agent builds a GraphRAG knowledge base.
+2. AI Agent suggests documentation improvements.
+3. AI Agent fixes formatting issues or lint violations.
+
+### Non-Functional Requirements (Optional)
+
+- [NFR_AVAILABILITY (System Availability)](../requirements/non-functional/performance.md#NFR_AVAILABILITY) Ensuring AI features are consistently accessible
+- [NFR_VSCODE_PORTABILITY (Cross-platform Portability)](../requirements/non-functional/vscode.md#NFR_VSCODE_PORTABILITY) Enables AI assistance across multiple desktop operating systems

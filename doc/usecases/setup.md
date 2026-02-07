@@ -4,16 +4,26 @@
 
 ## Install Manual Setup
 
-The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) sets up the development environment manually on their local machine without using Docker.
+The developer sets up the development environment manually on their local machine.
 
-**Derives:**
+### Actors
 
-- [IF_CLAUDE_MARKETPLACE (Claude Marketplace)](../requirements/interfaces/interfaces.md#IF_CLAUDE_MARKETPLACE)
-- [FR_INSTALL_MANUAL (Manual Installation)](../requirements/functional/installation.md#FR_INSTALL_MANUAL)
+- [ACT_DEV (Developer)](../actors/users.md#ACT_DEV)
+- [ACT_USER (User)](../actors/users.md#ACT_USER)
 
-## Description
+### Interfaces
 
-The developer ensures their local environment meets the specifications defined in [FR_INSTALL_MANUAL (Manual Installation)](../requirements/functional/installation.md#FR_INSTALL_MANUAL).
+- [IF_GITHUB_RELEASES (GitHub Releases Interface)](../requirements/interfaces/interfaces.md#IF_GITHUB_RELEASES)
+
+### Requirements
+
+- [FR_INSTALL_MANUAL (Manual Installation)](../requirements/functional/installation.md#FR_INSTALL_MANUAL) Required for users choosing not to use automated scripts
+- [FR_CORE_AUDIT (Audit Logging)](../requirements/functional/core.md#FR_CORE_AUDIT) Ensures installation events are tracked for security
+
+### Flow
+
+1. Developer ensures local environment meets specifications.
+2. Developer manually installs required tools.
 
 ---
 
@@ -21,66 +31,49 @@ The developer ensures their local environment meets the specifications defined i
 
 ## Install via Binary Script
 
-The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) installs the `docgraph` CLI binary using automated scripts for their platform.
+The developer installs the `docgraph` CLI binary using automated scripts.
 
-### Procedure
+### Actors
 
-Run the appropriate script for your platform:
+- [ACT_DEV (Developer)](../actors/users.md#ACT_DEV)
 
-**macOS / Linux:**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/sonesuke/docgraph/main/install.sh | bash
-```
-
-**Windows (PowerShell):**
-
-```powershell
-powershell -c "irm https://raw.githubusercontent.com/sonesuke/docgraph/main/install.ps1 | iex"
-```
-
-**Derives:**
+### Interfaces
 
 - [IF_GITHUB_RELEASES (GitHub Releases Interface)](../requirements/interfaces/interfaces.md#IF_GITHUB_RELEASES)
-- [FR_INSTALL_BINARY (Binary Installation Support)](../requirements/functional/installation.md#FR_INSTALL_BINARY)
+
+### Requirements
+
+- [FR_INSTALL_BINARY (Binary Installation Support)](../requirements/functional/installation.md#FR_INSTALL_BINARY) Provides a fast and automated way to set up the CLI
+
+### Flow
+
+1. Developer runs the platform-specific install script.
+2. Script downloads the latest binary from GitHub Releases.
+
+---
 
 <a id="UC_CLAUDE_INSTALL"></a>
 
 ## Install Claude Plugin
 
-The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) installs the Docgraph plugin in Claude Desktop using a two-step process: adding the marketplace and then installing the plugin. This enables document-driven development assistance and GraphRAG-based knowledge construction.
+The developer installs the Docgraph plugin in Claude Desktop.
 
-### Procedure
+### Actors
 
-The Docgraph plugin is distributed via the `sonesuke/docgraph` repository.
+- [ACT_DEV (Developer)](../actors/users.md#ACT_DEV)
 
-#### 1. Add Marketplace
-
-First, add the official marketplace to your Claude instance by running:
-
-```text
-/plugin marketplace add sonesuke/docgraph
-```
-
-#### 2. Install the Plugin
-
-After adding the marketplace, install the Docgraph plugin by running:
-
-```text
-/plugin install docgraph-plugin@docgraph-claude-plugins
-```
-
-### Goals
-
-- Enable the AI agent to understand the documentation graph.
-- Provide real-time linting and fixing suggestions within the AI chat interface.
-- Assist in complex traceability analysis across large documentation sets.
-
-**Derives:**
+### Interfaces
 
 - [IF_CLAUDE_MARKETPLACE (Claude Marketplace)](../requirements/interfaces/interfaces.md#IF_CLAUDE_MARKETPLACE)
-- [FR_CLAUDE_MARKETPLACE (Claude Marketplace Support)](../requirements/functional/claude.md#FR_CLAUDE_MARKETPLACE)
-- [FR_CLAUDE_INSTALL (Claude Plugin Installation)](../requirements/functional/claude.md#FR_CLAUDE_INSTALL)
+
+### Requirements
+
+- [FR_CLAUDE_INSTALL (Claude Plugin Installation)](../requirements/functional/claude.md#FR_CLAUDE_INSTALL) Mandatory for enabling Docgraph within Claude Desktop
+
+### Flow
+
+1. Developer adds the marketplace to Claude.
+2. Developer installs the Docgraph plugin.
 
 ---
 
@@ -88,23 +81,31 @@ After adding the marketplace, install the Docgraph plugin by running:
 
 ## Install VS Code Extension
 
-The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) installs the `docgraph` VS Code extension to enable rich editing features for Markdown-based specifications.
+The developer installs the `docgraph` VS Code extension.
 
-### Procedure
+### Actors
 
-1. Download the latest `docgraph.vsix` from the [GitHub Releases](https://github.com/sonesuke/docgraph/releases).
-2. Install it in VS Code:
-   - Run `Extensions: Install from VSIX...` from the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`).
-   - Or run from command line: `code --install-extension docgraph.vsix`
+- [ACT_DEV (Developer)](../actors/users.md#ACT_DEV)
 
-**Derives:**
+### Interfaces
 
 - [IF_VSCODE_MARKETPLACE (VS Code Marketplace)](../requirements/interfaces/interfaces.md#IF_VSCODE_MARKETPLACE)
-- [FR_VSC_BINARY_PATH (Binary Path Configuration)](../requirements/functional/vscode.md#FR_VSC_BINARY_PATH)
-- [FR_VSC_MARKDOWN_ACTIVATION (Markdown Activation)](../requirements/functional/vscode.md#FR_VSC_MARKDOWN_ACTIVATION)
-- [FR_VSC_SERVER_LIFECYCLE (Server Lifecycle Commands)](../requirements/functional/vscode.md#FR_VSC_SERVER_LIFECYCLE)
-- [NFR_VSCODE_PORTABILITY (Cross-platform Portability)](../requirements/non-functional/vscode.md#NFR_VSCODE_PORTABILITY)
-- [NFR_VSCODE_PACKAGING (Lightweight Packaging)](../requirements/non-functional/vscode.md#NFR_VSCODE_PACKAGING)
+
+### Requirements
+
+- [FR_VSC_BINARY_PATH (Binary Path Configuration)](../requirements/functional/vscode.md#FR_VSC_BINARY_PATH) Enables the extension to find the docgraph engine
+- [FR_VSC_MARKDOWN_ACTIVATION (Markdown Activation)](../requirements/functional/vscode.md#FR_VSC_MARKDOWN_ACTIVATION) Restricts extension logic to Markdown files
+- [FR_VSC_SERVER_LIFECYCLE (Server Lifecycle Commands)](../requirements/functional/vscode.md#FR_VSC_SERVER_LIFECYCLE) Allows manual control over the LSP server
+- [FR_CORE_AUTH (Authentication)](../requirements/functional/core.md#FR_CORE_AUTH) Securely identifies the developer
+
+### Flow
+
+1. Developer downloads the VSIX file.
+2. Developer installs the extension in VS Code.
+
+### Non-Functional Requirements (Optional)
+
+- [NFR_VSCODE_PACKAGING (Lightweight Packaging)](../requirements/non-functional/vscode.md#NFR_VSCODE_PACKAGING) Ensures the extension is fast to download and install
 
 ---
 
@@ -112,36 +113,21 @@ The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) installs the `docgraph` VS
 
 ## Install Zed Extension
 
-The [ACT_DEV (Developer)](../actors/users.md#ACT_DEV) installs the `docgraph` Zed extension to enable rich editing features for Markdown-based specifications.
+The developer installs the `docgraph` Zed extension.
 
-### Procedure
+### Actors
 
-1. Build the extension:
+- [ACT_DEV (Developer)](../actors/users.md#ACT_DEV)
 
-   ```bash
-   cd zed-extension && cargo build --release --target wasm32-wasip1
-   ```
-
-2. In Zed, run the command `zed: install dev extension`.
-3. Select the `zed-extension` directory.
-4. Create or update `.zed/settings.json` in the project root to enable the language server:
-
-   ```json
-   {
-     "languages": {
-       "Markdown": {
-         "language_servers": [
-           "docgraph"
-         ],
-         "format_on_save": "on"
-       }
-     }
-   }
-   ```
-
-5. Trust the workspace to allow the language server to start.
-
-**Derives:**
+### Interfaces
 
 - [IF_ZED_UI (Zed UI)](../requirements/interfaces/interfaces.md#IF_ZED_UI)
-- [FR_INSTALL_EXT_ZED (Zed Editor Extension)](../requirements/functional/installation.md#FR_INSTALL_EXT_ZED)
+
+### Requirements
+
+- [FR_INSTALL_EXT_ZED (Zed Editor Extension)](../requirements/functional/installation.md#FR_INSTALL_EXT_ZED) Enables Docgraph assistance within the Zed editor
+
+### Flow
+
+1. Developer builds the extension targetting wasm32-wasip1.
+2. Developer installs the dev extension in Zed.

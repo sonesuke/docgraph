@@ -1,27 +1,33 @@
-# CLI-Based Analysis Use Cases
+# CLI Analysis Use Cases
 
 <a id="UC_CLI_ANALYSIS"></a>
 
-## CLI-Based Documentation Analysis
+## CLI Traceability Analysis
 
-The [ACT_USER (User)](../actors/users.md#ACT_USER) and [ACT_CI (CI System)](../actors/systems.md#ACT_CI) use the CLI to analyze, validate, and query the documentation graph.
+The developer runs the `docgraph` CLI to analyze the documentation graph.
 
-**Capabilities:**
+### Actors
 
-- **Linting**: Checks for errors in the document graph (duplicate IDs, missing references).
-- **Automated Checks**: CI automatically verifies the document graph on every push.
-- **Graph Generation**: Generates a JSON representation of the document graph.
-- **Search**: Searches for nodes by ID or wildcards.
-- **Trace**: Visualizes paths between nodes to understand dependencies.
-- **Describe**: Inspects detailed relationships of a specific block.
+- [ACT_DEV (Developer)](../actors/users.md#ACT_DEV)
 
-**Derives:**
+### Interfaces
 
 - [IF_CLI (Command Line Interface)](../requirements/interfaces/interfaces.md#IF_CLI)
-- [FR_CLI_LINT (Lint Command)](../requirements/functional/cli.md#FR_CLI_LINT)
-- [FR_CLI_GRAPH (Graph Command)](../requirements/functional/cli.md#FR_CLI_GRAPH)
-- [FR_CLI_LIST (List Command)](../requirements/functional/cli.md#FR_CLI_LIST)
-- [FR_CLI_TRACE (Trace Command)](../requirements/functional/cli.md#FR_CLI_TRACE)
-- [FR_CLI_DESCRIBE (Describe Command)](../requirements/functional/cli.md#FR_CLI_DESCRIBE)
-- [FR_CORE_UNIQUE (Unique IDs)](../requirements/functional/core.md#FR_CORE_UNIQUE)
-- [FR_CORE_VALID_REF (Valid References)](../requirements/functional/core.md#FR_CORE_VALID_REF)
+
+### Requirements
+
+- [FR_CLI_LINT (Lint Command)](../requirements/functional/cli.md#FR_CLI_LINT) Core CLI action for validating documentation
+- [FR_CLI_GRAPH (Graph Command)](../requirements/functional/cli.md#FR_CLI_GRAPH) Visualizing traceability relationships
+- [FR_CORE_AUDIT (Audit Logging)](../requirements/functional/core.md#FR_CORE_AUDIT) Tracking CLI usage for compliance monitoring
+- [FR_CLI_TRACE (Trace Command)](../requirements/functional/cli.md#FR_CLI_TRACE) Analyzing dependency paths between nodes
+- [FR_CLI_DESCRIBE (Describe Command)](../requirements/functional/cli.md#FR_CLI_DESCRIBE) Showing detailed metadata for a specific node
+- [FR_CLI_TYPE (Type Command)](../requirements/functional/cli.md#FR_CLI_TYPE) Filtering nodes by their defined types
+- [FR_CLI_LIST (List Command)](../requirements/functional/cli.md#FR_CLI_LIST) Listing all nodes found in the workspace
+- [FR_CLI_VERSION (Version Command)](../requirements/functional/cli.md#FR_CLI_VERSION) Displaying the current version of the tool
+- [FR_CLI_HELP (Help Command)](../requirements/functional/cli.md#FR_CLI_HELP) Providing usage guidance for CLI commands
+
+### Flow
+
+1. Developer opens a terminal in the project root.
+2. Developer runs `docgraph check .`.
+3. CLI performs structural validation and reports errors.

@@ -69,6 +69,8 @@ mod tests {
                 file_path: path.clone(),
                 line_start: 10,
                 line_end: 12,
+                content: String::new(),
+                node_type: "FR".to_string(),
                 ..Default::default()
             },
             SpecBlock {
@@ -83,6 +85,8 @@ mod tests {
                     col_end: 10,
                     ..Default::default()
                 }],
+                content: String::new(),
+                node_type: "UC".to_string(),
                 ..Default::default()
             },
         ];
@@ -152,6 +156,8 @@ mod tests {
                 file_path: path.clone(),
                 line_start: 10,
                 line_end: 12,
+                content: String::new(),
+                node_type: "FR".to_string(),
                 ..Default::default()
             },
             SpecBlock {
@@ -166,6 +172,8 @@ mod tests {
                     col_end: 15,
                     ..Default::default()
                 }],
+                content: String::new(),
+                node_type: "UC".to_string(),
                 ..Default::default()
             },
         ];
@@ -217,6 +225,8 @@ mod tests {
             file_path: path.clone(),
             line_start: 1,
             line_end: 1,
+            content: String::new(),
+            node_type: "FR".to_string(),
             ..Default::default()
         }];
 
