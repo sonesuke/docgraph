@@ -19,7 +19,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
 # Ensure pre-installed tools are always in PATH even if CARGO_HOME is overridden at runtime
 ENV PATH=/usr/local/cargo/bin:$PATH
 
-# No pre-build (cache is disabled by user request)
+
 
 # Install cargo-binstall and other rust tools as root (installs to /usr/local/cargo/bin)
 RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash \
