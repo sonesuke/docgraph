@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [ -z "$CI" ]; then
+if [ -z "$CI" ] && [ -z "$GITHUB_ACTIONS" ]; then
     # Fix permissions for local development where CARGO_HOME is root-owned by the base image
     sudo chown -R vscode:vscode /usr/local/cargo
 
