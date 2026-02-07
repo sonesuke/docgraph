@@ -8,11 +8,13 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     pkg-config \
     libssl-dev \
     ripgrep \
-    vim
+    vim \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js LTS manually
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-    && apt-get install -y nodejs
+    && apt-get install -y nodejs \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Ensure pre-installed tools are always in PATH even if CARGO_HOME is overridden at runtime
 ENV PATH=/usr/local/cargo/bin:$PATH
