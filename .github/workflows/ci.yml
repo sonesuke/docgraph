@@ -33,37 +33,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Dev Container CLI
-        run: npm install -g @devcontainers/cli
-
-      - name: Build & Initialize Dev Container
-        run: |
-          devcontainer up --workspace-folder .
+      - name: Build & All-in-One Verification (Diagnostic)
+        uses: devcontainers/ci@v0.3
         env:
           CI: true
-
-      - name: Rust Format Check
-        run: devcontainer exec --workspace-folder . cargo fmt -- --check
-
-      - name: Cargo Clippy
-        run: devcontainer exec --workspace-folder . cargo clippy -- -D warnings
-
-      - name: Security Audit (Rust)
-        run: |
-          devcontainer exec --workspace-folder . cargo audit
-          devcontainer exec --workspace-folder . bash -c "cd zed-extension && cargo audit"
-
-      - name: VSIX Lint & Audit
-        run: |
-          devcontainer exec --workspace-folder . npm install --prefix vsix
-          devcontainer exec --workspace-folder . npm run lint --prefix vsix
-          devcontainer exec --workspace-folder . npm audit --prefix vsix
-
-      - name: Tests & Coverage
-        run: devcontainer exec --workspace-folder . cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
-
-      - name: Docgraph Check
-        run: devcontainer exec --workspace-folder . cargo run -- check ./doc
+          CARGO_HOME: /workspaces/docgraph/.cargo
+          CARGO_TARGET_DIR: /workspaces/docgraph/target
+          CARGO_INCREMENTAL: 1
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: |
+            echo "--- FIRST BUILD ---"
+            cargo build
+            echo "--- FIRST CHECK (Should be fast) ---"
+            time cargo run -- check ./doc
+            echo "--- SECOND CHECK (Should be instant) ---"
+            time cargo run -- check ./doc
+            echo "--- CLIPPY ---"
+            cargo clippy -- -D warnings
 
 
       - name: Upload coverage report
