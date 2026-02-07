@@ -1,4 +1,4 @@
-FROM rust:1-bookworm
+FROM rust:1-slim-bookworm
 
 # Install Node.js and other dependencies as root
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
