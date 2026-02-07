@@ -37,6 +37,7 @@ jobs:
         uses: devcontainers/ci@v0.3
         env:
           CI: true
+          CARGO_HOME: /workspaces/docgraph/.cargo
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -47,6 +48,7 @@ jobs:
         uses: devcontainers/ci@v0.3
         env:
           CI: true
+          CARGO_HOME: /workspaces/docgraph/.cargo
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -57,6 +59,7 @@ jobs:
         uses: devcontainers/ci@v0.3
         env:
           CI: true
+          CARGO_HOME: /workspaces/docgraph/.cargo
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -67,6 +70,7 @@ jobs:
         uses: devcontainers/ci@v0.3
         env:
           CI: true
+          CARGO_HOME: /workspaces/docgraph/.cargo
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -79,6 +83,7 @@ jobs:
         uses: devcontainers/ci@v0.3
         env:
           CI: true
+          CARGO_HOME: /workspaces/docgraph/.cargo
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -92,6 +97,7 @@ jobs:
         uses: devcontainers/ci@v0.3
         env:
           CI: true
+          CARGO_HOME: /workspaces/docgraph/.cargo
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
@@ -102,11 +108,13 @@ jobs:
         uses: devcontainers/ci@v0.3
         env:
           CI: true
+          CARGO_HOME: /workspaces/docgraph/.cargo
         with:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
           runCmd: cargo run -- check ./doc
+
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v6

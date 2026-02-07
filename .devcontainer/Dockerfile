@@ -21,10 +21,8 @@ RUN chown -R vscode:vscode /usr/local/cargo /usr/local/rustup
 # Switch to vscode user
 USER vscode
 
-# Set CARGO_HOME to a location in user home to avoid permission issues in CI
-# and add it to PATH
-# ENV CARGO_HOME=/home/vscode/.cargo (Deferred until runtime)
-ENV PATH=$CARGO_HOME/bin:$PATH
+# Ensure pre-installed tools are always in PATH even if CARGO_HOME is overridden at runtime
+ENV PATH=/usr/local/cargo/bin:$PATH
 
 # No pre-build (cache is disabled by user request)
 
