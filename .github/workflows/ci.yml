@@ -44,9 +44,9 @@ jobs:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
-          runCmd: cargo build
+          runCmd: "true"
 
-      - name: Initialize Dev Container
+      - name: Cargo Build
         uses: devcontainers/ci@v0.3
         env:
           CI: true
@@ -57,7 +57,7 @@ jobs:
           imageName: ghcr.io/${{ github.repository }}/docgraph-dev
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
-          runCmd: "true"
+          runCmd: cargo build
 
       - name: Docgraph Check
         uses: devcontainers/ci@v0.3
