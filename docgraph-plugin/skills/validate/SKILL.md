@@ -24,9 +24,13 @@ Verify if each ID is mnemonic and easily associated with its Title.
 ### 3. Prefix Consistency
 Verify if elements in the same category share the same prefix (e.g., `FR_`, `NFR_`, `UC_`, `MOD_`, `IF_`).
 
-### 4. File Placement
-Verify if the file location matches the ID prefix.
-- `FR_LOGIN` should be in `doc/requirements/functional/...`
+### 4. File Placement and Categorization
+Verify if the file location is appropriate for the ID prefix and consistent with similar nodes.
+1. **Consistency Check**: Use `docgraph list "<PREFIX>_*"` (e.g., `docgraph list "FR_*"`) to see where other nodes of the same type are located. 
+2. **Rule of Thumb**: Generally, nodes with the same prefix should be grouped in the same file or a specific directory structure.
+3. **Validation**: 
+   - `FR_LOGIN` should be in `doc/requirements/functional/...`
+   - If most `FR_` nodes are in `requirements.md`, this node should likely be there too, or in a logically related file.
 
 ### 5. Template and Structure Validation (NEW)
 Verify if the node's content follows the defined template and structure rules.
