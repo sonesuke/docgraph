@@ -270,6 +270,7 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                                             item_text.push_str(dest_url);
                                             item_text.push(')');
                                         }
+                                        Event::SoftBreak | Event::HardBreak => item_text.push(' '),
                                         Event::End(TagEnd::Item) => break,
                                         _ => {}
                                     }
@@ -364,6 +365,7 @@ fn get_event_text<'a>(iter: &mut impl Iterator<Item = Event<'a>>) -> String {
                 text.push_str(&dest_url);
                 text.push(')');
             }
+            Event::SoftBreak | Event::HardBreak => text.push(' '),
             Event::End(TagEnd::Link)
             | Event::End(TagEnd::Heading(_))
             | Event::End(TagEnd::Item) => break,
