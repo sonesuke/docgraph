@@ -1,11 +1,11 @@
 ---
 name: validate
-description: Ensure ID naming conventions, consistency, and correct file placement.
+description: Validation Quality Gate - Ensure project integrity and consistency.
 ---
 
-# Validation Skill
+# Validation Quality Gate
 
-This skill provides a structured workflow to ensure that elements in the documentation graph are correctly named and placed.
+This skill serves as the **definitive quality threshold** for the documentation graph. It must be executed strictly to ensure that all semantic, structural, and consistency rules are met before finalizing changes.
 
 > [!IMPORTANT]
 > This skill must perform checks **strictly and rigorously**. Accuracy in ID naming, responsibility scope, and template adherence is critical for the integrity of the documentation graph. Do not overlook minor inconsistencies.
@@ -14,6 +14,14 @@ This skill provides a structured workflow to ensure that elements in the documen
 > For detailed usage and available options of any `docgraph` subcommand, always refer to `docgraph --help` or `docgraph <SUBCOMMAND> --help`.
 
 ## Workflow Steps
+
+### 0. Automated Check Pre-requisites
+Before performing manual semantic checks, ensure all automated validations pass.
+1. **Formatting**: Run `npm run format:md -- --check` (or similar) to verify Markdown style.
+2. **Consistency**: Run `docgraph check` to ensure the internal graph logic is sound.
+3. **Rust Integrity** (if applicable): Run `cargo test` and `cargo clippy`.
+
+If any of these fail, stop here and fix the issues first.
 
 ### 1. Scope Analysis
 List elements within the target scope to understand the current state. Use `docgraph list`.
@@ -57,3 +65,7 @@ If issues are found, propose:
 - **Fix Prefix**: Correct the prefix or the file path.
 - **Fix Structure**: Propose adding missing sections or correcting the link format to match the template.
 - **Split Node**: If SRP is violated, propose splitting the node into multiple IDs with narrower scopes.
+
+## Final Decision
+- **PASS**: The node/scope meets all strict quality criteria.
+- **FAIL**: Issues were identified that must be remediated before the Quality Gate is cleared.
