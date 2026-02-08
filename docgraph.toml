@@ -27,10 +27,10 @@ ADR  = { desc = "Architecture Decision Record", template = "doc/templates/decisi
 [references.UC]
 # Use Case derives Actor, Interface, and Requirements
 rules = [
-  { dir = "to", targets = ["ACT"], min = 1, desc = "Use cases must involve at least one Actor" },
-  { dir = "to", targets = ["IF"], min = 1, desc = "Use cases must interact through at least one Interface" },
-  { dir = "to", targets = ["FR"], min = 1, desc = "Use cases must realize at least one Functional Requirement" },
-  { dir = "to", targets = ["NFR"], min = 0, desc = "Use cases may relate to NFRs" }
+  { dir = "to", targets = ["ACT"], min = 1, desc = "Use cases must involve at least one Actor", context = "triggered by" },
+  { dir = "to", targets = ["IF"], min = 1, desc = "Use cases must interact through at least one Interface", context = "interacts through" },
+  { dir = "to", targets = ["FR"], min = 1, desc = "Use cases must realize at least one Functional Requirement", context = "realizes" },
+  { dir = "to", targets = ["NFR"], min = 0, desc = "Use cases may relate to NFRs", context = "related to" }
 ]
 
 [references.ACT]
