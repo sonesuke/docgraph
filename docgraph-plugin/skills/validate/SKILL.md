@@ -28,8 +28,18 @@ Verify if elements in the same category share the same prefix (e.g., `FR_`, `NFR
 Verify if the file location matches the ID prefix.
 - `FR_LOGIN` should be in `doc/requirements/functional/...`
 
-### 5. Remediation
+### 5. Template and Structure Validation (NEW)
+Verify if the node's content follows the defined template and structure rules.
+1. **Retrieve Template**: Use `docgraph type <TYPE>` (e.g., `docgraph type FR`) to see the required structure and template file path.
+2. **Retrieve Content**: Use `docgraph describe <ID>` (e.g., `docgraph describe FR_LOGIN`) to see the full content of the node.
+3. **Compare**:
+   - Are all required sections (headers) present?
+   - Do list items (dependencies) match the expected patterns?
+   - Is the overall content consistent with the type's purpose?
+
+### 6. Remediation
 If issues are found, propose:
 - **Rename ID**: Suggest a better ID (verify dependencies with `docgraph describe` first).
 - **Move File**: Suggest moving the definition to the correct file.
 - **Fix Prefix**: Correct the prefix or the file path.
+- **Fix Structure**: Propose adding missing sections or correcting the link format to match the template.
