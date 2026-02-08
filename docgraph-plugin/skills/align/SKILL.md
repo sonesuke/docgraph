@@ -3,85 +3,91 @@ name: align
 description: Deep Consistency Gate - Verify Vertical and Horizontal relationship integrity.
 ---
 
-# Deep Consistency Gate
+# Deep Consistency Gate (Architecture & Meaning)
 
 This skill serves as the **gate for depth and relationship integrity** within the documentation graph. It focuses on ensuring that nodes are not only correct in isolation (as verified by `validate`) but also perfectly aligned with their context (Vertical) and their peers (Horizontal).
 
 > [!IMPORTANT]
-> The refinement must ensure that every node's purpose is unambiguous and its place in the hierarchy is fully justified. **Flag any semantic "fog" or responsibility overlap.**
+> This is an **Architecture & Meaning Gate**. Flag any semantic "fog" (unclear boundaries, implicit assumptions, or overloaded terms). Every node must be fully justified by its context.
 
 ## Workflow Steps
 
 ### 0. Validation Pre-requisite
 - **Level**: STRICT
-- **Policy**: Ensure the node has already passed the `validate` skill (Quality Gate).
+- **Policy**: 
+  - If `validate` status is unknown or FAIL -> **STOP** and return FAIL.
+  - Do not re-evaluate surface items (naming, templates) already covered by `validate`.
 
 ### 1. Vertical Consistency (Traceability & Context)
 - **Level**: STRICT for missing links, HEURISTIC for semantic clarity.
-- **Purpose**: Verify that the node "fits" between its parents and children.
+- **Vertical Expectations**:
+    - **Parents (Inbound)**: Define the "Why" (intent, requirement, or goal).
+    - **This Node**: Defines the "What" at its specific abstraction level.
+    - **Children (Outbound)**: Define the "How" (realization, implementation, or breakdown).
 
-1. **Context Check**: Use `docgraph describe <ID>` to see parent nodes (inbound relations). 
-   - Does the parent node explicitly require the responsibility defined in the target node?
-   - Is there any gap or ambiguity in how the parent's intent is carried over?
-2. **Realization Check**: Check child nodes (outbound relations).
-   - Is the target node's responsibility fully realized by its children?
-   - Are there any child nodes that seem unrelated to the target's purpose?
+1. **Context Check**: Use `docgraph describe <ID>` and verify:
+   - Does the parent node explicitly justify the existence of this node?
+   - Is there any gap in how the parent's intent is carried over?
+2. **Realization Check**: Verify child nodes:
+   - Is this node's responsibility fully and exclusively covered by its children?
 
 ### 2. Horizontal Consistency (Peer Alignment & MECE)
 - **Level**: HEURISTIC
-- **Purpose**: Ensure the node is Mutually Exclusive and Collectively Exhaustive (MECE) with its peers.
+- **Baseline Rule**: Use the dominant pattern among existing peer nodes. Do not invent new abstraction levels unless proposing an explicit refactor.
 
-1. **Peer Identification**: Use `docgraph list "<PREFIX>_*"` to find nodes of the same type.
-2. **Overlap Check**: Compare the target node's responsibility with its peers.
-   - Does this node overlap with another existing node?
-   - If a responsibility belongs to multiple nodes, propose a split or consolidation.
+1. **Peer Identification**: Use `docgraph list "<PREFIX>_*"`.
+2. **Overlap Check**: Verify Mutually Exclusive and Collectively Exhaustive (MECE) status.
+   - Does this node's responsibility overlap with peer nodes?
+   - Is the granularity consistent with the peer baseline?
 
-### 3. Responsibility Refinement (SRP Depth)
+### 3. Structural SRP Check
 - **Level**: HEURISTIC
-- **Purpose**: Deepen the SRP check from `validate`.
+- **Note**: `validate` checks surface SRP; `align` checks structural SRP (depth, cohesion, and abstraction fit).
 
-1. **Granularity Check**: Is the responsibility too high-level or too low-level for this type's baseline?
-2. **Cohesion Check**: Are all elements within the node tightly related?
+1. **Cohesion**: Are all elements within this node tightly related to the "What" definition?
+2. **Abstraction**: Is the node at the correct level relative to its parents and peers?
 
-### 4. Refinement Proposals
-Propose changes based on analysis:
-- **Clarify Context**: Suggest adding or explicitizing links to parents.
-- **Adjust Scope**: Propose narrowing or broadening the node to better fit its peers.
-- **Split/Merge**: If Horizontal consistency is broken, suggest structural changes.
+### 4. Proposals & Impact Analysis
+- **Level**: MANDATORY
+
+When proposing changes (Clarify Context, Split, Merge, or Move):
+1. **Affected Nodes**: List all nodes (parents, peers, children) that will be affected.
+2. **Re-validation**: Indicate whether `validate` must be re-run for any affected nodes.
+3. **Safety**: Ensure no existing references are broken without a remediation plan.
+
+## Workflow Cases
+
+### Case 1: TYPE_ID (e.g., FR, MOD)
+- Perform a full graph consistency review for the given type.
+
+### Case 2: NODE_ID (e.g., FR_LOGIN)
+- **Status**: Focused Refinement.
+- Perform a deep analysis specifically for the node and its immediate relations. Do not scan the entire graph unless necessary for baseline identification.
 
 ## Alignment Analysis Report
 You **must** provide the analysis in the following format:
 
 ### Target
-- **Node**: [ID]
-- **Type**: [Type Name]
+- **Node/Scope**: [ID or Type]
+- **Baseline Peer Pattern**: [Description of dominant convention]
 
 ### Consistency Analysis
 | Dimension | Check Item | Result | Analysis / Evidence |
 |:---|:---|:---|:---|
-| **Vertical** | Parent Alignment | PASS/FAIL | |
-| **Vertical** | Child Coverage | PASS/FAIL | |
-| **Horizontal** | Peer Overlap (MECE) | PASS/FAIL | |
-| **Quality** | Semantic Clarity | PASS/FAIL | |
+| **Prerequisite** | Validate PASS | PASS/FAIL | |
+| **Vertical** | Parents (Why) | PASS/FAIL | |
+| **Vertical** | Children (How) | PASS/FAIL | |
+| **Horizontal** | Peer MECE | PASS/FAIL | |
+| **SRP** | Abstraction Fit | PASS/FAIL | |
+
+### Refinement Proposals
+- **Proposal**: [Description]
+- **Affected IDs**: [List]
+- **Re-validate Required**: [Yes/No]
 
 ## Final Decision
-- **PASS**: The node shows deep integrity and fits perfectly within the graph.
-- **FAIL**: Structural or semantic issues identified. Remediation required.
+### Decision Semantics
+- **PASS**: Node shows deep integrity and may be merged/applied.
+- **FAIL**: Structural or semantic issues identified. MUST NOT be merged.
 
 **FINAL DECISION: [PASS/FAIL]**
-
-### Case 2: Input is a NODE_ID (e.g., FR_LOGIN, UC_CHECKOUT)
-
-1. **Show Details**: Use `docgraph describe`.
-
-2. **SRP Check (Single Responsibility Principle)**:
-   - **Too many responsibilities?**: Does this single node try to do too much?
-   - **Vague definition?**: Is the scope defined clearly?
-
-3. **Realizability Check**:
-   - **Sufficient components?**: Do the linked child nodes/dependencies sufficiently realize the responsibilities?
-   - **Missing dependencies?**: Identify paths that lack justification or realization.
-
-4. **Remediation**:
-   - **Split Node**: If it has too many responsibilities, propose splitting it.
-   - **Add Dependencies**: If realizability is low, propose adding missing links.
