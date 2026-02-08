@@ -17,7 +17,9 @@
     "customizations": {
         "vscode": {}
     },
-    "remoteUser": "vscode",
+    "containerEnv": {
+        "Z_AI_API_KEY": "${localEnv:Z_AI_API_KEY}"
+    },
     "postCreateCommand": "bash .devcontainer/post-create.sh",
-    "waitFor": "postCreateCommand"
+    "remoteUser": "vscode"
 }
