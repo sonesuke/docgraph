@@ -62,26 +62,26 @@ rules = [
 [references.NFR]
 # Non-Functional Requirement is derived from UC/FR/Constraint and derives architecture
 rules = [
-  { dir = "from", targets = ["UC", "FR", "CON"], min = 1, desc = "Non-functional requirements should be defined to meet specific functionality, business needs, or overall constraints" },
-  { dir = "to", targets = ["CC", "MOD", "NFR"], min = 1, desc = "Non-functional requirements must be reflected in cross-cutting concerns (CC), implementation modules (MOD), or point to other NFRs" }
+  { dir = "from", targets = ["UC", "FR", "CON"], min = 1, desc = "Non-functional requirements should be defined to meet specific functionality, business needs, or overall constraints", context = "constrained by" },
+  { dir = "to", targets = ["CC", "MOD", "NFR"], min = 1, desc = "Non-functional requirements must be reflected in cross-cutting concerns (CC), implementation modules (MOD), or point to other NFRs", context = "satisfied by" }
 ]
 
 [references.CON]
 # Constraint derives Functional/Non-Functional Requirements
 rules = [
-  { dir = "to", targets = ["FR", "NFR"], min = 1, desc = "Constraints must be embodied as specific functional or quality requirements for the system" }
+  { dir = "to", targets = ["FR", "NFR"], min = 1, desc = "Constraints must be embodied as specific functional or quality requirements for the system", context = "embodies" }
 ]
 
 [references.CC]
 # Cross-cutting Concept is derived from Requirements and derives Decisions or is realized by Modules
 rules = [
-  { dir = "from", targets = ["NFR", "FR"], min = 0, desc = "Cross-cutting concerns are derived from requirements" },
-  { dir = "to", targets = ["ADR"], min = 0, desc = "Cross-cutting concerns lead to specific architectural decisions (ADR)" },
-  { dir = "to", targets = ["MOD"], min = 0, desc = "Cross-cutting concerns may be realized by specific modules (MOD)" }
+  { dir = "from", targets = ["NFR", "FR"], min = 0, desc = "Cross-cutting concerns are derived from requirements", context = "derived from" },
+  { dir = "to", targets = ["ADR"], min = 0, desc = "Cross-cutting concerns lead to specific architectural decisions (ADR)", context = "leads to" },
+  { dir = "to", targets = ["MOD"], min = 0, desc = "Cross-cutting concerns may be realized by specific modules (MOD)", context = "realized by" }
 ]
 
 [references.MOD]
 # Module is derived from Functional Requirements, Non-Functional Requirements, Interfaces, or Cross-cutting Concepts
 rules = [
-  { dir = "from", targets = ["FR", "NFR", "IF", "CC"], min = 1, desc = "Each module must be justified by at least one functional/non-functional requirement, interface, or cross-cutting concept to ensure traceability" }
+  { dir = "from", targets = ["FR", "NFR", "IF", "CC"], min = 1, desc = "Each module must be justified by at least one functional/non-functional requirement, interface, or cross-cutting concept to ensure traceability", context = "justified by" }
 ]
