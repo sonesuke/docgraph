@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-02-08
+
+### Features
+
+- **Three-Gate Quality Pipeline**: Introduced a progressive evaluation pipeline for Spec-as-Code governance.
+  - **validate (Validation Quality Gate)**: Verifies hygiene, naming, and template compliance.
+  - **align (Architecture & Meaning Gate)**: Verifies vertical/horizontal consistency and structural SRP.
+  - **trace (Realization & Flow Gate)**: Verifies downstream reachability, abstraction monotonicity, and realizability.
+- **Quality Gate Checklists**: Integrated mandatory quality checklists into all gate assessment reports.
+
+### Refactor
+
+- **Skill Consolidation**: Migrated and simplified slash commands into Antigravity skills.
+- **Renamed `refine` to `align`**: Better reflect the role as an Architecture & Meaning Gate.
+- Removed redundant `docgraph` skill and deprecated `commands/` directory.
+
 ## [0.2.1] - 2026-02-05
 
 ### Bug Fixes
