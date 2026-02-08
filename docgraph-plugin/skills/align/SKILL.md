@@ -85,6 +85,15 @@ You **must** provide the analysis in the following format:
 - **Affected IDs**: [List]
 - **Re-validate Required**: [Yes/No]
 
+### Quality Gate Checklist
+In your final report, you **must** include this checklist to demonstrate deep architectural verification:
+
+- [ ] **Prerequisite PASS**: The node has successfully cleared the `validate` skill (Quality Gate).
+- [ ] **Vertical Alignment**: Why (Parent), What (This Node), and How (Child) are semantically consistent.
+- [ ] **Horizontal MECE**: Responsibility is mutually exclusive and follows the dominant peer baseline.
+- [ ] **Semantic Clarity**: No "semantic fog" or ambiguous boundaries identified.
+- [ ] **Impact Analysis**: All affected nodes are listed, and re-validation needs are clearly stated.
+
 ## Final Decision
 ### Decision Semantics
 - **PASS**: Node shows deep integrity and may be merged/applied.
