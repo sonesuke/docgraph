@@ -21,14 +21,20 @@ fn try_list(query: String, path: PathBuf) -> anyhow::Result<ExitCode> {
     let re = regex::Regex::new(&regex_str)
         .with_context(|| format!("Invalid query pattern: '{}'", query))?;
 
-    for block in blocks {
-        if re.is_match(&block.id) {
-            println!(
-                "{} : {}",
-                block.id,
-                block.name.as_deref().unwrap_or("No description")
-            );
-        }
+    let mut matched_blocks: Vec<_> = blocks
+        .into_iter()
+        .filter(|block| re.is_match(&block.id))
+        .collect();
+
+    matched_blocks.sort_by(|a, b| a.id.cmp(&b.id));
+
+    for block in matched_blocks {
+        println!(
+            "{} : {} ({})",
+            block.id,
+            block.name.as_deref().unwrap_or("No description"),
+            block.file_path.display()
+        );
     }
     Ok(ExitCode::SUCCESS)
 }

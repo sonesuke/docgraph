@@ -27,6 +27,7 @@ fn try_describe(id: String, path: PathBuf) -> anyhow::Result<ExitCode> {
         id,
         target_block.name.as_deref().unwrap_or("No description")
     );
+    println!("\n---\n{}\n---", target_block.content.trim());
     println!("\n{} references to", id);
     for edge in &target_block.edges {
         let name = blocks
