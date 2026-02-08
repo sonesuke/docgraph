@@ -2,86 +2,95 @@
 # Based on the Dependency Model specification
 
 [graph]
-doc_types = ["ACT", "DAT", "IF", "ADR"]
 ignore = ["README.md", "SECURITY.md", ".claude", ".claude-plugin", "docgraph-plugin", "doc/templates"]
 
-[node_types]
+
+
 # Core specification types
-UC  = { desc = "Use Case", template = "doc/templates/usecases.md" }
-FR  = { desc = "Functional Requirement", template = "doc/templates/functional.md" }
-NFR = { desc = "Non-Functional Requirement", template = "doc/templates/non-functional.md" }
-CON = { desc = "Constraint", template = "doc/templates/constraint.md" }
-MOD = { desc = "Module", template = "doc/templates/module.md" }
-
-# Architecture types (Core Dependency Model)
-CC  = { desc = "Cross-cutting Concept", template = "doc/templates/cross-cutting.md" }
-
-# Documentation types (can be referenced by all core types)
-ACT  = { desc = "Actor", template = "doc/templates/actors.md" }
-DAT  = { desc = "Data Entity" }
-IF   = { desc = "Interface Specification", template = "doc/templates/interface.md" }
-ADR  = { desc = "Architecture Decision Record", template = "doc/templates/decision.md" }
-
-# ========== Business Relations ==========
-
-[references.UC]
-# Use Case derives Actor, Interface, and Requirements
+[nodes.UC]
+desc = "Use Case"
+template = "doc/templates/usecases.md"
 rules = [
-  { dir = "to", targets = ["ACT"], min = 1, desc = "Use cases must involve at least one Actor" },
-  { dir = "to", targets = ["IF"], min = 1, desc = "Use cases must interact through at least one Interface" },
-  { dir = "to", targets = ["FR"], min = 1, desc = "Use cases must realize at least one Functional Requirement" },
-  { dir = "to", targets = ["NFR"], min = 0, desc = "Use cases may relate to NFRs" }
+  { dir = "to", targets = ["ACT"], min = 1, desc = "Every use case must identify the initiating participant (Actor) to define scope and responsibility", context = "triggered by" },
+  { dir = "to", targets = ["IF"], min = 1, desc = "Business scenarios must specify their interaction points (Interfaces) to ensure architectural decoupling", context = "interacts through" },
+  { dir = "to", targets = ["FR"], min = 1, desc = "Use cases must be connected to functional outcomes (FR) to maintain business value traceability", context = "uses" }
 ]
 
-[references.ACT]
-# Actor is derived from Use Case
+[nodes.FR]
+desc = "Functional Requirement"
+template = "doc/templates/functional.md"
 rules = [
-  { dir = "from", targets = ["UC"], min = 1, desc = "System actors must be involved in at least one use case" }
+  { dir = "from", targets = ["UC"], min = 1, desc = "Every functional requirement must be driven by at least one business scenario (UC) to ensure user value", context = "used by" },
+  { dir = "from", targets = ["CON"], min = 0, desc = "Functional requirements define how the system must behave within foundational constraints", context = "constrained by" },
+  { dir = "to", targets = ["MOD"], min = 1, desc = "Every requirement must be allocated to a structural component (Module) to ensure no functionality is left unimplemented", context = "implemented by" },
+  { dir = "to", targets = ["NFR"], min = 0, desc = "Functional requirements may drive specific quality attribute requirements (NFR)", context = "qualified by" },
+  { dir = "to", targets = ["IF"], min = 0, desc = "Functional requirements may define public API contracts or user interfaces (IF)", context = "defines" },
+  { dir = "to", targets = ["CC"], min = 0, desc = "Functional requirements may be reflected in cross-cutting concerns (CC) that apply across multiple modules", context = "reflected in" }
 ]
 
-[references.IF]
-# Interface is derived from Use Case and Functional Requirement
+[nodes.NFR]
+desc = "Quality Requirement (Non-Functional)"
+template = "doc/templates/non-functional.md"
 rules = [
-  { dir = "from", targets = ["UC"], min = 1, desc = "Exposed interfaces must be justified by at least one business use case" },
-  { dir = "from", targets = ["FR"], min = 1, desc = "Interfaces must be defined by at least one functional requirement" },
-  { dir = "to", targets = ["MOD"], min = 1, desc = "Interface specifications must be realized by at least one module (MOD) to ensure implementation" }
+  { dir = "from", targets = ["FR"], min = 0, desc = "Quality requirements define the performance or security expectations for functional behavior", context = "qualifies" },
+  { dir = "from", targets = ["CON"], min = 0, desc = "Quality requirements define the quality attributes dictated by foundational constraints", context = "constrained by" },
+  { dir = "to", targets = ["CC"], min = 0, desc = "Quality requirements are reflected in cross-cutting designs (CC) that apply across modules", context = "reflected in" },
+  { dir = "to", targets = ["MOD"], min = 0, desc = "Quality requirements may be realized through specific implementation details in modules (MOD)", context = "implemented by" }
 ]
 
-# ========== Specification Relations ==========
-
-[references.FR]
-# Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
+[nodes.CON]
+desc = "Constraint"
+template = "doc/templates/constraint.md"
 rules = [
-  { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Functional requirements are derived from business needs (UC) or constraints (CON) to clarify their existence" },
-  { dir = "to", targets = ["MOD"], min = 1, desc = "Each functional requirement must be realized by at least one module (MOD) to ensure implementation" },
-  { dir = "to", targets = ["NFR"], min = 0, desc = "Functional requirements may derive non-functional requirements (NFR)" },
-  { dir = "to", targets = ["IF"], min = 0, desc = "Functional requirements may define interfaces (IF)" },
-  { dir = "to", targets = ["CC"], min = 0, desc = "Functional requirements may be reflected in cross-cutting concerns (CC)" }
+  { dir = "to", targets = ["FR", "NFR"], min = 1, desc = "Foundational constraints must be embodied in actionable functional or quality requirements to guide system behavior", context = "constrains" }
 ]
 
-[references.NFR]
-# Non-Functional Requirement is derived from UC/FR/Constraint and derives architecture
+[nodes.MOD]
+desc = "Module"
+template = "doc/templates/module.md"
 rules = [
-  { dir = "from", targets = ["UC", "FR", "CON"], min = 1, desc = "Non-functional requirements should be defined to meet specific functionality, business needs, or overall constraints" },
-  { dir = "to", targets = ["CC", "MOD", "NFR"], min = 1, desc = "Non-functional requirements must be reflected in cross-cutting concerns (CC), implementation modules (MOD), or point to other NFRs" }
+  { dir = "from", targets = ["FR", "NFR", "IF", "CC"], min = 1, desc = "Every structural module must be justified by at least one requirement or architectural concept to ensure purposeful design", context = "implemented by" }
 ]
 
-[references.CON]
-# Constraint derives Functional/Non-Functional Requirements
+# Architecture types
+[nodes.CC]
+desc = "Cross-cutting Concept"
+template = "doc/templates/cross-cutting.md"
 rules = [
-  { dir = "to", targets = ["FR", "NFR"], min = 1, desc = "Constraints must be embodied as specific functional or quality requirements for the system" }
+  { dir = "from", targets = ["NFR", "FR"], min = 0, desc = "Cross-cutting concerns address requirements that span multiple system modules", context = "reflected by" },
+  { dir = "to", targets = ["ADR"], min = 0, desc = "Cross-cutting concern designs lead to specific architectural decisions (ADR)", context = "leads to" },
+  { dir = "to", targets = ["MOD"], min = 0, desc = "Cross-cutting concerns are realized through implementation patterns in specific modules (MOD)", context = "implemented by" }
 ]
 
-[references.CC]
-# Cross-cutting Concept is derived from Requirements and derives Decisions or is realized by Modules
+# Documentation types
+[nodes.ACT]
+desc = "Actor"
+template = "doc/templates/actors.md"
 rules = [
-  { dir = "from", targets = ["NFR", "FR"], min = 0, desc = "Cross-cutting concerns are derived from requirements" },
-  { dir = "to", targets = ["ADR"], min = 0, desc = "Cross-cutting concerns lead to specific architectural decisions (ADR)" },
-  { dir = "to", targets = ["MOD"], min = 0, desc = "Cross-cutting concerns may be realized by specific modules (MOD)" }
+  { dir = "from", targets = ["*"], min = 0, desc = "Actors represent external entities interacting with the system across various boundary points", context = "involved" },
+  { dir = "from", targets = ["UC"], min = 1, desc = "System actors must specify the business scenarios (UC) they participate in", context = "involved in" }
 ]
 
-[references.MOD]
-# Module is derived from Functional Requirements, Non-Functional Requirements, Interfaces, or Cross-cutting Concepts
+[nodes.DAT]
+desc = "Data Entity"
+template = "doc/templates/data.md"
 rules = [
-  { dir = "from", targets = ["FR", "NFR", "IF", "CC"], min = 1, desc = "Each module must be justified by at least one functional/non-functional requirement, interface, or cross-cutting concept to ensure traceability" }
+  { dir = "from", targets = ["*"], min = 0, desc = "Data entities provide shared domain models utilized across multiple system components", context = "uses data" }
+]
+
+[nodes.IF]
+desc = "Interface Specification"
+template = "doc/templates/interface.md"
+rules = [
+  { dir = "from", targets = ["*"], min = 0, desc = "System interfaces define the public contracts for communication and integration points", context = "integrated with" },
+  { dir = "from", targets = ["UC"], min = 1, desc = "Exposed interfaces must be justified by at least one business scenario (UC)", context = "justified by" },
+  { dir = "from", targets = ["FR"], min = 1, desc = "Interfaces must be connected to functional requirements to define their behavior", context = "defined by" },
+  { dir = "to", targets = ["MOD"], min = 1, desc = "Every interface specification must be implemented by a module (MOD) to ensure its realization", context = "implemented by" }
+]
+
+[nodes.ADR]
+desc = "Architecture Decision Record"
+template = "doc/templates/decision.md"
+rules = [
+  { dir = "from", targets = ["*"], min = 0, desc = "Architectural decisions provide the design rationale and historical context for system elements", context = "informed by" }
 ]

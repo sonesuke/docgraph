@@ -103,9 +103,6 @@ The developer installs the `docgraph` VS Code extension.
 1. Developer downloads the VSIX file.
 2. Developer installs the extension in VS Code.
 
-### Non-Functional Requirements (Optional)
-
-- [NFR_VSCODE_PACKAGING (Lightweight Packaging)](../requirements/non-functional/vscode.md#NFR_VSCODE_PACKAGING) Ensures the extension is fast to download and install
 
 ---
 

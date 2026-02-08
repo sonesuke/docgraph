@@ -35,6 +35,3 @@ The developer edits documentation in an LSP-compatible editor with real-time fee
 2. Editor starts the `docgraph` language server.
 3. Developer receives real-time validation and hover info.
 
-### Non-Functional Requirements (Optional)
-
-- [NFR_LATENCY (System Latency)](../requirements/non-functional/performance.md#NFR_LATENCY) Ensuring LSP response is responsive during typing

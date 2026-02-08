@@ -154,11 +154,12 @@ impl Backend {
         match not.method.as_str() {
             "initialized" => {
                 let _ = cast_not::<Initialized>(not)?;
-                eprintln!("docgraph language server initialized");
+                self.log_message("docgraph language server initialized");
                 self.run_lint();
             }
             "textDocument/didOpen" => {
                 let params = cast_not::<DidOpenTextDocument>(not)?;
+                self.log_message(format!("Document opened: {:?}", params.text_document.uri));
                 self.documents.insert(
                     params.text_document.uri.to_string(),
                     params.text_document.text,
@@ -199,6 +200,15 @@ impl Backend {
         Ok(())
     }
 
+    pub fn log_message<S: Into<String>>(&self, message: S) {
+        let params = lsp_types::LogMessageParams {
+            typ: lsp_types::MessageType::LOG,
+            message: message.into(),
+        };
+        let not = Notification::new("window/logMessage".to_string(), params);
+        let _ = self.sender.send(Message::Notification(not));
+    }
+
     fn publish_diagnostics(&self, uri: Uri, diagnostics: Vec<Diagnostic>) -> anyhow::Result<()> {
         let params = PublishDiagnosticsParams {
             uri,
@@ -213,7 +223,25 @@ impl Backend {
     pub fn run_lint(&self) {
         let root_opt = self.workspace_root.lock().unwrap().clone();
         if let Some(root) = root_opt {
-            let config = config::Config::load(&root).unwrap_or_else(|_| config::Config::default());
+            let config = match config::Config::load(&root) {
+                Ok(c) => {
+                    self.log_message(format!(
+                        "Config loaded successfully from {}. Node types: {}",
+                        root.display(),
+                        c.nodes.len()
+                    ));
+                    if c.nodes.is_empty() {
+                        self.log_message(
+                            "Warning: config.nodes is empty. Check your docgraph.toml.",
+                        );
+                    }
+                    c
+                }
+                Err(e) => {
+                    self.log_message(format!("Error loading config: {}", e));
+                    config::Config::default()
+                }
+            };
 
             // Create overrides map (convert DashMap<String, String> to HashMap<PathBuf, String>)
             let mut overrides = std::collections::HashMap::new();

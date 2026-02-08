@@ -11,7 +11,7 @@ async fn e2e_document_symbols() -> anyhow::Result<()> {
 
     fs::write(
         root_path.join("docgraph.toml"),
-        r#"[node_types.REQ]
+        r#"[nodes.REQ]
 desc = "Requirement""#,
     )?;
 
@@ -82,7 +82,7 @@ async fn e2e_workspace_symbols() -> anyhow::Result<()> {
 
     fs::write(
         root_path.join("docgraph.toml"),
-        r#"[node_types.REQ]
+        r#"[nodes.REQ]
 desc = "Requirement""#,
     )?;
 

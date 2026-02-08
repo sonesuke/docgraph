@@ -61,6 +61,10 @@ The plugin SHALL support distribution via the [Claude Marketplace](../../require
 - [MOD_PLUGIN (Claude Code Plugin)](../../architecture/view/module.md#MOD_PLUGIN)
 - [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
+### Qualified by
+
+- [NFR_VSCODE_PORTABILITY (Cross-platform Portability)](../../requirements/non-functional/vscode.md#NFR_VSCODE_PORTABILITY)
+
 <a id="FR_CLAUDE_INSTALL"></a>
 
 ## Claude Plugin Installation
