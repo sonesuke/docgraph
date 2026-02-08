@@ -30,9 +30,11 @@ pub fn create_config(dir: &Path, content: &str) -> std::path::PathBuf {
 /// Default docgraph.toml with basic node types
 pub fn default_config() -> &'static str {
     r#"
-[node_types]
-TEST = { desc = "Test node" }
-REQ = { desc = "Requirement" }
-ADR = { desc = "Architecture Decision Record" }
+[nodes.TEST]
+desc = "Test node"
+[nodes.REQ]
+desc = "Requirement"
+[nodes.ADR]
+desc = "Architecture Decision Record"
 "#
 }

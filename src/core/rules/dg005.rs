@@ -10,7 +10,7 @@ pub fn check_strict_node_types(blocks: &[SpecBlock], config: &Config) -> Vec<Dia
         let s: &str = block.id.as_str();
         let prefix = s.split(['-', '_']).next().unwrap_or(s);
 
-        if !config.node_types.contains_key(prefix) {
+        if !config.nodes.contains_key(prefix) {
             diagnostics.push(Diagnostic {
                 severity: Severity::Error,
                 code: "DG005".to_string(),
@@ -18,7 +18,7 @@ pub fn check_strict_node_types(blocks: &[SpecBlock], config: &Config) -> Vec<Dia
                     "Unknown node type prefix '{}' in ID '{}'. Must be one of: {:?}.",
                     prefix,
                     block.id,
-                    config.node_types.keys().collect::<Vec<_>>()
+                    config.nodes.keys().collect::<Vec<_>>()
                 ),
                 path: block.file_path.clone(),
                 range: Range {
@@ -58,7 +58,7 @@ mod tests {
     fn test_dg005_unknown_prefix() {
         let mut config = Config::default();
         config
-            .node_types
+            .nodes
             .insert("REQ".to_string(), Default::default());
 
         let blocks = vec![create_block("UNK-01")];
@@ -72,7 +72,7 @@ mod tests {
     fn test_dg005_known_prefix() {
         let mut config = Config::default();
         config
-            .node_types
+            .nodes
             .insert("REQ".to_string(), Default::default());
 
         let blocks = vec![create_block("REQ-01")];

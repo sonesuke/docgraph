@@ -35,9 +35,9 @@ pub fn check_templates(root: &Path, spec_blocks: &[SpecBlock], config: &Config) 
     RE_PLACEHOLDER.get_or_init(|| Regex::new(r"\\\{[^}]+\\\}").unwrap());
     let mut diagnostics = Vec::new();
 
-    for (type_name, node_type) in &config.node_types {
-        if let Some(template_path) = &node_type.template {
-            let full_template_path = if template_path.exists() {
+    for (type_name, node_config) in &config.nodes {
+        if let Some(template_path) = &node_config.template {
+            let full_template_path: std::path::PathBuf = if template_path.exists() {
                 template_path.to_path_buf()
             } else {
                 root.join(template_path)

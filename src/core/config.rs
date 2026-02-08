@@ -8,29 +8,25 @@ use crate::core::error::Result;
 #[derive(Debug, Deserialize, Default, Clone)]
 pub struct Config {
     #[serde(default)]
-    pub node_types: HashMap<String, NodeType>,
+    pub nodes: HashMap<String, NodeConfig>,
     #[serde(default)]
     pub graph: GraphConfig,
-    #[serde(default)]
-    pub references: HashMap<String, ReferenceConfig>,
-}
-
-#[derive(Debug, Deserialize, Default, Clone)]
-pub struct NodeType {
-    pub desc: String,
-    pub template: Option<std::path::PathBuf>,
 }
 
 #[derive(Debug, Deserialize, Default, Clone)]
 pub struct GraphConfig {
     #[serde(default)]
-    pub doc_types: Vec<String>,
+    pub unique: Vec<String>,
+    #[serde(default)]
+    pub explicit: Vec<String>,
     #[serde(default)]
     pub ignore: Vec<String>,
 }
 
 #[derive(Debug, Deserialize, Default, Clone)]
-pub struct ReferenceConfig {
+pub struct NodeConfig {
+    pub desc: String,
+    pub template: Option<std::path::PathBuf>,
     #[serde(default)]
     pub rules: Vec<RuleConfig>,
 }
@@ -95,7 +91,7 @@ mod tests {
         File::create(&config_path).unwrap();
 
         let config = Config::load(dir.path()).unwrap();
-        assert!(config.node_types.is_empty());
+        assert!(config.nodes.is_empty());
     }
 
     #[test]
@@ -104,10 +100,10 @@ mod tests {
         let config_path = dir.path().join("docgraph.toml");
         let mut file = File::create(&config_path).unwrap();
         // Add node type to check desc
-        writeln!(file, "[node_types.REQ]\ndesc = \"Requirement\"").unwrap();
+        writeln!(file, "[nodes.REQ]\ndesc = \"Requirement\"").unwrap();
 
         let config = Config::load(dir.path()).unwrap();
-        assert_eq!(config.node_types["REQ"].desc, "Requirement");
+        assert_eq!(config.nodes["REQ"].desc, "Requirement");
     }
 
     #[test]
@@ -118,10 +114,10 @@ mod tests {
 
         let config_path = dir.path().join("docgraph.toml");
         let mut file = File::create(&config_path).unwrap();
-        writeln!(file, "[node_types.REQ]\ndesc = \"Requirement\"").unwrap();
+        writeln!(file, "[nodes.REQ]\ndesc = \"Requirement\"").unwrap();
 
         let config = Config::load(&subdir).unwrap();
-        assert_eq!(config.node_types["REQ"].desc, "Requirement");
+        assert_eq!(config.nodes["REQ"].desc, "Requirement");
     }
 
     #[test]
@@ -140,7 +136,7 @@ mod tests {
         let dir = tempdir().unwrap();
         let config_path = dir.path().join("docgraph.toml");
         let mut file = File::create(&config_path).unwrap();
-        writeln!(file, "[node_types.REQ]\ndesc = \"Requirement\"").unwrap();
+        writeln!(file, "[nodes.REQ]\ndesc = \"Requirement\"").unwrap();
 
         // Pass the FILE path, not dir
         // The code `start_dir = if path.is_dir() { ... } else { path.parent() ... }`
@@ -149,7 +145,7 @@ mod tests {
         let file_path = dir.path().join("file.md");
         let config = Config::load(&file_path).unwrap();
 
-        assert_eq!(config.node_types["REQ"].desc, "Requirement");
+        assert_eq!(config.nodes["REQ"].desc, "Requirement");
     }
 
     #[test]
