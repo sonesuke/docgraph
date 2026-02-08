@@ -4,11 +4,7 @@
 
 {Description}
 
-<<<<<<< HEAD
 ### Codified in (Optional)
-=======
-### codified in (Optional)
->>>>>>> origin/main
 
 - [CC* (*)](*#CC_*) {Reason}
 

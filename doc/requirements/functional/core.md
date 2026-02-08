@@ -45,7 +45,6 @@ The system SHOULD provide mechanisms to authenticate users before allowing certa
 ### Realized by
 
 - [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
-<<<<<<< HEAD
 
 ---
 
@@ -103,5 +102,3 @@ rules = [
 ### Realized by
 
 - [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
-=======
->>>>>>> origin/main

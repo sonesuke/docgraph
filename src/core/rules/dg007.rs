@@ -230,8 +230,8 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                 
                 // Look for a list
                 let mut found_idx = None;
-                for i in event_idx..events.len() {
-                    match &events[i] {
+                for (i, event) in events.iter().enumerate().skip(event_idx) {
+                    match event {
                         Event::Start(Tag::List(_)) => {
                             found_idx = Some(i);
                             break;
@@ -304,8 +304,8 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                 
                 // Look for matching text
                 let mut found = false;
-                for i in event_idx..events.len() {
-                    match &events[i] {
+                for (i, event) in events.iter().enumerate().skip(event_idx) {
+                    match event {
                         Event::Text(t) | Event::Code(t) => {
                             if match_text(pattern, t) {
                                 found = true;
