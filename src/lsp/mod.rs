@@ -45,6 +45,7 @@ pub fn run_server() {
 
     let backend = Backend::new(
         connection.sender.clone(),
+        #[allow(deprecated)]
         params.root_uri.clone(),
         params.workspace_folders.clone(),
     );

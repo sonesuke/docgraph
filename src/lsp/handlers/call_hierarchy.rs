@@ -1,6 +1,7 @@
 use crate::lsp::Backend;
 use anyhow::Result;
 use lsp_types::*;
+use url::Url;
 
 pub fn prepare_call_hierarchy(
     backend: &Backend,
@@ -11,7 +12,9 @@ pub fn prepare_call_hierarchy(
     let line = position.line as usize + 1;
     let col = position.character as usize + 1;
 
-    if let Ok(path) = uri.to_file_path() {
+    if let Ok(url) = Url::parse(uri.as_str())
+        && let Ok(path) = url.to_file_path()
+    {
         let path = std::fs::canonicalize(&path).unwrap_or(path);
         let blocks = backend.blocks.lock().unwrap();
 
@@ -19,7 +22,8 @@ pub fn prepare_call_hierarchy(
         if let Some(target_id) =
             crate::core::locate::locate_id_at_position(&blocks, &[], &path, line, col)
             && let Some(target_block) = blocks.iter().find(|b| b.id == target_id)
-            && let Ok(target_uri) = Url::from_file_path(&target_block.file_path)
+            && let Ok(target_url) = Url::from_file_path(&target_block.file_path)
+            && let Ok(target_uri) = target_url.as_str().parse::<Uri>()
         {
             return Ok(Some(vec![CallHierarchyItem {
                 name: target_block
@@ -108,7 +112,10 @@ pub fn incoming_calls(
                 .iter()
                 .any(|e| e.line == loc.range_start_line && e.col_start == loc.range_start_col);
 
-            if is_edge && let Ok(u) = Url::from_file_path(&source_block.file_path) {
+            if is_edge
+                && let Ok(u) = Url::from_file_path(&source_block.file_path)
+                && let Ok(uri) = u.as_str().parse::<Uri>()
+            {
                 calls.push(CallHierarchyIncomingCall {
                     from: CallHierarchyItem {
                         name: source_block
@@ -118,7 +125,7 @@ pub fn incoming_calls(
                         kind: SymbolKind::INTERFACE,
                         tags: None,
                         detail: None,
-                        uri: u,
+                        uri,
                         range: Range {
                             start: Position {
                                 line: source_block.line_start as u32 - 1,
@@ -202,6 +209,7 @@ pub fn outgoing_calls(
         for (target_id, from_ranges) in targets {
             if let Some(target_block) = blocks.iter().find(|b| b.id == target_id)
                 && let Ok(u) = Url::from_file_path(&target_block.file_path)
+                && let Ok(uri) = u.as_str().parse::<Uri>()
             {
                 calls.push(CallHierarchyOutgoingCall {
                     to: CallHierarchyItem {
@@ -212,7 +220,7 @@ pub fn outgoing_calls(
                         kind: SymbolKind::INTERFACE,
                         tags: None,
                         detail: None,
-                        uri: u,
+                        uri,
                         range: Range {
                             start: Position {
                                 line: target_block.line_start as u32 - 1,

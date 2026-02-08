@@ -1,5 +1,6 @@
 use anyhow::Result;
 use lsp_types::*;
+use url::Url;
 
 pub fn rename(
     blocks: &[crate::core::types::SpecBlock],
@@ -11,7 +12,9 @@ pub fn rename(
     let line = position.line as usize + 1;
     let col = position.character as usize + 1;
 
-    if let Ok(path) = uri.to_file_path() {
+    if let Ok(url) = Url::parse(uri.as_str())
+        && let Ok(path) = url.to_file_path()
+    {
         let path = path.canonicalize().unwrap_or(path);
 
         // Delegate to Core Logic
@@ -20,11 +23,14 @@ pub fn rename(
         {
             let locations = crate::core::locate::find_references_msg(blocks, refs, &target_id);
 
-            let mut changes: std::collections::HashMap<Url, Vec<TextEdit>> =
+            #[allow(clippy::mutable_key_type)]
+            let mut changes: std::collections::HashMap<Uri, Vec<TextEdit>> =
                 std::collections::HashMap::new();
 
             for loc in locations {
-                if let Ok(u) = Url::from_file_path(&loc.file_path) {
+                if let Ok(u) = Url::from_file_path(&loc.file_path)
+                    && let Ok(uri) = u.as_str().parse::<Uri>()
+                {
                     let edit = TextEdit {
                         range: Range {
                             start: Position {
@@ -39,7 +45,7 @@ pub fn rename(
                         new_text: params.new_name.clone(),
                     };
 
-                    let edits = changes.entry(u.clone()).or_default();
+                    let edits = changes.entry(uri).or_default();
 
                     // Simple deduplication: allow if exact range doesn't exist
                     // Note: ideally we should check for overlap, but exact duplicate is the likely cause here.

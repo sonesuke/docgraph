@@ -2,7 +2,7 @@ use crossbeam_channel::Sender;
 use dashmap::DashMap;
 use lsp_server::{Connection, Message, Notification, RequestId, Response};
 use lsp_types::{
-    Diagnostic, InitializeParams, Position, PublishDiagnosticsParams, Range, Url, WorkspaceFolder,
+    Diagnostic, InitializeParams, Position, PublishDiagnosticsParams, Range, Uri, WorkspaceFolder,
     notification::{
         DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument,
         Initialized, Notification as _, PublishDiagnostics,
@@ -15,6 +15,7 @@ use lsp_types::{
 };
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
+use url::Url;
 
 use super::handlers;
 use crate::core::{collect, config, lint, types};
@@ -24,23 +25,26 @@ pub struct Backend {
     pub workspace_root: Arc<Mutex<Option<PathBuf>>>,
     pub blocks: Arc<Mutex<Vec<types::SpecBlock>>>,
     pub standalone_refs: Arc<Mutex<Vec<types::RefUse>>>,
-    pub documents: Arc<DashMap<Url, String>>,
+    pub documents: Arc<DashMap<String, String>>,
 }
 
 impl Backend {
     pub fn new(
         sender: Sender<Message>,
-        root_uri: Option<Url>,
+        root_uri: Option<Uri>,
         workspace_folders: Option<Vec<WorkspaceFolder>>,
     ) -> Self {
         let mut root = None;
         if let Some(uri) = root_uri {
-            if let Ok(path) = uri.to_file_path() {
+            if let Ok(url) = Url::parse(uri.as_str())
+                && let Ok(path) = url.to_file_path()
+            {
                 root = Some(std::fs::canonicalize(&path).unwrap_or(path));
             }
         } else if let Some(folders) = workspace_folders
             && let Some(folder) = folders.first()
-            && let Ok(path) = folder.uri.to_file_path()
+            && let Ok(url) = Url::parse(folder.uri.as_str())
+            && let Ok(path) = url.to_file_path()
         {
             root = Some(std::fs::canonicalize(&path).unwrap_or(path));
         }
@@ -155,8 +159,10 @@ impl Backend {
             }
             "textDocument/didOpen" => {
                 let params = cast_not::<DidOpenTextDocument>(not)?;
-                self.documents
-                    .insert(params.text_document.uri.clone(), params.text_document.text);
+                self.documents.insert(
+                    params.text_document.uri.to_string(),
+                    params.text_document.text,
+                );
                 self.run_lint();
             }
             "textDocument/didChange" => {
@@ -164,7 +170,7 @@ impl Backend {
                 // We assume full text sync
                 if let Some(change) = params.content_changes.first() {
                     self.documents
-                        .insert(params.text_document.uri.clone(), change.text.clone());
+                        .insert(params.text_document.uri.to_string(), change.text.clone());
                 }
                 self.run_lint();
             }
@@ -174,7 +180,7 @@ impl Backend {
             }
             "textDocument/didClose" => {
                 let params = cast_not::<DidCloseTextDocument>(not)?;
-                self.documents.remove(&params.text_document.uri);
+                self.documents.remove(params.text_document.uri.as_str());
                 self.publish_diagnostics(params.text_document.uri, vec![])?;
             }
             _ => {}
@@ -193,7 +199,7 @@ impl Backend {
         Ok(())
     }
 
-    fn publish_diagnostics(&self, uri: Url, diagnostics: Vec<Diagnostic>) -> anyhow::Result<()> {
+    fn publish_diagnostics(&self, uri: Uri, diagnostics: Vec<Diagnostic>) -> anyhow::Result<()> {
         let params = PublishDiagnosticsParams {
             uri,
             diagnostics,
@@ -209,10 +215,12 @@ impl Backend {
         if let Some(root) = root_opt {
             let config = config::Config::load(&root).unwrap_or_else(|_| config::Config::default());
 
-            // Create overrides map (convert DashMap<Url, String> to HashMap<PathBuf, String>)
+            // Create overrides map (convert DashMap<String, String> to HashMap<PathBuf, String>)
             let mut overrides = std::collections::HashMap::new();
             for entry in self.documents.iter() {
-                if let Ok(path) = entry.key().to_file_path() {
+                if let Ok(url) = Url::parse(entry.key())
+                    && let Ok(path) = url.to_file_path()
+                {
                     // Try to canonicalize the path for consistent lookup
                     if let Ok(canon_path) = std::fs::canonicalize(&path) {
                         overrides.insert(canon_path, entry.value().clone());
@@ -248,7 +256,9 @@ impl Backend {
             }
             // Also open files
             for entry in self.documents.iter() {
-                if let Ok(path) = entry.key().to_file_path() {
+                if let Ok(url) = Url::parse(entry.key())
+                    && let Ok(path) = url.to_file_path()
+                {
                     file_diagnostics.entry(path).or_default();
                 }
             }
@@ -278,7 +288,9 @@ impl Backend {
             }
 
             for (path, diags) in file_diagnostics {
-                if let Ok(uri) = Url::from_file_path(path) {
+                if let Ok(url) = Url::from_file_path(path)
+                    && let Ok(uri) = url.as_str().parse::<Uri>()
+                {
                     let _ = self.publish_diagnostics(uri, diags);
                 }
             }

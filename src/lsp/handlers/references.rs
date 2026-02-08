@@ -1,5 +1,6 @@
 use anyhow::Result;
 use lsp_types::*;
+use url::Url;
 
 pub fn references(
     blocks: &[crate::core::types::SpecBlock],
@@ -11,7 +12,9 @@ pub fn references(
     let line = position.line as usize + 1;
     let col = position.character as usize + 1;
 
-    if let Ok(path) = uri.to_file_path() {
+    if let Ok(url) = Url::parse(uri.as_str())
+        && let Ok(path) = url.to_file_path()
+    {
         let path = std::fs::canonicalize(&path).unwrap_or(path);
         // Delegate to Core Logic
         if let Some(target_id) =
@@ -21,9 +24,11 @@ pub fn references(
             let mut locations = Vec::new();
 
             for res in results {
-                if let Ok(u) = Url::from_file_path(&res.file_path) {
+                if let Ok(u) = Url::from_file_path(&res.file_path)
+                    && let Ok(uri) = u.as_str().parse::<Uri>()
+                {
                     locations.push(Location {
-                        uri: u,
+                        uri,
                         range: Range {
                             start: Position {
                                 line: res.range_start_line as u32 - 1,
@@ -93,6 +98,7 @@ mod tests {
         let refs = vec![];
 
         let uri = Url::from_file_path(&path).unwrap();
+        let uri = uri.as_str().parse::<Uri>().unwrap();
         // FR-01 is at line 10. <a id="FR-01"></a>. col 8 starts 'F'.
         let params = ReferenceParams {
             text_document_position: TextDocumentPositionParams {
@@ -180,6 +186,7 @@ mod tests {
         let refs = vec![];
 
         let uri = Url::from_file_path(&path).unwrap();
+        let uri = uri.as_str().parse::<Uri>().unwrap();
         let params = ReferenceParams {
             text_document_position: TextDocumentPositionParams {
                 text_document: TextDocumentIdentifier { uri },
@@ -242,6 +249,7 @@ mod tests {
         }];
 
         let uri = Url::from_file_path(&path).unwrap();
+        let uri = uri.as_str().parse::<Uri>().unwrap();
         let params = ReferenceParams {
             text_document_position: TextDocumentPositionParams {
                 text_document: TextDocumentIdentifier { uri },
@@ -262,10 +270,12 @@ mod tests {
         let locs = result.unwrap();
         assert!(!locs.is_empty());
         // Should find the standalone ref in path2
-        assert!(
-            locs.iter()
-                .any(|l| l.uri.to_file_path() == Ok(path2.clone()))
-        );
+        assert!(locs.iter().any(|l| {
+            Url::parse(l.uri.as_str())
+                .ok()
+                .and_then(|u| u.to_file_path().ok())
+                == Some(path2.clone())
+        }));
     }
 
     #[test]
@@ -277,6 +287,7 @@ mod tests {
         let refs = vec![];
 
         let uri = Url::from_file_path(&path).unwrap();
+        let uri = uri.as_str().parse::<Uri>().unwrap();
         let params = ReferenceParams {
             text_document_position: TextDocumentPositionParams {
                 text_document: TextDocumentIdentifier { uri },

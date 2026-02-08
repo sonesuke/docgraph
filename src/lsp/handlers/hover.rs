@@ -1,5 +1,6 @@
 use anyhow::Result;
 use lsp_types::*;
+use url::Url;
 
 pub fn hover(
     blocks: &[crate::core::types::SpecBlock],
@@ -11,7 +12,9 @@ pub fn hover(
     let line = position.line as usize + 1;
     let col = position.character as usize + 1;
 
-    if let Ok(path) = uri.to_file_path() {
+    if let Ok(url) = Url::parse(uri.as_str())
+        && let Ok(path) = url.to_file_path()
+    {
         let path = std::fs::canonicalize(&path).unwrap_or(path);
         // Delegate to Core Logic
         if let Some(target_id) =

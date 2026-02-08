@@ -1,12 +1,15 @@
 use anyhow::Result;
 use lsp_types::*;
+use url::Url;
 
 pub fn document_symbol(
     blocks: &[crate::core::types::SpecBlock],
     params: DocumentSymbolParams,
 ) -> Result<Option<DocumentSymbolResponse>> {
     let uri = params.text_document.uri;
-    if let Ok(path) = uri.to_file_path() {
+    if let Ok(url) = Url::parse(uri.as_str())
+        && let Ok(path) = url.to_file_path()
+    {
         let path = std::fs::canonicalize(&path).unwrap_or(path);
         let symbols: Vec<DocumentSymbol> = blocks
             .iter()
@@ -72,6 +75,7 @@ pub fn workspace_symbol(
         })
         .filter_map(|b| {
             let uri = Url::from_file_path(&b.file_path).ok()?;
+            let uri = uri.as_str().parse::<Uri>().ok()?;
             let range = Range {
                 start: Position {
                     line: b.line_start as u32 - 1,
