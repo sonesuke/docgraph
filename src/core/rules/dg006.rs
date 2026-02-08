@@ -39,13 +39,21 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                         if let Some(min) = rule.min {
                             let count = sources
                                 .iter()
-                                .filter(|t| rule.targets.contains(t) || rule.targets.contains(&"*".to_string()))
+                                .filter(|t| {
+                                    rule.targets.contains(t)
+                                        || rule.targets.contains(&"*".to_string())
+                                })
                                 .count();
                             if count < min {
                                 let label = rule.context.as_deref().unwrap_or("be referenced by");
                                 let mut message = format!(
                                     "REQUIRED: Node '{}' (type {}) must {} at least {} {}. (Found {})",
-                                    block.id, prefix, label, min, if min > 1 { "nodes" } else { "node" }, count
+                                    block.id,
+                                    prefix,
+                                    label,
+                                    min,
+                                    if min > 1 { "nodes" } else { "node" },
+                                    count
                                 );
                                 if let Some(desc) = &rule.desc {
                                     message.push_str(&format!("\nReason: {}", desc));
@@ -69,13 +77,21 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                         if let Some(max) = rule.max {
                             let count = sources
                                 .iter()
-                                .filter(|t| rule.targets.contains(t) || rule.targets.contains(&"*".to_string()))
+                                .filter(|t| {
+                                    rule.targets.contains(t)
+                                        || rule.targets.contains(&"*".to_string())
+                                })
                                 .count();
                             if count > max {
                                 let label = rule.context.as_deref().unwrap_or("be referenced by");
                                 let mut message = format!(
                                     "LIMIT EXCEEDED: Node '{}' (type {}) can {} at most {} {}. (Found {})",
-                                    block.id, prefix, label, max, if max > 1 { "nodes" } else { "node" }, count
+                                    block.id,
+                                    prefix,
+                                    label,
+                                    max,
+                                    if max > 1 { "nodes" } else { "node" },
+                                    count
                                 );
                                 if let Some(desc) = &rule.desc {
                                     message.push_str(&format!("\nReason: {}", desc));
@@ -116,7 +132,12 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                             let label = rule.context.as_deref().unwrap_or("have relation to");
                             let mut message = format!(
                                 "REQUIRED: Node '{}' (type {}) must {} at least {} {}. (Found {})",
-                                block.id, prefix, label, min, if min > 1 { "nodes" } else { "node" }, count
+                                block.id,
+                                prefix,
+                                label,
+                                min,
+                                if min > 1 { "nodes" } else { "node" },
+                                count
                             );
                             if let Some(desc) = &rule.desc {
                                 message.push_str(&format!("\nReason: {}", desc));
@@ -142,7 +163,12 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                             let label = rule.context.as_deref().unwrap_or("have relation to");
                             let mut message = format!(
                                 "LIMIT EXCEEDED: Node '{}' (type {}) can {} at most {} {}. (Found {})",
-                                block.id, prefix, label, max, if max > 1 { "nodes" } else { "node" }, count
+                                block.id,
+                                prefix,
+                                label,
+                                max,
+                                if max > 1 { "nodes" } else { "node" },
+                                count
                             );
                             if let Some(desc) = &rule.desc {
                                 message.push_str(&format!("\nReason: {}", desc));
@@ -170,7 +196,7 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                 let target_type = edge.id.split(['-', '_']).next().unwrap_or(&edge.id);
 
                 let source_allows_all = allowed_outgoing_types.contains("*");
-                let target_accepts_all = config.nodes.get(target_type).map_or(false, |tc| {
+                let target_accepts_all = config.nodes.get(target_type).is_some_and(|tc| {
                     tc.rules
                         .iter()
                         .any(|r| r.dir == "from" && r.targets.contains(&"*".to_string()))
@@ -189,33 +215,47 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
                     let mut guidance = Vec::new();
                     for rule in &node_config.rules {
                         if rule.dir == "to" {
-                           let label = rule.context.as_deref().unwrap_or("reference");
-                           guidance.push(format!("\"{}\" {}", label, rule.targets.join("/")));
+                            let label = rule.context.as_deref().unwrap_or("reference");
+                            guidance.push(format!("\"{}\" {}", label, rule.targets.join("/")));
                         }
                     }
                     if !guidance.is_empty() {
-                        message.push_str(&format!("\n{} nodes typically: {}.", prefix, guidance.join(", ")));
+                        message.push_str(&format!(
+                            "\n{} nodes typically: {}.",
+                            prefix,
+                            guidance.join(", ")
+                        ));
                     }
 
                     // Check for reverse relationship hint
                     if let Some(target_config) = config.nodes.get(target_type) {
                         let mut reverse_allowed = false;
                         let mut reverse_label = "reference";
-                        
+
                         // Check if Target -> Source is allowed via direct rules
                         for target_rule in &target_config.rules {
-                            if target_rule.dir == "to" && (target_rule.targets.contains(&prefix.to_string()) || target_rule.targets.contains(&"*".to_string())) {
+                            if target_rule.dir == "to"
+                                && (target_rule.targets.contains(&prefix.to_string())
+                                    || target_rule.targets.contains(&"*".to_string()))
+                            {
                                 reverse_allowed = true;
-                                if let Some(ctx) = &target_rule.context { reverse_label = ctx; }
+                                if let Some(ctx) = &target_rule.context {
+                                    reverse_label = ctx;
+                                }
                             }
                         }
-                        
+
                         // Check if Source -> Target is allowed via Source's "from" rules (less likely but possible)
                         // Or if Target -> Source is allowed via Source's "from" rules
                         for source_rule in &node_config.rules {
-                            if source_rule.dir == "from" && (source_rule.targets.contains(&target_type.to_string()) || source_rule.targets.contains(&"*".to_string())) {
+                            if source_rule.dir == "from"
+                                && (source_rule.targets.contains(&target_type.to_string())
+                                    || source_rule.targets.contains(&"*".to_string()))
+                            {
                                 reverse_allowed = true;
-                                if let Some(ctx) = &source_rule.context { reverse_label = ctx; }
+                                if let Some(ctx) = &source_rule.context {
+                                    reverse_label = ctx;
+                                }
                             }
                         }
 
@@ -250,9 +290,9 @@ pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diag
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::path::PathBuf;
-    use crate::core::types::EdgeUse;
     use crate::core::config::{Config, NodeConfig, RuleConfig};
+    use crate::core::types::EdgeUse;
+    use std::path::PathBuf;
 
     fn create_block(id: &str, edges: Vec<&str>) -> SpecBlock {
         SpecBlock {
@@ -345,11 +385,9 @@ mod tests {
         let blocks_fail = vec![create_block("SYS-01", vec![])]; // No REQ points to it
         let diags_fail = check_strict_relations(&blocks_fail, &config);
         assert_eq!(diags_fail.len(), 1);
-        assert!(
-            diags_fail[0]
-                .message
-                .contains("REQUIRED: Node 'SYS-01' (type SYS) must be referenced by at least 1 node. (Found 0)")
-        );
+        assert!(diags_fail[0].message.contains(
+            "REQUIRED: Node 'SYS-01' (type SYS) must be referenced by at least 1 node. (Found 0)"
+        ));
 
         // Case 2: SYS has 1 incoming (Ok)
         let blocks_ok = vec![
@@ -426,7 +464,9 @@ mod tests {
         // Check "invalid" direction is ignored (no panic, no extra error)
         // Check "to" rule failed and included description
         assert_eq!(diags.len(), 1);
-        assert!(diags[0].message.contains("REQUIRED: Node 'REQ-01' (type REQ) must have relation to at least 1 node. (Found 0)"));
+        assert!(diags[0].message.contains(
+            "REQUIRED: Node 'REQ-01' (type REQ) must have relation to at least 1 node. (Found 0)"
+        ));
         assert!(diags[0].message.contains("Reason: Important Business Rule"));
     }
 }

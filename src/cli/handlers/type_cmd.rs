@@ -54,16 +54,21 @@ fn show_type_details(config: &Config, id: &str) -> ExitCode {
         println!("Rules:");
         for rule in &node_config.rules {
             let targets = rule.targets.join(", ");
-            let min = rule.min.map(|m: usize| m.to_string()).unwrap_or("-".to_string());
-            let max = rule.max.map(|m: usize| m.to_string()).unwrap_or("-".to_string());
+            let min = rule
+                .min
+                .map(|m: usize| m.to_string())
+                .unwrap_or("-".to_string());
+            let max = rule
+                .max
+                .map(|m: usize| m.to_string())
+                .unwrap_or("-".to_string());
             let desc = rule.desc.as_deref().unwrap_or("");
 
             println!(
                 "  {} [{}] min={} max={}: {}",
                 rule.dir, targets, min, max, desc
-                );
-            }
-
+            );
+        }
     } else {
         println!("No rules defined for this type.");
     }

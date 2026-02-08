@@ -721,7 +721,9 @@ This should be detected as unexpected.
 
         if let Err(e) = result {
             assert!(
-                e.contains("Missing required text") || e.contains("Pattern not found") || e.contains("Header text mismatch"),
+                e.contains("Missing required text")
+                    || e.contains("Pattern not found")
+                    || e.contains("Header text mismatch"),
                 "Error message should mention missing text or mismatch, got: {}",
                 e
             );

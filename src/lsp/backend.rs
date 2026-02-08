@@ -225,9 +225,15 @@ impl Backend {
         if let Some(root) = root_opt {
             let config = match config::Config::load(&root) {
                 Ok(c) => {
-                    self.log_message(format!("Config loaded successfully from {}. Node types: {}", root.display(), c.nodes.len()));
+                    self.log_message(format!(
+                        "Config loaded successfully from {}. Node types: {}",
+                        root.display(),
+                        c.nodes.len()
+                    ));
                     if c.nodes.is_empty() {
-                        self.log_message("Warning: config.nodes is empty. Check your docgraph.toml.");
+                        self.log_message(
+                            "Warning: config.nodes is empty. Check your docgraph.toml.",
+                        );
                     }
                     c
                 }

@@ -11,9 +11,12 @@ async fn e2e_rename() -> anyhow::Result<()> {
     let root_path = dir.path().canonicalize()?;
 
     let config_path = root_path.join("docgraph.toml");
-    fs::write(&config_path, r#"[nodes.REQ]
+    fs::write(
+        &config_path,
+        r#"[nodes.REQ]
 desc = "Requirement"
-"#)?;
+"#,
+    )?;
 
     // A defines REQ-001
     let file_a = root_path.join("a.md");
@@ -95,9 +98,12 @@ async fn e2e_rename_from_reference() -> anyhow::Result<()> {
     let root_path = dir.path().canonicalize()?;
 
     let config_path = root_path.join("docgraph.toml");
-    fs::write(&config_path, r#"[nodes.REQ]
+    fs::write(
+        &config_path,
+        r#"[nodes.REQ]
 desc = "Requirement"
-"#)?;
+"#,
+    )?;
 
     let file_a = root_path.join("a.md");
     let uri_a = format!("file://{}", file_a.to_str().unwrap());

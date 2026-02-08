@@ -57,9 +57,7 @@ mod tests {
     #[test]
     fn test_dg005_unknown_prefix() {
         let mut config = Config::default();
-        config
-            .nodes
-            .insert("REQ".to_string(), Default::default());
+        config.nodes.insert("REQ".to_string(), Default::default());
 
         let blocks = vec![create_block("UNK-01")];
         let diags = check_strict_node_types(&blocks, &config);
@@ -71,9 +69,7 @@ mod tests {
     #[test]
     fn test_dg005_known_prefix() {
         let mut config = Config::default();
-        config
-            .nodes
-            .insert("REQ".to_string(), Default::default());
+        config.nodes.insert("REQ".to_string(), Default::default());
 
         let blocks = vec![create_block("REQ-01")];
         let diags = check_strict_node_types(&blocks, &config);

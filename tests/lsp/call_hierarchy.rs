@@ -11,10 +11,13 @@ async fn e2e_call_hierarchy() -> anyhow::Result<()> {
     let root_path = dir.path().to_path_buf();
 
     let config_path = root_path.join("docgraph.toml");
-    fs::write(&config_path, r#"
+    fs::write(
+        &config_path,
+        r#"
 [nodes.REQ]
 desc = "Requirement"
-"#)?;
+"#,
+    )?;
 
     // A -> B
     let file_a = root_path.join("a.md");

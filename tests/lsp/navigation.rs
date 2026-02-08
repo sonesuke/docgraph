@@ -12,10 +12,13 @@ async fn e2e_definition_and_references() -> anyhow::Result<()> {
     let root_path = dir.path().to_path_buf();
 
     let config_path = root_path.join("docgraph.toml");
-    fs::write(&config_path, r#"
+    fs::write(
+        &config_path,
+        r#"
 [nodes.REQ]
 desc = "Requirement"
-"#)?;
+"#,
+    )?;
 
     // File A: Defines REQ-001
     let file_a_path = root_path.join("a.md");
