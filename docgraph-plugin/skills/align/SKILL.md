@@ -1,5 +1,5 @@
 ---
-name: refine
+name: align
 description: Deep Consistency Gate - Verify Vertical and Horizontal relationship integrity.
 ---
 
@@ -49,7 +49,7 @@ Propose changes based on analysis:
 - **Adjust Scope**: Propose narrowing or broadening the node to better fit its peers.
 - **Split/Merge**: If Horizontal consistency is broken, suggest structural changes.
 
-## Refinement Analysis Report
+## Alignment Analysis Report
 You **must** provide the analysis in the following format:
 
 ### Target
