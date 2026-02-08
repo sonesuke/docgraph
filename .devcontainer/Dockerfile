@@ -1,5 +1,10 @@
 FROM rust:1-slim-bookworm
 
+# Set UTF-8 locale
+ENV LANG=C.UTF-8 \
+    LANGUAGE=C.UTF-8 \
+    LC_ALL=C.UTF-8
+
 # Install Node.js and other dependencies as root
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
@@ -27,5 +32,5 @@ RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/ca
     && rustup component add rustfmt clippy llvm-tools-preview \
     && cargo binstall -y cargo-audit cargo-llvm-cov
 
-# Install Claude CLI as root
-RUN curl -fsSL https://claude.ai/install.sh | bash
+# Configure tmux with mouse support for all users
+RUN echo 'set -g mouse on' > /etc/skel/.tmux.conf
