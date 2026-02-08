@@ -7,6 +7,9 @@ description: Ensure ID naming conventions, consistency, and correct file placeme
 
 This skill provides a structured workflow to ensure that elements in the documentation graph are correctly named and placed.
 
+> [!IMPORTANT]
+> This skill must perform checks **strictly and rigorously**. Accuracy in ID naming, responsibility scope, and template adherence is critical for the integrity of the documentation graph. Do not overlook minor inconsistencies.
+
 > [!NOTE]
 > For detailed usage and available options of any `docgraph` subcommand, always refer to `docgraph --help` or `docgraph <SUBCOMMAND> --help`.
 
