@@ -1,7 +1,9 @@
 mod backend;
 mod handlers;
+mod uri_ext;
 
 pub use backend::Backend;
+pub use uri_ext::{uri_from_file_path, UriExt};
 
 use lsp_server::Connection;
 use lsp_types::{

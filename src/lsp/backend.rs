@@ -2,7 +2,7 @@ use crossbeam_channel::Sender;
 use dashmap::DashMap;
 use lsp_server::{Connection, Message, Notification, RequestId, Response};
 use lsp_types::{
-    Diagnostic, InitializeParams, Position, PublishDiagnosticsParams, Range, Url, WorkspaceFolder,
+    Diagnostic, InitializeParams, Position, PublishDiagnosticsParams, Range, Uri, WorkspaceFolder,
     notification::{
         DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument,
         Initialized, Notification as _, PublishDiagnostics,
@@ -17,6 +17,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
 use super::handlers;
+use super::uri_ext::{uri_from_file_path, UriExt};
 use crate::core::{collect, config, lint, types};
 
 pub struct Backend {
@@ -24,23 +25,23 @@ pub struct Backend {
     pub workspace_root: Arc<Mutex<Option<PathBuf>>>,
     pub blocks: Arc<Mutex<Vec<types::SpecBlock>>>,
     pub standalone_refs: Arc<Mutex<Vec<types::RefUse>>>,
-    pub documents: Arc<DashMap<Url, String>>,
+    pub documents: Arc<DashMap<Uri, String>>,
 }
 
 impl Backend {
     pub fn new(
         sender: Sender<Message>,
-        root_uri: Option<Url>,
+        root_uri: Option<Uri>,
         workspace_folders: Option<Vec<WorkspaceFolder>>,
     ) -> Self {
         let mut root = None;
         if let Some(uri) = root_uri {
-            if let Ok(path) = uri.to_file_path() {
+            if let Some(path) = uri.to_file_path() {
                 root = Some(std::fs::canonicalize(&path).unwrap_or(path));
             }
         } else if let Some(folders) = workspace_folders
             && let Some(folder) = folders.first()
-            && let Ok(path) = folder.uri.to_file_path()
+            && let Some(path) = folder.uri.to_file_path()
         {
             root = Some(std::fs::canonicalize(&path).unwrap_or(path));
         }
@@ -193,7 +194,7 @@ impl Backend {
         Ok(())
     }
 
-    fn publish_diagnostics(&self, uri: Url, diagnostics: Vec<Diagnostic>) -> anyhow::Result<()> {
+    fn publish_diagnostics(&self, uri: Uri, diagnostics: Vec<Diagnostic>) -> anyhow::Result<()> {
         let params = PublishDiagnosticsParams {
             uri,
             diagnostics,
@@ -209,10 +210,10 @@ impl Backend {
         if let Some(root) = root_opt {
             let config = config::Config::load(&root).unwrap_or_else(|_| config::Config::default());
 
-            // Create overrides map (convert DashMap<Url, String> to HashMap<PathBuf, String>)
+            // Create overrides map (convert DashMap<Uri, String> to HashMap<PathBuf, String>)
             let mut overrides = std::collections::HashMap::new();
             for entry in self.documents.iter() {
-                if let Ok(path) = entry.key().to_file_path() {
+                if let Some(path) = entry.key().to_file_path() {
                     // Try to canonicalize the path for consistent lookup
                     if let Ok(canon_path) = std::fs::canonicalize(&path) {
                         overrides.insert(canon_path, entry.value().clone());
@@ -248,7 +249,7 @@ impl Backend {
             }
             // Also open files
             for entry in self.documents.iter() {
-                if let Ok(path) = entry.key().to_file_path() {
+                if let Some(path) = entry.key().to_file_path() {
                     file_diagnostics.entry(path).or_default();
                 }
             }
@@ -278,7 +279,7 @@ impl Backend {
             }
 
             for (path, diags) in file_diagnostics {
-                if let Ok(uri) = Url::from_file_path(path) {
+                if let Some(uri) = uri_from_file_path(&path) {
                     let _ = self.publish_diagnostics(uri, diags);
                 }
             }

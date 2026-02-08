@@ -1,3 +1,4 @@
+use crate::lsp::uri_ext::{uri_from_file_path, UriExt};
 use anyhow::Result;
 use lsp_types::*;
 
@@ -11,7 +12,7 @@ pub fn rename(
     let line = position.line as usize + 1;
     let col = position.character as usize + 1;
 
-    if let Ok(path) = uri.to_file_path() {
+    if let Some(path) = uri.to_file_path() {
         let path = path.canonicalize().unwrap_or(path);
 
         // Delegate to Core Logic
@@ -20,11 +21,11 @@ pub fn rename(
         {
             let locations = crate::core::locate::find_references_msg(blocks, refs, &target_id);
 
-            let mut changes: std::collections::HashMap<Url, Vec<TextEdit>> =
+            let mut changes: std::collections::HashMap<Uri, Vec<TextEdit>> =
                 std::collections::HashMap::new();
 
             for loc in locations {
-                if let Ok(u) = Url::from_file_path(&loc.file_path) {
+                if let Some(u) = uri_from_file_path(&loc.file_path) {
                     let edit = TextEdit {
                         range: Range {
                             start: Position {

@@ -1,3 +1,4 @@
+use crate::lsp::uri_ext::{uri_from_file_path, UriExt};
 use anyhow::Result;
 use lsp_types::*;
 
@@ -11,7 +12,7 @@ pub fn references(
     let line = position.line as usize + 1;
     let col = position.character as usize + 1;
 
-    if let Ok(path) = uri.to_file_path() {
+    if let Some(path) = uri.to_file_path() {
         let path = std::fs::canonicalize(&path).unwrap_or(path);
         // Delegate to Core Logic
         if let Some(target_id) =
@@ -21,7 +22,7 @@ pub fn references(
             let mut locations = Vec::new();
 
             for res in results {
-                if let Ok(u) = Url::from_file_path(&res.file_path) {
+                if let Some(u) = uri_from_file_path(&res.file_path) {
                     locations.push(Location {
                         uri: u,
                         range: Range {
@@ -92,7 +93,7 @@ mod tests {
         ];
         let refs = vec![];
 
-        let uri = Url::from_file_path(&path).unwrap();
+        let uri = uri_from_file_path(&path).unwrap();
         // FR-01 is at line 10. <a id="FR-01"></a>. col 8 starts 'F'.
         let params = ReferenceParams {
             text_document_position: TextDocumentPositionParams {
@@ -179,7 +180,7 @@ mod tests {
         ];
         let refs = vec![];
 
-        let uri = Url::from_file_path(&path).unwrap();
+        let uri = uri_from_file_path(&path).unwrap();
         let params = ReferenceParams {
             text_document_position: TextDocumentPositionParams {
                 text_document: TextDocumentIdentifier { uri },
@@ -241,7 +242,7 @@ mod tests {
             col_end: 14,
         }];
 
-        let uri = Url::from_file_path(&path).unwrap();
+        let uri = uri_from_file_path(&path).unwrap();
         let params = ReferenceParams {
             text_document_position: TextDocumentPositionParams {
                 text_document: TextDocumentIdentifier { uri },
@@ -264,7 +265,7 @@ mod tests {
         // Should find the standalone ref in path2
         assert!(
             locs.iter()
-                .any(|l| l.uri.to_file_path() == Ok(path2.clone()))
+                .any(|l| l.uri.to_file_path() == Some(path2.clone()))
         );
     }
 
@@ -276,7 +277,7 @@ mod tests {
         let blocks = vec![];
         let refs = vec![];
 
-        let uri = Url::from_file_path(&path).unwrap();
+        let uri = uri_from_file_path(&path).unwrap();
         let params = ReferenceParams {
             text_document_position: TextDocumentPositionParams {
                 text_document: TextDocumentIdentifier { uri },

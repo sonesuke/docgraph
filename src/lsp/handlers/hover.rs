@@ -1,3 +1,4 @@
+use crate::lsp::uri_ext::UriExt;
 use anyhow::Result;
 use lsp_types::*;
 
@@ -11,7 +12,7 @@ pub fn hover(
     let line = position.line as usize + 1;
     let col = position.character as usize + 1;
 
-    if let Ok(path) = uri.to_file_path() {
+    if let Some(path) = uri.to_file_path() {
         let path = std::fs::canonicalize(&path).unwrap_or(path);
         // Delegate to Core Logic
         if let Some(target_id) =
