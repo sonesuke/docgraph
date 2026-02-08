@@ -17,16 +17,16 @@ List elements within the target scope to understand the current state. Use `docg
 
 ### 2. ID and Title Correspondence
 Verify if each ID is mnemonic and easily associated with its Title.
-- **Good**: `ID: FR-LOGIN, Title: Login Function`
-- **Bad**: `ID: FR-005, Title: Login Function` (if unreadable)
-- **Bad**: `ID: FR-LOGIN, Title: Export API` (mismatched)
+- **Good**: `ID: FR_LOGIN, Title: Login Function`
+- **Bad**: `ID: FR_005, Title: Login Function` (if unreadable)
+- **Bad**: `ID: FR_LOGIN, Title: Export API` (mismatched)
 
 ### 3. Prefix Consistency
-Verify if elements in the same category share the same prefix (e.g., `FR-`, `NFR-`, `UC-`, `MOD-`, `IF-`).
+Verify if elements in the same category share the same prefix (e.g., `FR_`, `NFR_`, `UC_`, `MOD_`, `IF_`).
 
 ### 4. File Placement
 Verify if the file location matches the ID prefix.
-- `FR-LOGIN` should be in `doc/requirements/functional/...`
+- `FR_LOGIN` should be in `doc/requirements/functional/...`
 
 ### 5. Remediation
 If issues are found, propose:

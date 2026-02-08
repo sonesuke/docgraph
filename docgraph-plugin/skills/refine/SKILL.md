@@ -26,7 +26,7 @@ This skill provides a structured workflow to verify responsibilities and ensure 
    - **Explain Overlap**: Clearly state what is overlapping and how.
    - **Propose Options**: Suggest merging, deleting, or restructuring.
 
-### Case 2: Input is a NODE_ID (e.g., FR-LOGIN, UC-CHECKOUT)
+### Case 2: Input is a NODE_ID (e.g., FR_LOGIN, UC_CHECKOUT)
 
 1. **Show Details**: Use `docgraph describe`.
 
