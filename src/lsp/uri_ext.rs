@@ -1,6 +1,7 @@
 use lsp_types::Uri;
 use std::borrow::Cow;
 use std::path::{Path, PathBuf};
+use std::str::FromStr;
 
 /// Extension trait for Uri to provide file path conversion methods
 /// that were removed when lsp-types migrated from url::Url to fluent_uri::Uri
@@ -55,21 +56,23 @@ pub fn uri_from_file_path(path: &Path) -> Option<Uri> {
     #[cfg(windows)]
     {
         // On Windows, use file:/// format
-        let path_str = path.to_string_lossy().replace('\\', "/");
+        let path_str = percent_encode_path(&path.to_string_lossy().replace('\\', "/"));
         let uri_str = format!("file:///{}", path_str);
         Uri::from_str(&uri_str).ok()
     }
 
     #[cfg(not(windows))]
     {
-        let uri_str = format!("file://{}", path.to_string_lossy());
+        let path_str = percent_encode_path(&path.to_string_lossy());
+        let uri_str = format!("file://{}", path_str);
         Uri::from_str(&uri_str).ok()
     }
 }
 
 /// Simple percent-decode for URI path components
+/// Properly handles UTF-8 multi-byte sequences
 fn percent_decode_path(s: &str) -> String {
-    let mut result = String::with_capacity(s.len());
+    let mut bytes = Vec::new();
     let mut chars = s.chars();
     
     while let Some(c) = chars.next() {
@@ -78,19 +81,47 @@ fn percent_decode_path(s: &str) -> String {
             let hex: String = chars.by_ref().take(2).collect();
             if hex.len() == 2 {
                 if let Ok(byte) = u8::from_str_radix(&hex, 16) {
-                    result.push(byte as char);
+                    bytes.push(byte);
                     continue;
                 }
             }
             // If parsing failed, just add the % and the chars we consumed
-            result.push('%');
-            result.push_str(&hex);
+            bytes.extend_from_slice(b"%");
+            bytes.extend_from_slice(hex.as_bytes());
         } else {
-            result.push(c);
+            // Regular ASCII character - can convert directly
+            if c.is_ascii() {
+                bytes.push(c as u8);
+            } else {
+                // Non-ASCII character - encode as UTF-8
+                let mut buf = [0u8; 4];
+                let str_slice = c.encode_utf8(&mut buf);
+                bytes.extend_from_slice(str_slice.as_bytes());
+            }
+        }
+    }
+    
+    // Convert accumulated bytes to String, replacing invalid UTF-8 with �
+    String::from_utf8_lossy(&bytes).into_owned()
+}
+
+/// Simple percent-encode for URI path components
+/// Encodes special characters except for /
+fn percent_encode_path(s: &str) -> String {
+    let mut result = String::with_capacity(s.len());
+    
+    for byte in s.as_bytes() {
+        match byte {
+            // Unreserved characters (RFC 3986)
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'.' | b'_' | b'~' | b'/' => {
+                result.push(*byte as char);
+            }
+            // Percent-encode everything else
+            _ => {
+                result.push_str(&format!("%{:02X}", byte));
+            }
         }
     }
     
     result
 }
-
-use std::str::FromStr;
