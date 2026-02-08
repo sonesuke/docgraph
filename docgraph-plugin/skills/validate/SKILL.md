@@ -1,9 +1,9 @@
 ---
-name: align
+name: validate
 description: Ensure ID naming conventions, consistency, and correct file placement.
 ---
 
-# Alignment Skill
+# Validation Skill
 
 This skill provides a structured workflow to ensure that elements in the documentation graph are correctly named and placed.
 
