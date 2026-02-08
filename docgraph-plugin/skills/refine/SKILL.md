@@ -7,24 +7,20 @@ description: Verify and refine element responsibilities (Supports TYPE_ID or NOD
 
 This skill provides a structured workflow to verify responsibilities and ensure the quality of the documentation graph.
 
+> [!NOTE]
+> For detailed usage and available options of any `docgraph` subcommand, always refer to `docgraph --help` or `docgraph <SUBCOMMAND> --help`.
+
 ## Workflow
 
 ### Case 1: Input is a TYPE_ID (e.g., FR, SYS, ACT, UC)
 
-1. **Show Type Definition**: Understand the rules and description of the type.
-   ```bash
-   docgraph type {{TARGET}}
-   ```
+1. **Show Type Definition**: Understand the rules and description of the type using `docgraph type`.
 
-2. **List All Elements**: Gather all instances of this type.
-   ```bash
-   docgraph list "{{TARGET}}*"
-   ```
+2. **List All Elements**: Gather all instances of this type using `docgraph list`.
 
 3. **Holistic Analysis (MECE)**: Verify if the elements are Mutually Exclusive and Collectively Exhaustive.
-   - Identify potential overlaps based on IDs and Titles.
-   - For overlaps, use `docgraph describe {{ID}}` to confirm detailed content.
-   - Check for gaps in coverage relative to the type's purpose.
+   - Identify potential overlaps and gaps.
+   - Use `docgraph describe` to confirm detailed content of suspicious nodes.
 
 4. **Remediation**:
    - **Explain Overlap**: Clearly state what is overlapping and how.
@@ -32,10 +28,7 @@ This skill provides a structured workflow to verify responsibilities and ensure 
 
 ### Case 2: Input is a NODE_ID (e.g., FR-LOGIN, UC-CHECKOUT)
 
-1. **Show Details**:
-   ```bash
-   docgraph describe {{TARGET}}
-   ```
+1. **Show Details**: Use `docgraph describe`.
 
 2. **SRP Check (Single Responsibility Principle)**:
    - **Too many responsibilities?**: Does this single node try to do too much?
