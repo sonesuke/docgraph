@@ -1,5 +1,5 @@
 {
-    "name": "docgraph-plugin",
+    "name": "docgraph",
     "description": "Docgraph plugin for Claude",
     "version": "0.1.0",
     "author": {
