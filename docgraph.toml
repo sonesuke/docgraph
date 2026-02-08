@@ -36,7 +36,7 @@ rules = [
 [references.ACT]
 # Actor is derived from Use Case
 rules = [
-  { dir = "from", targets = ["UC"], min = 1, desc = "System actors must be involved in at least one use case" }
+  { dir = "from", targets = ["UC"], min = 1, desc = "System actors must be involved in at least one use case", context = "involved in" }
 ]
 
 [references.IF]
