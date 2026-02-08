@@ -17,6 +17,7 @@
     "customizations": {
         "vscode": {}
     },
+    "remoteUser": "vscode",
     "postCreateCommand": "bash .devcontainer/post-create.sh",
     "waitFor": "postCreateCommand"
 }

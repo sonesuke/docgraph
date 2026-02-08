@@ -8,6 +8,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     pkg-config \
     libssl-dev \
     ripgrep \
+    tmux \
     vim \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
