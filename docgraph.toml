@@ -42,9 +42,9 @@ rules = [
 [references.IF]
 # Interface is derived from Use Case and Functional Requirement
 rules = [
-  { dir = "from", targets = ["UC"], min = 1, desc = "Exposed interfaces must be justified by at least one business use case" },
-  { dir = "from", targets = ["FR"], min = 1, desc = "Interfaces must be defined by at least one functional requirement" },
-  { dir = "to", targets = ["MOD"], min = 1, desc = "Interface specifications must be realized by at least one module (MOD) to ensure implementation" }
+  { dir = "from", targets = ["UC"], min = 1, desc = "Exposed interfaces must be justified by at least one business use case", context = "justified by" },
+  { dir = "from", targets = ["FR"], min = 1, desc = "Interfaces must be defined by at least one functional requirement", context = "defined by" },
+  { dir = "to", targets = ["MOD"], min = 1, desc = "Interface specifications must be realized by at least one module (MOD) to ensure implementation", context = "realized by" }
 ]
 
 # ========== Specification Relations ==========
@@ -52,11 +52,11 @@ rules = [
 [references.FR]
 # Functional Requirement is derived from Use Case/Constraint and derives further requirements or architecture
 rules = [
-  { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Functional requirements are derived from business needs (UC) or constraints (CON) to clarify their existence" },
-  { dir = "to", targets = ["MOD"], min = 1, desc = "Each functional requirement must be realized by at least one module (MOD) to ensure implementation" },
-  { dir = "to", targets = ["NFR"], min = 0, desc = "Functional requirements may derive non-functional requirements (NFR)" },
-  { dir = "to", targets = ["IF"], min = 0, desc = "Functional requirements may define interfaces (IF)" },
-  { dir = "to", targets = ["CC"], min = 0, desc = "Functional requirements may be reflected in cross-cutting concerns (CC)" }
+  { dir = "from", targets = ["UC", "CON"], min = 1, desc = "Functional requirements are derived from business needs (UC) or constraints (CON) to clarify their existence", context = "derived from" },
+  { dir = "to", targets = ["MOD"], min = 1, desc = "Each functional requirement must be realized by at least one module (MOD) to ensure implementation", context = "realized by" },
+  { dir = "to", targets = ["NFR"], min = 0, desc = "Functional requirements may derive non-functional requirements (NFR)", context = "derives" },
+  { dir = "to", targets = ["IF"], min = 0, desc = "Functional requirements may define interfaces (IF)", context = "defines" },
+  { dir = "to", targets = ["CC"], min = 0, desc = "Functional requirements may be reflected in cross-cutting concerns (CC)", context = "reflected in" }
 ]
 
 [references.NFR]
