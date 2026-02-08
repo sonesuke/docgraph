@@ -6,10 +6,40 @@
 
 The `docgraph.toml` file at the project root defines the validation rules and workspace behavior.
 
+<<<<<<< HEAD
 **Specifications:**
 
 - **File Path**: `docgraph.toml` (Project Root)
 - **Format**: TOML
+=======
+**Configuration Structure:**
+>>>>>>> origin/main
+
+### Realized by
+
+<<<<<<< HEAD
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
+=======
+[node_types]
+UC = { desc = "Use Case" }
+FR = { desc = "Functional Requirement" }
+
+[references.UC]
+rules = [
+  { dir = "to", targets = ["FR"], min = 1, desc = "Use cases must derive functional requirements" }
+]
+```
+
+**Settings:**
+
+| Attribute      | Type           | Description                                                  |
+| :------------- | :------------- | :----------------------------------------------------------- |
+| `doc_types`    | `List<String>` | Node types that are exempt from strict relation checks.      |
+| `[node_types]` | `Table`        | Defines allowed prefixes for nodes.                          |
+| `[references]` | `Table`        | Defines constraints on how different node types can connect. |
+
+**Note:** Strict node type and strict relation validation are always enabled and cannot be disabled.
+>>>>>>> origin/main
 
 ### Realized by
 
