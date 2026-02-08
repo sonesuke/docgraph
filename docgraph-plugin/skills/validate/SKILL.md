@@ -41,7 +41,7 @@ Verify if the node's content follows the defined template and structure rules.
    - Do list items (dependencies) match the expected patterns?
    - Is the overall content consistent with the type's purpose?
 
-### 6. Single Responsibility Principle (SRP) Check (NEW)
+### 6. Single Responsibility Principle (SRP) Check
 Verify if the node represents a single responsibility at the appropriate granularity for its type.
 - **Goal**: One ID should correspond to one clear concept or requirement.
 - **Check**: Does this node try to address multiple unrelated issues? 
