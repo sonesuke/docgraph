@@ -11,7 +11,9 @@ async fn e2e_rename() -> anyhow::Result<()> {
     let root_path = dir.path().canonicalize()?;
 
     let config_path = root_path.join("docgraph.toml");
-    fs::write(&config_path, r#"[graph]"#)?;
+    fs::write(&config_path, r#"[nodes.REQ]
+desc = "Requirement"
+"#)?;
 
     // A defines REQ-001
     let file_a = root_path.join("a.md");
@@ -77,10 +79,6 @@ async fn e2e_rename() -> anyhow::Result<()> {
     assert_eq!(edits_a[0].get("newText").unwrap(), "REQ-999");
 
     // B: [REQ-001](a.md#REQ-001) -> [REQ-999](a.md#REQ-999)
-    // Depending on implementation, this might be 1 or 2 edits.
-    // SpecBlock normally tracks the *link* as an edge.
-    // If our Edge logic captures the whole link, or just the ID parts?
-    // Let's print to see (in a real scenario), but here we assume it finds the ID usages.
     assert!(!edits_b.is_empty());
     for edit in edits_b {
         assert_eq!(edit.get("newText").unwrap(), "REQ-999");
@@ -97,7 +95,9 @@ async fn e2e_rename_from_reference() -> anyhow::Result<()> {
     let root_path = dir.path().canonicalize()?;
 
     let config_path = root_path.join("docgraph.toml");
-    fs::write(&config_path, r#"[graph]"#)?;
+    fs::write(&config_path, r#"[nodes.REQ]
+desc = "Requirement"
+"#)?;
 
     let file_a = root_path.join("a.md");
     let uri_a = format!("file://{}", file_a.to_str().unwrap());

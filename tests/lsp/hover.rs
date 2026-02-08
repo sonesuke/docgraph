@@ -11,7 +11,10 @@ async fn e2e_hover() -> anyhow::Result<()> {
     let root_path = dir.path().to_path_buf();
 
     let config_path = root_path.join("docgraph.toml");
-    fs::write(&config_path, r#"[graph]"#)?;
+    fs::write(&config_path, r#"
+[nodes.REQ]
+desc = "Requirement"
+"#)?;
 
     let file_path = root_path.join("test.md");
     let file_uri = format!("file://{}", file_path.to_str().unwrap());

@@ -16,7 +16,7 @@ async fn e2e_diagnostics_and_hover() -> anyhow::Result<()> {
     fs::write(
         &config_path,
         r#"
-[node_types.REQ]
+[nodes.REQ]
 desc = "Requirement"
     "#,
     )?;
