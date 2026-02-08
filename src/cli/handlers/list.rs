@@ -24,9 +24,10 @@ fn try_list(query: String, path: PathBuf) -> anyhow::Result<ExitCode> {
     for block in blocks {
         if re.is_match(&block.id) {
             println!(
-                "{} : {}",
+                "{} : {} ({})",
                 block.id,
-                block.name.as_deref().unwrap_or("No description")
+                block.name.as_deref().unwrap_or("No description"),
+                block.file_path.display()
             );
         }
     }
