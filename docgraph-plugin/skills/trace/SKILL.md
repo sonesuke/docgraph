@@ -67,6 +67,15 @@ You **must** provide the analysis in the following format:
 - **Continuity**: [Evidence of drift or preservation]
 - **Traversal**: [List identified paths]
 
+### Quality Gate Checklist
+In your final report, you **must** include this checklist to demonstrate realization integrity:
+
+- [ ] **Prerequisite PASS**: The node has successfully cleared `validate` and `align` skills.
+- [ ] **Terminal Reachability**: At least one downstream path reaches a realizable terminal endpoint.
+- [ ] **Abstraction Monotonicity**: Abstraction level decreases or stays same; no forward-jumps to higher abstraction.
+- [ ] **Semantic Continuity**: Core intent is preserved, not diluted or drifted, through to the terminal.
+- [ ] **Realizability**: Terminal nodes have concrete definitions sufficient for implementation.
+
 ## Final Decision
 ### Decision Semantics
 - **PASS**: At least one path is complete, monotonic, semantically coherent, and realizable.
