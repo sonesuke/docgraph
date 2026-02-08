@@ -75,6 +75,7 @@ All notable changes to this project will be documented in this file.
 - Use devcontainers/ci for release workflow (#70)
 - *(dependabot)* Add zed-extension config (#71)
 
+
 ## [0.2.1] - 2026-02-06
 
 ### Bug Fixes
