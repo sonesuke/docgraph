@@ -18,4 +18,5 @@ The system follows a strict layered architecture to separate concerns and ensure
 
 ### Decided by
 
-- [ADR_LAYERED_ARCH (Layered Architecture)](../../decisions/layered-architecture.md#ADR_LAYERED_ARCH) To organize code structure.
+- [ADR_LAYERED_ARCH (Layered Architecture)](../../decisions/layered-architecture.md#ADR_LAYERED_ARCH) To organize code
+  structure.

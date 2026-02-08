@@ -6,7 +6,8 @@ This document defines standardized development practices and environments for th
 
 ## Development Environment
 
-We provide a standardized development environment using VS Code Dev Containers to ensure consistency across all contributors and the CI pipeline.
+We provide a standardized development environment using VS Code Dev Containers to ensure consistency across all
+contributors and the CI pipeline.
 
 Defined in [.devcontainer/devcontainer.json](../../../.devcontainer/devcontainer.json).
 
@@ -18,13 +19,15 @@ Defined in [.devcontainer/devcontainer.json](../../../.devcontainer/devcontainer
 
 **Performance:**
 
-- **Image Size**: The Dev Container image should be kept as small as possible to ensure fast CI/CD execution and minimize local disk usage.
+- **Image Size**: The Dev Container image should be kept as small as possible to ensure fast CI/CD execution and
+  minimize local disk usage.
   - Use minimal base images (e.g., `slim` variants).
   - Remove unnecessary build artifacts and caches (e.g., `apt-get clean`).
 
 ### Decided by
 
-- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY) To ensure consistent development experience.
+- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY) To ensure consistent
+  development experience.
 
 ### Realized by
 
@@ -36,7 +39,8 @@ Defined in [.devcontainer/devcontainer.json](../../../.devcontainer/devcontainer
 
 ## Commit Messages
 
-We follow the **Conventional Commits** specification for all commit messages. This enables automated changelog generation and versioning.
+We follow the **Conventional Commits** specification for all commit messages. This enables automated changelog
+generation and versioning.
 
 **Format:**
 

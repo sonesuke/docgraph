@@ -6,7 +6,10 @@ The `docgraph` VS Code extension acts as a bridge between the editor and the `do
 
 ## LSP Client Integration
 
-The extension, distributed via [VS Code Marketplace](../../requirements/interfaces/interfaces.md#IF_VSCODE_MARKETPLACE), SHALL implement a Language Server Protocol (LSP) client that establishes communication with the `docgraph` binary running in LSP mode (`docgraph lsp`) and exposes features via [VS Code UI](../../requirements/interfaces/interfaces.md#IF_VSCODE_UI).
+The extension, distributed via [VS Code Marketplace](../../requirements/interfaces/interfaces.md#IF_VSCODE_MARKETPLACE),
+SHALL implement a Language Server Protocol (LSP) client that establishes communication with the `docgraph` binary
+running in LSP mode (`docgraph lsp`) and exposes features via
+[VS Code UI](../../requirements/interfaces/interfaces.md#IF_VSCODE_UI).
 
 ### Realized by
 
@@ -21,7 +24,8 @@ The extension, distributed via [VS Code Marketplace](../../requirements/interfac
 
 ## Binary Path Configuration
 
-The extension SHALL provide a setting (`docgraph.binaryPath`) allowing the user to specify the absolute path to the `docgraph` executable. If not specified, it SHALL attempt to find the binary in the system `PATH`.
+The extension SHALL provide a setting (`docgraph.binaryPath`) allowing the user to specify the absolute path to the
+`docgraph` executable. If not specified, it SHALL attempt to find the binary in the system `PATH`.
 
 ### Realized by
 
@@ -35,7 +39,8 @@ The extension SHALL provide a setting (`docgraph.binaryPath`) allowing the user 
 
 ## Markdown Activation
 
-The extension SHALL activate automatically when a workspace contains Markdown files (`*.md`) or when a Markdown file is opened. It SHALL associate its LSP capabilities exclusively with the `markdown` document selector.
+The extension SHALL activate automatically when a workspace contains Markdown files (`*.md`) or when a Markdown file is
+opened. It SHALL associate its LSP capabilities exclusively with the `markdown` document selector.
 
 ### Realized by
 
@@ -45,7 +50,8 @@ The extension SHALL activate automatically when a workspace contains Markdown fi
 
 ## Server Lifecycle Commands
 
-The extension SHALL provide a command to restart the `docgraph` language server manually, which is useful when the binary is updated or the configuration changes.
+The extension SHALL provide a command to restart the `docgraph` language server manually, which is useful when the
+binary is updated or the configuration changes.
 
 ### Realized by
 

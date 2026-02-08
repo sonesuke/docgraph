@@ -14,7 +14,8 @@ The system must satisfy strict performance requirements to support large codebas
 
 ## Open Source Software (OSS)
 
-This project is Open Source Software. To facilitate community contribution and ensure long-term sustainability, we MUST adhere to de-facto industry standards for development workflows and project structure.
+This project is Open Source Software. To facilitate community contribution and ensure long-term sustainability, we MUST
+adhere to de-facto industry standards for development workflows and project structure.
 
 ### Realized by
 
@@ -24,7 +25,8 @@ This project is Open Source Software. To facilitate community contribution and e
 
 ## Solo Development
 
-This project is developed by a single individual. To maintain quality and velocity with limited resources, automation is mandatory.
+This project is developed by a single individual. To maintain quality and velocity with limited resources, automation is
+mandatory.
 
 ### Realized by
 

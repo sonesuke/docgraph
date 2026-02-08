@@ -19,4 +19,5 @@ CLI and LSP handlers import from Core, but Core never imports from handlers.
 
 ### Decided by
 
-- [ADR_LAYERED_ARCH (Layered Architecture)](../../decisions/layered-architecture.md#ADR_LAYERED_ARCH) To enforce directional dependency.
+- [ADR_LAYERED_ARCH (Layered Architecture)](../../decisions/layered-architecture.md#ADR_LAYERED_ARCH) To enforce
+  directional dependency.

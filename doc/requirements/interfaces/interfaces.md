@@ -33,9 +33,11 @@ The `docgraph` CLI provides commands for linting, graph generation, and analysis
 
 ## Interface: Claude Code Plugin
 
-The Docgraph Claude plugin provides a specialized interface for Claude Code, enabling the AI agent to perform complex documentation analysis and manipulation.
+The Docgraph Claude plugin provides a specialized interface for Claude Code, enabling the AI agent to perform complex
+documentation analysis and manipulation.
 
-The interface acts as a high-level wrapper around the Docgraph core functions, tailored for the agentic capabilities of Claude. It leverages the Model Context Protocol (MCP) to expose tools and resources.
+The interface acts as a high-level wrapper around the Docgraph core functions, tailored for the agentic capabilities of
+Claude. It leverages the Model Context Protocol (MCP) to expose tools and resources.
 
 **Exposed Capabilities:**
 

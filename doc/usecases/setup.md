@@ -17,8 +17,10 @@ The developer sets up the development environment manually on their local machin
 
 ### Requirements
 
-- [FR_INSTALL_MANUAL (Manual Installation)](../requirements/functional/installation.md#FR_INSTALL_MANUAL) Required for users choosing not to use automated scripts
-- [FR_CORE_AUDIT (Audit Logging)](../requirements/functional/core.md#FR_CORE_AUDIT) Ensures installation events are tracked for security
+- [FR_INSTALL_MANUAL (Manual Installation)](../requirements/functional/installation.md#FR_INSTALL_MANUAL) Required for
+  users choosing not to use automated scripts
+- [FR_CORE_AUDIT (Audit Logging)](../requirements/functional/core.md#FR_CORE_AUDIT) Ensures installation events are
+  tracked for security
 
 ### Flow
 
@@ -43,7 +45,8 @@ The developer installs the `docgraph` CLI binary using automated scripts.
 
 ### Requirements
 
-- [FR_INSTALL_BINARY (Binary Installation Support)](../requirements/functional/installation.md#FR_INSTALL_BINARY) Provides a fast and automated way to set up the CLI
+- [FR_INSTALL_BINARY (Binary Installation Support)](../requirements/functional/installation.md#FR_INSTALL_BINARY)
+  Provides a fast and automated way to set up the CLI
 
 ### Flow
 
@@ -68,7 +71,8 @@ The developer installs the Docgraph plugin in Claude Desktop.
 
 ### Requirements
 
-- [FR_CLAUDE_INSTALL (Claude Plugin Installation)](../requirements/functional/claude.md#FR_CLAUDE_INSTALL) Mandatory for enabling Docgraph within Claude Desktop
+- [FR_CLAUDE_INSTALL (Claude Plugin Installation)](../requirements/functional/claude.md#FR_CLAUDE_INSTALL) Mandatory for
+  enabling Docgraph within Claude Desktop
 
 ### Flow
 
@@ -93,16 +97,18 @@ The developer installs the `docgraph` VS Code extension.
 
 ### Requirements
 
-- [FR_VSC_BINARY_PATH (Binary Path Configuration)](../requirements/functional/vscode.md#FR_VSC_BINARY_PATH) Enables the extension to find the docgraph engine
-- [FR_VSC_MARKDOWN_ACTIVATION (Markdown Activation)](../requirements/functional/vscode.md#FR_VSC_MARKDOWN_ACTIVATION) Restricts extension logic to Markdown files
-- [FR_VSC_SERVER_LIFECYCLE (Server Lifecycle Commands)](../requirements/functional/vscode.md#FR_VSC_SERVER_LIFECYCLE) Allows manual control over the LSP server
+- [FR_VSC_BINARY_PATH (Binary Path Configuration)](../requirements/functional/vscode.md#FR_VSC_BINARY_PATH) Enables the
+  extension to find the docgraph engine
+- [FR_VSC_MARKDOWN_ACTIVATION (Markdown Activation)](../requirements/functional/vscode.md#FR_VSC_MARKDOWN_ACTIVATION)
+  Restricts extension logic to Markdown files
+- [FR_VSC_SERVER_LIFECYCLE (Server Lifecycle Commands)](../requirements/functional/vscode.md#FR_VSC_SERVER_LIFECYCLE)
+  Allows manual control over the LSP server
 - [FR_CORE_AUTH (Authentication)](../requirements/functional/core.md#FR_CORE_AUTH) Securely identifies the developer
 
 ### Flow
 
 1. Developer downloads the VSIX file.
 2. Developer installs the extension in VS Code.
-
 
 ---
 
@@ -122,7 +128,8 @@ The developer installs the `docgraph` Zed extension.
 
 ### Requirements
 
-- [FR_INSTALL_EXT_ZED (Zed Editor Extension)](../requirements/functional/installation.md#FR_INSTALL_EXT_ZED) Enables Docgraph assistance within the Zed editor
+- [FR_INSTALL_EXT_ZED (Zed Editor Extension)](../requirements/functional/installation.md#FR_INSTALL_EXT_ZED) Enables
+  Docgraph assistance within the Zed editor
 
 ### Flow
 

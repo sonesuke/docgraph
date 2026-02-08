@@ -16,15 +16,19 @@ The developer writes specifications in Markdown using anchor heading format.
 
 ### Requirements
 
-- [FR_CORE_UNIQUE (Unique Node IDs)](../requirements/functional/core.md#FR_CORE_UNIQUE) Preventing ambiguity in requirement references
-- [FR_CORE_VALID_REF (Valid References)](../requirements/functional/core.md#FR_CORE_VALID_REF) Ensuring internal consistency of the documentation graph
-- [FR_CORE_TEMPLATE_VALIDATION (Template Validation)](../requirements/functional/core.md#FR_CORE_TEMPLATE_VALIDATION) Ensuring documentation follows defined structural templates
-- [FR_CORE_CONFIGURATION (Configuration)](../requirements/functional/core.md#FR_CORE_CONFIGURATION) Customizing workspace behavior via docgraph.toml
-- [FR_DEV_STANDARDS (Development Standards)](../requirements/functional/development.md#FR_DEV_STANDARDS) Ensuring consistent commit and versioning practices
+- [FR_CORE_UNIQUE (Unique Node IDs)](../requirements/functional/core.md#FR_CORE_UNIQUE) Preventing ambiguity in
+  requirement references
+- [FR_CORE_VALID_REF (Valid References)](../requirements/functional/core.md#FR_CORE_VALID_REF) Ensuring internal
+  consistency of the documentation graph
+- [FR_CORE_TEMPLATE_VALIDATION (Template Validation)](../requirements/functional/core.md#FR_CORE_TEMPLATE_VALIDATION)
+  Ensuring documentation follows defined structural templates
+- [FR_CORE_CONFIGURATION (Configuration)](../requirements/functional/core.md#FR_CORE_CONFIGURATION) Customizing
+  workspace behavior via docgraph.toml
+- [FR_DEV_STANDARDS (Development Standards)](../requirements/functional/development.md#FR_DEV_STANDARDS) Ensuring
+  consistent commit and versioning practices
 
 ### Flow
 
 1. Developer opens a Markdown file.
 2. Developer adds an anchor tag before a heading.
 3. Developer defines properties or relationships using Markdown links.
-

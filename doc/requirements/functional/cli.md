@@ -4,7 +4,8 @@
 
 ## Lint Command
 
-The `lint` command shall parse all Markdown files in the target directory, build the graph, and report any violations of validation rules via the [Command Line Interface](../../requirements/interfaces/interfaces.md#IF_CLI).
+The `lint` command shall parse all Markdown files in the target directory, build the graph, and report any violations of
+validation rules via the [Command Line Interface](../../requirements/interfaces/interfaces.md#IF_CLI).
 
 ### Realized by
 
@@ -27,7 +28,8 @@ The `graph` command shall output the graph structure in JSON format.
 
 The `list` command shall output nodes matching a specific query with their names.
 
-The query can contain wildcards (`*` and `?`). If no wildcards are present, the command performs a prefix match (forward match).
+The query can contain wildcards (`*` and `?`). If no wildcards are present, the command performs a prefix match (forward
+match).
 
 **Usage:**
 

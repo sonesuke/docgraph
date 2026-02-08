@@ -13,7 +13,8 @@ The system must be highly performant to ensure a smooth user experience, even wi
 
 ### Codified in (Optional)
 
-- [CC_PERF_TESTING (4. Performance Testing)](../../architecture/design/testing.md#CC_PERF_TESTING) Defines performance testing standards
+- [CC_PERF_TESTING (4. Performance Testing)](../../architecture/design/testing.md#CC_PERF_TESTING) Defines performance
+  testing standards
 
 ---
 

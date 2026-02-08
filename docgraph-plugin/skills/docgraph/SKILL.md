@@ -110,13 +110,13 @@ These commands are workflows defined specifically for this plugin to assist with
 
 ### `/docgraph-plugin:align` - Organize and Rename Elements
 
-Executes the alignment workflow defined in `commands/align.md`.
-Ensures naming conventions, consistency, and correct file placement.
+Executes the alignment workflow defined in `commands/align.md`. Ensures naming conventions, consistency, and correct
+file placement.
 
 ### `/docgraph-plugin:refine` - Refine Structure and Responsibilities
 
-Executes the refinement workflow defined in `commands/refine.md`.
-Verifies structure, MECE, and SRP (Single Responsibility Principle) with detailed analysis.
+Executes the refinement workflow defined in `commands/refine.md`. Verifies structure, MECE, and SRP (Single
+Responsibility Principle) with detailed analysis.
 
 ## Workflow Recommendations
 

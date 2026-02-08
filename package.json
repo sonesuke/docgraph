@@ -1,0 +1,29 @@
+{
+  "name": "docgraph",
+  "version": "1.0.0",
+  "description": "[![CI](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml/badge.svg)](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml) [![Security audit](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml/badge.svg)](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml) [![Coverage](https://img.shields.io/badge/coverage-view-blue)](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml)",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format:md": "prettier --write \"**/*.md\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sonesuke/docgraph.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sonesuke/docgraph/issues"
+  },
+  "homepage": "https://github.com/sonesuke/docgraph#readme",
+  "devDependencies": {
+    "prettier": "^3.8.1"
+  }
+}

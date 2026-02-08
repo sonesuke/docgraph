@@ -12,7 +12,8 @@ The system uses a unified error handling strategy based on the `Result` type and
 
 **Overview:**
 
-Error handling in `docgraph` follows a **boundary-based strategy**: typed errors in the core library, contextual errors in binaries.
+Error handling in `docgraph` follows a **boundary-based strategy**: typed errors in the core library, contextual errors
+in binaries.
 
 **The Rule:**
 
@@ -75,7 +76,8 @@ Errors automatically convert across boundaries:
 
 ### Decided by
 
-- [ADR_ERROR_HANDLING (Error Handling Strategy: thiserror for Core, anyhow for Binaries)](../../decisions/error-handling.md#ADR_ERROR_HANDLING) To unify error reporting.
+- [ADR_ERROR_HANDLING (Error Handling Strategy: thiserror for Core, anyhow for Binaries)](../../decisions/error-handling.md#ADR_ERROR_HANDLING)
+  To unify error reporting.
 
 ### Realized by
 

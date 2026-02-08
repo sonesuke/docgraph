@@ -66,8 +66,10 @@ CLI Handlers → Core ← LSP Handlers
 
 This provides:
 
-- **Interface Flexibility**: New interfaces can be added without modifying Core (e.g., `src/api/handlers/`, `src/github/handlers/`)
-- **Change Isolation**: UI changes don't affect business logic (changing CLI output format only modifies `src/cli/handlers/`)
+- **Interface Flexibility**: New interfaces can be added without modifying Core (e.g., `src/api/handlers/`,
+  `src/github/handlers/`)
+- **Change Isolation**: UI changes don't affect business logic (changing CLI output format only modifies
+  `src/cli/handlers/`)
 - **Core Stability**: Core validation logic remains stable across interface changes
 
 ### Trade-offs
@@ -77,7 +79,9 @@ This provides:
 
 ## Context
 
-`docgraph` is a tool for building and validating knowledge graphs from Markdown files. It needs to support multiple interfaces (CLI, LSP) while sharing the same core logic, avoiding code duplication, and maintaining high maintainability.
+`docgraph` is a tool for building and validating knowledge graphs from Markdown files. It needs to support multiple
+interfaces (CLI, LSP) while sharing the same core logic, avoiding code duplication, and maintaining high
+maintainability.
 
 ### Example: `check` Command Flow
 

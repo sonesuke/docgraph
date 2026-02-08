@@ -20,7 +20,8 @@ Request handlers should be "thin," delegating business logic to core modules.
 
 ### Decided by
 
-- [ADR_THIN_HANDLERS (Thin Handlers)](../../decisions/thin-handlers.md#ADR_THIN_HANDLERS) To maintain separation of concerns.
+- [ADR_THIN_HANDLERS (Thin Handlers)](../../decisions/thin-handlers.md#ADR_THIN_HANDLERS) To maintain separation of
+  concerns.
 
 ### Realized by
 

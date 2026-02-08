@@ -2,7 +2,8 @@
 
 # Error Handling Strategy: thiserror for Core, anyhow for Binaries
 
-Defines the error handling strategy across the Docgraph architecture, using `thiserror` for the core library and `anyhow` for binary crates (CLI, LSP).
+Defines the error handling strategy across the Docgraph architecture, using `thiserror` for the core library and
+`anyhow` for binary crates (CLI, LSP).
 
 ## Decision
 
@@ -86,7 +87,8 @@ fn to_jsonrpc_error(err: anyhow::Error) -> jsonrpc::Error {
 
 ## Rationale
 
-We selected this hybrid approach to balance type safety in the core library with development velocity and error context in the application layers.
+We selected this hybrid approach to balance type safety in the core library with development velocity and error context
+in the application layers.
 
 ### 1. Core Library: thiserror (Typed Errors)
 
@@ -125,7 +127,8 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #### 2. CLI Binary: anyhow (Contextual Reporting)
 
-**Why**: CLI is the final consumer - errors are displayed to users and then the program exits. We need **rich context** more than type safety.
+**Why**: CLI is the final consumer - errors are displayed to users and then the program exits. We need **rich context**
+more than type safety.
 
 **Benefits**:
 

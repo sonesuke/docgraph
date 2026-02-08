@@ -13,17 +13,20 @@ The system SHALL provide an automated validation pipeline to ensure document gra
 ### Codified in (Optional)
 
 - [CC_CICD (CI/CD Pipeline)](../../architecture/design/cicd.md#CC_CICD) Ensures automated validation
-- [CC_DEV_ENV (Development Environment)](../../architecture/design/development-norm.md#CC_DEV_ENV) Defines development environment standards
+- [CC_DEV_ENV (Development Environment)](../../architecture/design/development-norm.md#CC_DEV_ENV) Defines development
+  environment standards
 
 ### Decided by (Optional)
 
-- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY) Decision to align CI and dev environments
+- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY) Decision to align CI
+  and dev environments
 
 <a id="FR_DEV_STANDARDS"></a>
 
 ## Development Standards
 
-The project SHALL adhere to standardized development practices to ensure maintainability and automated release management.
+The project SHALL adhere to standardized development practices to ensure maintainability and automated release
+management.
 
 - **Commit Messages**: MUST follow the Conventional Commits specification.
 - **Versioning**: MUST follow Semantic Versioning (SemVer).
@@ -34,5 +37,7 @@ The project SHALL adhere to standardized development practices to ensure maintai
 
 ### Codified in (Optional)
 
-- [CC_CONVENTIONAL_COMMITS (Commit Messages)](../../architecture/design/development-norm.md#CC_CONVENTIONAL_COMMITS) Standardizes commit message format
-- [CC_SEMANTIC_VERSIONING (Versioning)](../../architecture/design/development-norm.md#CC_SEMANTIC_VERSIONING) Defines versioning strategy
+- [CC_CONVENTIONAL_COMMITS (Commit Messages)](../../architecture/design/development-norm.md#CC_CONVENTIONAL_COMMITS)
+  Standardizes commit message format
+- [CC_SEMANTIC_VERSIONING (Versioning)](../../architecture/design/development-norm.md#CC_SEMANTIC_VERSIONING) Defines
+  versioning strategy

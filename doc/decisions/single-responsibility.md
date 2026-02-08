@@ -6,14 +6,19 @@ Applies the Single Responsibility Principle to Docgraph modules, ensuring each m
 
 ## Decision
 
-We adopt the **Single Responsibility Principle (SRP)**: each module should have one, and only one, reason to change. In practice, this means each file/module is responsible for exactly one thing.
+We adopt the **Single Responsibility Principle (SRP)**: each module should have one, and only one, reason to change. In
+practice, this means each file/module is responsible for exactly one thing.
 
 ## Rationale
 
-- **Easier to Understand**: When reading `check.rs`, developers only need to understand the `check` command logic. No other command logic is mixed in, reducing cognitive load.
-- **Limited Change Impact**: When modifying the `check` command, developers only need to edit `check.rs`. Other commands are unaffected, minimizing the risk of unintended side effects.
-- **Clear Ownership**: Each file has a clear purpose, making it obvious where to add new functionality or fix bugs. This improves developer productivity and code navigation.
-- **Better Testing**: Each module can be tested independently with focused test cases, improving test clarity and reducing test complexity.
+- **Easier to Understand**: When reading `check.rs`, developers only need to understand the `check` command logic. No
+  other command logic is mixed in, reducing cognitive load.
+- **Limited Change Impact**: When modifying the `check` command, developers only need to edit `check.rs`. Other commands
+  are unaffected, minimizing the risk of unintended side effects.
+- **Clear Ownership**: Each file has a clear purpose, making it obvious where to add new functionality or fix bugs. This
+  improves developer productivity and code navigation.
+- **Better Testing**: Each module can be tested independently with focused test cases, improving test clarity and
+  reducing test complexity.
 
 ### Trade-offs
 
@@ -22,7 +27,9 @@ We adopt the **Single Responsibility Principle (SRP)**: each module should have 
 
 ## Context
 
-As the `docgraph` codebase grows, we need a clear principle for organizing code into modules and files. Without a guiding principle, modules can become bloated with multiple responsibilities, making the code harder to understand, test, and maintain.
+As the `docgraph` codebase grows, we need a clear principle for organizing code into modules and files. Without a
+guiding principle, modules can become bloated with multiple responsibilities, making the code harder to understand,
+test, and maintain.
 
 ### Anti-Pattern Example
 
@@ -36,7 +43,8 @@ pub fn handle_graph(...) { /* ... */ }
 pub fn handle_list(...) { /* ... */ }
 ```
 
-This violates SRP because the file has multiple reasons to change (any change to any command requires editing this file).
+This violates SRP because the file has multiple reasons to change (any change to any command requires editing this
+file).
 
 **Good** - Single responsibility per file:
 

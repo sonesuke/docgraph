@@ -4,21 +4,28 @@
 [![Security audit](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml/badge.svg)](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/badge/coverage-view-blue)](https://github.com/sonesuke/docgraph/actions/workflows/ci.yml)
 
-A powerful lint tool and graph generator designed to build and verify directed graphs embedded in standard Markdown files. `docgraph` ensures your documentation is consistent, traceable, and AI-ready.
+A powerful lint tool and graph generator designed to build and verify directed graphs embedded in standard Markdown
+files. `docgraph` ensures your documentation is consistent, traceable, and AI-ready.
 
 ## Overview
 
-`docgraph` treats Markdown blocks as nodes in a graph. By using HTML anchors (`<a id="..."></a>`) and standard Markdown links, you can define structured relationships (edges) between documents. This enables automated traceability across your entire documentation suite—from business actors and use cases down to technical requirements and architecture decisions.
+`docgraph` treats Markdown blocks as nodes in a graph. By using HTML anchors (`<a id="..."></a>`) and standard Markdown
+links, you can define structured relationships (edges) between documents. This enables automated traceability across
+your entire documentation suite—from business actors and use cases down to technical requirements and architecture
+decisions.
 
-For a comprehensive guide on concepts, architecture, and specifications, please refer to the **[Documentation Overview](./doc/overview.md)**.
+For a comprehensive guide on concepts, architecture, and specifications, please refer to the
+**[Documentation Overview](./doc/overview.md)**.
 
 ## Key Features
 
-- **Graph Validation**: Automated checks for broken links, duplicate IDs, and relationship rule violations defined in `docgraph.toml`.
+- **Graph Validation**: Automated checks for broken links, duplicate IDs, and relationship rule violations defined in
+  `docgraph.toml`.
 - **Template Validation**: Enforce consistent documentation structure using Markdown templates with wildcard support.
 - **Traceability Analysis**: Tools to search, trace, and describe complex node relationships.
 
-- **AI-Agent Ready**: Built-in support for GraphRAG knowledge construction. AI Agents can consume `docgraph` outputs to assist in documentation and development workflows.
+- **AI-Agent Ready**: Built-in support for GraphRAG knowledge construction. AI Agents can consume `docgraph` outputs to
+  assist in documentation and development workflows.
 - **Modern IDE Integration**: A dedicated VS Code plugin with full LSP support.
 
 ## Getting Started
@@ -81,11 +88,11 @@ Choose how you want to interact with `docgraph`:
 
    **Example Claude Interaction:**
 
-   > **You**: "Build a knowledge graph from the current directory."
-   > **Claude**: "Building knowledge graph... Done. Found 15 nodes and 24 relationships."
+   > **You**: "Build a knowledge graph from the current directory." **Claude**: "Building knowledge graph... Done. Found
+   > 15 nodes and 24 relationships."
    >
-   > **You**: "What are the dependencies for UC_WRITE?"
-   > **Claude**: "UC_WRITE depends on ACT_USER and is realized by IF_CLI_LINT."
+   > **You**: "What are the dependencies for UC_WRITE?" **Claude**: "UC_WRITE depends on ACT_USER and is realized by
+   > IF_CLI_LINT."
 
 #### Option B: VS Code Extension
 
@@ -141,6 +148,7 @@ docgraph trace UC_LOGIN FR_EMAIL_LOGIN
 
 ---
 
-Contributions are welcome! If you're interested in helping improve `docgraph`, please check out our **[Module View](./doc/architecture/view/module.md)** for an overview of the technical structure.
+Contributions are welcome! If you're interested in helping improve `docgraph`, please check out our
+**[Module View](./doc/architecture/view/module.md)** for an overview of the technical structure.
 
 Detailed technical documentation and use cases can be found in the **[Documentation Overview](./doc/overview.md)**.
