@@ -6,7 +6,8 @@ Adopts the pattern of thin handlers that delegate business logic to the core lib
 
 ## Decision
 
-We adopt the **Thin Handlers** principle: handlers should contain no business logic. They serve only as adapters between the user interface and the Core layer.
+We adopt the **Thin Handlers** principle: handlers should contain no business logic. They serve only as adapters between
+the user interface and the Core layer.
 
 Handlers perform exactly three tasks:
 
@@ -121,9 +122,12 @@ pub fn handle_check(...) {
 
 ## Rationale
 
-- **Easy Testing**: Handlers are thin enough that integration tests are sufficient. Complex logic is tested in Core unit tests, which are faster and more reliable.
-- **Centralized Logic**: All business logic lives in Core, making it easy to find and modify. Developers don't need to search through multiple handler files to understand validation rules or parsing logic.
-- **Interface Independence**: The same Core logic can be called from CLI, LSP, or any future interface without duplication. Adding a new interface requires only writing a thin adapter layer.
+- **Easy Testing**: Handlers are thin enough that integration tests are sufficient. Complex logic is tested in Core unit
+  tests, which are faster and more reliable.
+- **Centralized Logic**: All business logic lives in Core, making it easy to find and modify. Developers don't need to
+  search through multiple handler files to understand validation rules or parsing logic.
+- **Interface Independence**: The same Core logic can be called from CLI, LSP, or any future interface without
+  duplication. Adding a new interface requires only writing a thin adapter layer.
 
 ### Trade-offs
 
@@ -132,7 +136,9 @@ pub fn handle_check(...) {
 
 ## Context
 
-In a layered architecture with Core and Handler layers, we need to decide how much logic should reside in handlers versus the Core. Putting too much logic in handlers leads to duplication across interfaces (CLI, LSP) and makes testing harder.
+In a layered architecture with Core and Handler layers, we need to decide how much logic should reside in handlers
+versus the Core. Putting too much logic in handlers leads to duplication across interfaces (CLI, LSP) and makes testing
+harder.
 
 ## Related
 

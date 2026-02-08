@@ -1,6 +1,7 @@
 # LSP Functional Requirements
 
-The `docgraph` language server provides interactive features for IDEs (e.g., VS Code) to improve the experience of writing and maintaining docgraph specifications.
+The `docgraph` language server provides interactive features for IDEs (e.g., VS Code) to improve the experience of
+writing and maintaining docgraph specifications.
 
 <a id="FR_LSP_GOTO"></a>
 
@@ -102,7 +103,8 @@ The server lists all nodes in the current document for navigation.
 
 **Capability**: `documentSymbolProvider`
 
-**Behavior**: Returns a list of all Nodes defined in the current document. This populates the "Outline" view in most editors.
+**Behavior**: Returns a list of all Nodes defined in the current document. This populates the "Outline" view in most
+editors.
 
 ### Realized by
 

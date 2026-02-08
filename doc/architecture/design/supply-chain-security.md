@@ -14,8 +14,7 @@ We enforce strict controls on dependencies and build processes to prevent supply
 
 **1. Dependency Updates**
 
-**Tool**: GitHub Dependabot
-**Configuration**: `.github/dependabot.yml`
+**Tool**: GitHub Dependabot **Configuration**: `.github/dependabot.yml`
 
 Automatically scans for outdated or vulnerable packages:
 
@@ -25,10 +24,10 @@ Automatically scans for outdated or vulnerable packages:
 
 **2. Dependency Vulnerability Scanning**
 
-**Tool**: cargo-audit
-**Integration**: CI/CD Pipeline (`.github/workflows/ci.yml`)
+**Tool**: cargo-audit **Integration**: CI/CD Pipeline (`.github/workflows/ci.yml`)
 
-Blocks merges that introduce dependencies with known security vulnerabilities by checking against the RustSec advisory database.
+Blocks merges that introduce dependencies with known security vulnerabilities by checking against the RustSec advisory
+database.
 
 ### Decided by
 

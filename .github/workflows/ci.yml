@@ -88,6 +88,18 @@ jobs:
           push: never
           runCmd: cargo fmt -- --check
 
+      - name: Markdown Format Check
+        uses: devcontainers/ci@v0.3
+        env:
+          CI: true
+        with:
+          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
+          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
+          push: never
+          runCmd: |
+            npm install
+            npm run format:md -- --check
+
       - name: Cargo Clippy
         uses: devcontainers/ci@v0.3
         env:

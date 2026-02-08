@@ -4,7 +4,8 @@
 
 ## CI/CD Pipeline
 
-The Continuous Integration and Continuous Delivery (CI/CD) pipeline ensures that all code changes are automatically validated, tested, and released.
+The Continuous Integration and Continuous Delivery (CI/CD) pipeline ensures that all code changes are automatically
+validated, tested, and released.
 
 **Strategies:**
 
@@ -14,7 +15,8 @@ The Continuous Integration and Continuous Delivery (CI/CD) pipeline ensures that
 
 ### Decided by
 
-- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY) To minimize environmental discrepancies.
+- [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY) To minimize
+  environmental discrepancies.
 
 ### Realized by
 

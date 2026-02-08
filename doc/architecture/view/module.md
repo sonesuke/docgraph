@@ -1,6 +1,7 @@
 # Module View
 
-The `docgraph` project is organized into several distinct modules, separating the core domain logic, the command-line interface, the language server, and the editor integration.
+The `docgraph` project is organized into several distinct modules, separating the core domain logic, the command-line
+interface, the language server, and the editor integration.
 
 ## Module Structure Overview
 
@@ -83,7 +84,8 @@ The `lsp` module provides the Language Server Protocol implementation.
 
 ### LSP Handlers
 
-- **`handlers`**: Implements LSP capabilities such as `textDocument/definition`, `textDocument/references`, and `textDocument/hover`.
+- **`handlers`**: Implements LSP capabilities such as `textDocument/definition`, `textDocument/references`, and
+  `textDocument/hover`.
 
 <a id="MOD_VSEX"></a>
 
@@ -91,7 +93,8 @@ The `lsp` module provides the Language Server Protocol implementation.
 
 The `vsix` module is a TypeScript-based project that acts as the LSP client.
 
-- **`src/extension.ts`**: Manages the lifecycle of the `docgraph` language server and registers editor-specific commands.
+- **`src/extension.ts`**: Manages the lifecycle of the `docgraph` language server and registers editor-specific
+  commands.
 
 <a id="MOD_EXT_ZED"></a>
 
@@ -99,7 +102,8 @@ The `vsix` module is a TypeScript-based project that acts as the LSP client.
 
 The `zed-extension` is a WASM-based extension for the Zed editor.
 
-- **`zed-extension/src/lib.rs`**: Implements the `zed::Extension` trait and the `language_server_command` to bridge Zed and the `docgraph` binary.
+- **`zed-extension/src/lib.rs`**: Implements the `zed::Extension` trait and the `language_server_command` to bridge Zed
+  and the `docgraph` binary.
 
 <a id="MOD_CICD"></a>
 

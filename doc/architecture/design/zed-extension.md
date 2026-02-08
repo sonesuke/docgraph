@@ -4,11 +4,13 @@ The `zed-extension` provides Language Server Protocol (LSP) support for the Docg
 
 ## Overview
 
-Zed extensions are written in Rust and compiled to WebAssembly (`wasm32-wasip1`). They act as a bridge between the Zed editor and the `docgraph` language server.
+Zed extensions are written in Rust and compiled to WebAssembly (`wasm32-wasip1`). They act as a bridge between the Zed
+editor and the `docgraph` language server.
 
 ## Architecture
 
-The extension implements the `zed::Extension` trait, which provides hooks for managing the lifecycle of the language server.
+The extension implements the `zed::Extension` trait, which provides hooks for managing the lifecycle of the language
+server.
 
 ### Language Server Lifecycle
 
@@ -30,7 +32,8 @@ languages = ["Markdown"]
 
 ### Project Settings (`.zed/settings.json`)
 
-To explicitly enable the `docgraph` language server in a project, a `.zed/settings.json` file should be created in the project root:
+To explicitly enable the `docgraph` language server in a project, a `.zed/settings.json` file should be created in the
+project root:
 
 ```json
 {
@@ -44,7 +47,8 @@ To explicitly enable the `docgraph` language server in a project, a `.zed/settin
 
 ## Security and Trust
 
-Since the extension executes an external binary (`docgraph`), Zed requires the user to **Trust the Workspace** (exit Restricted Mode) before the language server can start. If the LSP does not start, ensure that the workspace is trusted.
+Since the extension executes an external binary (`docgraph`), Zed requires the user to **Trust the Workspace** (exit
+Restricted Mode) before the language server can start. If the LSP does not start, ensure that the workspace is trusted.
 
 ## Development
 
@@ -56,5 +60,6 @@ To install the extension locally for development:
 
 ## Traceability
 
-- **Requirement**: [FR_INSTALL_EXT_ZED (Zed Editor Extension)](../../requirements/functional/installation.md#FR_INSTALL_EXT_ZED)
+- **Requirement**:
+  [FR_INSTALL_EXT_ZED (Zed Editor Extension)](../../requirements/functional/installation.md#FR_INSTALL_EXT_ZED)
 - **Module**: [MOD_EXT_ZED (Zed Editor Extension)](../view/module.md#MOD_EXT_ZED)

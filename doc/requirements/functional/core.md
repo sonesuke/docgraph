@@ -32,7 +32,8 @@ The system MUST ensure that every node ID in the documentation remains unique ac
 
 ## Audit Logging
 
-The system MUST record all validation results and structural changes in a persistent audit log for traceability and compliance.
+The system MUST record all validation results and structural changes in a persistent audit log for traceability and
+compliance.
 
 ### Realized by
 
@@ -44,7 +45,8 @@ The system MUST record all validation results and structural changes in a persis
 
 ## Authentication
 
-The system SHOULD provide mechanisms to authenticate users before allowing certain operations, especially when interacting with remote marketplaces.
+The system SHOULD provide mechanisms to authenticate users before allowing certain operations, especially when
+interacting with remote marketplaces.
 
 ### Realized by
 
@@ -56,12 +58,14 @@ The system SHOULD provide mechanisms to authenticate users before allowing certa
 
 ## Template Validation
 
-The system MUST validate that documentation nodes conform to the structure defined in their associated Markdown templates.
+The system MUST validate that documentation nodes conform to the structure defined in their associated Markdown
+templates.
 
 **Validation Rules:**
 
 - **Structure Matching**: The hierarchy of headers and lists in the document must strictly match the template.
-- **Text Patterns**: Use `{...}` placeholders in templates to match variable content. Fixed text outside placeholders must match exactly.
+- **Text Patterns**: Use `{...}` placeholders in templates to match variable content. Fixed text outside placeholders
+  must match exactly.
 - **Wildcards**: Supports `*` for ID matching and substring matching in links.
 - **Optional Sections**: Use `(Optional)` in headers to mark sections that can be omitted.
 
@@ -75,8 +79,8 @@ The system MUST validate that documentation nodes conform to the structure defin
 
 ## Configuration
 
-The system MUST allow users to customize behavior via a configuration file (`docgraph.toml`) at the project root.
-The structure and available settings are defined in [IF_CONFIG](../../requirements/interfaces/interfaces.md#IF_CONFIG).
+The system MUST allow users to customize behavior via a configuration file (`docgraph.toml`) at the project root. The
+structure and available settings are defined in [IF_CONFIG](../../requirements/interfaces/interfaces.md#IF_CONFIG).
 
 **Settings Requirements:**
 
