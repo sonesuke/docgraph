@@ -10,6 +10,10 @@ The core engine MUST validate that all internal links reference existing node ID
 
 - [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
 
+### Qualified by
+
+- [NFR_AVAILABILITY (System Availability)](../../requirements/non-functional/performance.md#NFR_AVAILABILITY)
+
 ---
 
 <a id="FR_CORE_UNIQUE"></a>

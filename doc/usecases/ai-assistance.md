@@ -30,7 +30,3 @@ The AI Agent leverages the Docgraph plugin to provide intelligent assistance for
 2. AI Agent suggests documentation improvements.
 3. AI Agent fixes formatting issues or lint violations.
 
-### Non-Functional Requirements (Optional)
-
-- [NFR_AVAILABILITY (System Availability)](../requirements/non-functional/performance.md#NFR_AVAILABILITY) Ensuring AI features are consistently accessible
-- [NFR_VSCODE_PORTABILITY (Cross-platform Portability)](../requirements/non-functional/vscode.md#NFR_VSCODE_PORTABILITY) Enables AI assistance across multiple desktop operating systems

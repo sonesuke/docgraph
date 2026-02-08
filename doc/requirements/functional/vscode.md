@@ -12,6 +12,11 @@ The extension, distributed via [VS Code Marketplace](../../requirements/interfac
 
 - [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
 
+### Qualified by
+
+- [NFR_VSCODE_PORTABILITY (Cross-platform Portability)](../../requirements/non-functional/vscode.md#NFR_VSCODE_PORTABILITY)
+- [NFR_LATENCY (System Latency)](../../requirements/non-functional/performance.md#NFR_LATENCY)
+
 <a id="FR_VSC_BINARY_PATH"></a>
 
 ## Binary Path Configuration
@@ -21,6 +26,10 @@ The extension SHALL provide a setting (`docgraph.binaryPath`) allowing the user 
 ### Realized by
 
 - [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
+
+### Qualified by
+
+- [NFR_VSCODE_PACKAGING (Lightweight Packaging)](../../requirements/non-functional/vscode.md#NFR_VSCODE_PACKAGING)
 
 <a id="FR_VSC_MARKDOWN_ACTIVATION"></a>
 

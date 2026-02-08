@@ -10,6 +10,7 @@
 
 ### Qualified by (Optional)
 
+- [NFR* (*)](*#NFR_*)
 - [FR* (*)](*#FR_*) {Reason}
 
 ### Codified in (Optional)
