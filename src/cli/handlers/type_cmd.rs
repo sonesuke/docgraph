@@ -48,6 +48,12 @@ fn show_type_details(config: &Config, id: &str) -> ExitCode {
 
     println!("Type: {}", id_upper);
     println!("Description: {}", node_config.desc);
+    if let Some(template) = &node_config.template {
+        println!("Template: {}", template.display());
+        if let Ok(content) = std::fs::read_to_string(template) {
+            println!("\n---\n{}\n---", content.trim());
+        }
+    }
     println!();
 
     if !node_config.rules.is_empty() {
@@ -58,15 +64,17 @@ fn show_type_details(config: &Config, id: &str) -> ExitCode {
                 .min
                 .map(|m: usize| m.to_string())
                 .unwrap_or("-".to_string());
-            let max = rule
+
+            let max_str = rule
                 .max
-                .map(|m: usize| m.to_string())
-                .unwrap_or("-".to_string());
+                .map(|m: usize| format!(" max={}", m))
+                .unwrap_or_default();
+
             let desc = rule.desc.as_deref().unwrap_or("");
 
             println!(
-                "  {} [{}] min={} max={}: {}",
-                rule.dir, targets, min, max, desc
+                "  {} [{}] min={}{}: {}",
+                rule.dir, targets, min, max_str, desc
             );
         }
     } else {
