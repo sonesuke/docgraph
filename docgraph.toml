@@ -30,7 +30,7 @@ rules = [
   { dir = "to", targets = ["ACT"], min = 1, desc = "Use cases must involve at least one Actor", context = "triggered by" },
   { dir = "to", targets = ["IF"], min = 1, desc = "Use cases must interact through at least one Interface", context = "interacts through" },
   { dir = "to", targets = ["FR"], min = 1, desc = "Use cases must realize at least one Functional Requirement", context = "realizes" },
-  { dir = "to", targets = ["NFR"], min = 0, desc = "Use cases may relate to NFRs", context = "related to" }
+  { dir = "to", targets = ["NFR"], min = 0, desc = "Use cases may relate to NFRs", context = "requires quality" }
 ]
 
 [references.ACT]
