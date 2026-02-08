@@ -7,8 +7,9 @@ pub fn document_symbol(
     params: DocumentSymbolParams,
 ) -> Result<Option<DocumentSymbolResponse>> {
     let uri = params.text_document.uri;
-    if let Ok(url) = Url::parse(uri.as_str()) 
-        && let Ok(path) = url.to_file_path() {
+    if let Ok(url) = Url::parse(uri.as_str())
+        && let Ok(path) = url.to_file_path()
+    {
         let path = std::fs::canonicalize(&path).unwrap_or(path);
         let symbols: Vec<DocumentSymbol> = blocks
             .iter()

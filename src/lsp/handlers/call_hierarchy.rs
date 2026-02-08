@@ -12,50 +12,51 @@ pub fn prepare_call_hierarchy(
     let line = position.line as usize + 1;
     let col = position.character as usize + 1;
 
-    if let Ok(url) = Url::parse(uri.as_str()) 
-        && let Ok(path) = url.to_file_path() {
-            let path = std::fs::canonicalize(&path).unwrap_or(path);
-            let blocks = backend.blocks.lock().unwrap();
+    if let Ok(url) = Url::parse(uri.as_str())
+        && let Ok(path) = url.to_file_path()
+    {
+        let path = std::fs::canonicalize(&path).unwrap_or(path);
+        let blocks = backend.blocks.lock().unwrap();
 
-            // Delegate to Core
-            if let Some(target_id) =
-                crate::core::locate::locate_id_at_position(&blocks, &[], &path, line, col)
-                && let Some(target_block) = blocks.iter().find(|b| b.id == target_id)
-                && let Ok(target_url) = Url::from_file_path(&target_block.file_path)
-                && let Ok(target_uri) = target_url.as_str().parse::<Uri>()
-            {
-                return Ok(Some(vec![CallHierarchyItem {
-                    name: target_block
-                        .name
-                        .clone()
-                        .unwrap_or_else(|| target_id.clone()),
-                    kind: SymbolKind::INTERFACE,
-                    tags: None,
-                    detail: Some(format!("Ref count: {}", target_block.edges.len())),
-                    uri: target_uri,
-                    range: Range {
-                        start: Position {
-                            line: target_block.line_start as u32 - 1,
-                            character: 0,
-                        },
-                        end: Position {
-                            line: target_block.line_start as u32 - 1,
-                            character: 0,
-                        },
+        // Delegate to Core
+        if let Some(target_id) =
+            crate::core::locate::locate_id_at_position(&blocks, &[], &path, line, col)
+            && let Some(target_block) = blocks.iter().find(|b| b.id == target_id)
+            && let Ok(target_url) = Url::from_file_path(&target_block.file_path)
+            && let Ok(target_uri) = target_url.as_str().parse::<Uri>()
+        {
+            return Ok(Some(vec![CallHierarchyItem {
+                name: target_block
+                    .name
+                    .clone()
+                    .unwrap_or_else(|| target_id.clone()),
+                kind: SymbolKind::INTERFACE,
+                tags: None,
+                detail: Some(format!("Ref count: {}", target_block.edges.len())),
+                uri: target_uri,
+                range: Range {
+                    start: Position {
+                        line: target_block.line_start as u32 - 1,
+                        character: 0,
                     },
-                    selection_range: Range {
-                        start: Position {
-                            line: target_block.line_start as u32 - 1,
-                            character: 0,
-                        },
-                        end: Position {
-                            line: target_block.line_start as u32 - 1,
-                            character: 0,
-                        },
+                    end: Position {
+                        line: target_block.line_start as u32 - 1,
+                        character: 0,
                     },
-                    data: Some(serde_json::to_value(target_id).unwrap()),
-                }]));
-            }
+                },
+                selection_range: Range {
+                    start: Position {
+                        line: target_block.line_start as u32 - 1,
+                        character: 0,
+                    },
+                    end: Position {
+                        line: target_block.line_start as u32 - 1,
+                        character: 0,
+                    },
+                },
+                data: Some(serde_json::to_value(target_id).unwrap()),
+            }]));
+        }
     }
     Ok(None)
 }
@@ -111,7 +112,10 @@ pub fn incoming_calls(
                 .iter()
                 .any(|e| e.line == loc.range_start_line && e.col_start == loc.range_start_col);
 
-            if is_edge && let Ok(u) = Url::from_file_path(&source_block.file_path) && let Ok(uri) = u.as_str().parse::<Uri>() {
+            if is_edge
+                && let Ok(u) = Url::from_file_path(&source_block.file_path)
+                && let Ok(uri) = u.as_str().parse::<Uri>()
+            {
                 calls.push(CallHierarchyIncomingCall {
                     from: CallHierarchyItem {
                         name: source_block

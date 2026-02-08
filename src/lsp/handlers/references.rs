@@ -12,36 +12,38 @@ pub fn references(
     let line = position.line as usize + 1;
     let col = position.character as usize + 1;
 
-    if let Ok(url) = Url::parse(uri.as_str()) 
-        && let Ok(path) = url.to_file_path() {
-            let path = std::fs::canonicalize(&path).unwrap_or(path);
-            // Delegate to Core Logic
-            if let Some(target_id) =
-                crate::core::locate::locate_id_at_position(blocks, refs, &path, line, col)
-            {
-                let results = crate::core::locate::find_references_msg(blocks, refs, &target_id);
-                let mut locations = Vec::new();
+    if let Ok(url) = Url::parse(uri.as_str())
+        && let Ok(path) = url.to_file_path()
+    {
+        let path = std::fs::canonicalize(&path).unwrap_or(path);
+        // Delegate to Core Logic
+        if let Some(target_id) =
+            crate::core::locate::locate_id_at_position(blocks, refs, &path, line, col)
+        {
+            let results = crate::core::locate::find_references_msg(blocks, refs, &target_id);
+            let mut locations = Vec::new();
 
-                for res in results {
-                    if let Ok(u) = Url::from_file_path(&res.file_path) 
-                        && let Ok(uri) = u.as_str().parse::<Uri>() {
-                            locations.push(Location {
-                                uri,
-                                range: Range {
-                                    start: Position {
-                                        line: res.range_start_line as u32 - 1,
-                                        character: res.range_start_col as u32 - 1,
-                                    },
-                                    end: Position {
-                                        line: res.range_end_line as u32 - 1,
-                                        character: res.range_end_col as u32 - 1,
-                                    },
-                                },
-                            });
-                    }
+            for res in results {
+                if let Ok(u) = Url::from_file_path(&res.file_path)
+                    && let Ok(uri) = u.as_str().parse::<Uri>()
+                {
+                    locations.push(Location {
+                        uri,
+                        range: Range {
+                            start: Position {
+                                line: res.range_start_line as u32 - 1,
+                                character: res.range_start_col as u32 - 1,
+                            },
+                            end: Position {
+                                line: res.range_end_line as u32 - 1,
+                                character: res.range_end_col as u32 - 1,
+                            },
+                        },
+                    });
                 }
-                return Ok(Some(locations));
             }
+            return Ok(Some(locations));
+        }
     }
     Ok(None)
 }
@@ -268,10 +270,12 @@ mod tests {
         let locs = result.unwrap();
         assert!(!locs.is_empty());
         // Should find the standalone ref in path2
-        assert!(locs.iter().any(|l| Url::parse(l.uri.as_str())
-            .ok()
-            .and_then(|u| u.to_file_path().ok())
-            == Some(path2.clone())));
+        assert!(locs.iter().any(|l| {
+            Url::parse(l.uri.as_str())
+                .ok()
+                .and_then(|u| u.to_file_path().ok())
+                == Some(path2.clone())
+        }));
     }
 
     #[test]

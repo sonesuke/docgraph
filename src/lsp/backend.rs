@@ -36,9 +36,10 @@ impl Backend {
     ) -> Self {
         let mut root = None;
         if let Some(uri) = root_uri {
-            if let Ok(url) = Url::parse(uri.as_str()) 
-                && let Ok(path) = url.to_file_path() {
-                    root = Some(std::fs::canonicalize(&path).unwrap_or(path));
+            if let Ok(url) = Url::parse(uri.as_str())
+                && let Ok(path) = url.to_file_path()
+            {
+                root = Some(std::fs::canonicalize(&path).unwrap_or(path));
             }
         } else if let Some(folders) = workspace_folders
             && let Some(folder) = folders.first()
@@ -158,8 +159,10 @@ impl Backend {
             }
             "textDocument/didOpen" => {
                 let params = cast_not::<DidOpenTextDocument>(not)?;
-                self.documents
-                    .insert(params.text_document.uri.to_string(), params.text_document.text);
+                self.documents.insert(
+                    params.text_document.uri.to_string(),
+                    params.text_document.text,
+                );
                 self.run_lint();
             }
             "textDocument/didChange" => {
@@ -215,14 +218,15 @@ impl Backend {
             // Create overrides map (convert DashMap<String, String> to HashMap<PathBuf, String>)
             let mut overrides = std::collections::HashMap::new();
             for entry in self.documents.iter() {
-                if let Ok(url) = Url::parse(entry.key()) 
-                    && let Ok(path) = url.to_file_path() {
-                        // Try to canonicalize the path for consistent lookup
-                        if let Ok(canon_path) = std::fs::canonicalize(&path) {
-                            overrides.insert(canon_path, entry.value().clone());
-                        } else {
-                            overrides.insert(path, entry.value().clone());
-                        }
+                if let Ok(url) = Url::parse(entry.key())
+                    && let Ok(path) = url.to_file_path()
+                {
+                    // Try to canonicalize the path for consistent lookup
+                    if let Ok(canon_path) = std::fs::canonicalize(&path) {
+                        overrides.insert(canon_path, entry.value().clone());
+                    } else {
+                        overrides.insert(path, entry.value().clone());
+                    }
                 }
             }
 
@@ -252,9 +256,10 @@ impl Backend {
             }
             // Also open files
             for entry in self.documents.iter() {
-                if let Ok(url) = Url::parse(entry.key()) 
-                    && let Ok(path) = url.to_file_path() {
-                        file_diagnostics.entry(path).or_default();
+                if let Ok(url) = Url::parse(entry.key())
+                    && let Ok(path) = url.to_file_path()
+                {
+                    file_diagnostics.entry(path).or_default();
                 }
             }
 
@@ -283,9 +288,10 @@ impl Backend {
             }
 
             for (path, diags) in file_diagnostics {
-                if let Ok(url) = Url::from_file_path(path) 
-                    && let Ok(uri) = url.as_str().parse::<Uri>() {
-                        let _ = self.publish_diagnostics(uri, diags);
+                if let Ok(url) = Url::from_file_path(path)
+                    && let Ok(uri) = url.as_str().parse::<Uri>()
+                {
+                    let _ = self.publish_diagnostics(uri, diags);
                 }
             }
         }
