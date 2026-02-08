@@ -66,6 +66,15 @@ If issues are found, propose:
 - **Fix Structure**: Propose adding missing sections or correcting the link format to match the template.
 - **Split Node**: If SRP is violated, propose splitting the node into multiple IDs with narrower scopes.
 
+## Quality Gate Checklist
+In your final report, you **must** include this checklist to demonstrate thorough verification:
+
+- [ ] **Automated Checks**: `npm run format:md`, `docgraph check`, and `cargo test/clippy` (if applicable) all pass.
+- [ ] **ID Naming**: ID is underscore-separated (e.g., `TYPE_DESC`), mnemonic, and matches the prefix rules.
+- [ ] **File Placement**: File location is appropriate for the node type and consistent with similar nodes.
+- [ ] **Template Adherence**: All required sections and formats defined in `docgraph type` are present.
+- [ ] **SRP Compliance**: The node addresses only one clear responsibility at the correct granularity.
+
 ## Final Decision
-- **PASS**: The node/scope meets all strict quality criteria.
-- **FAIL**: Issues were identified that must be remediated before the Quality Gate is cleared.
+- **PASS**: All items in the checklist are confirmed.
+- **FAIL**: One or more items in the checklist failed. Provide remediation steps.
