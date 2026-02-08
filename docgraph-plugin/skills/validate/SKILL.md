@@ -32,7 +32,7 @@ Verify if the file location is appropriate for the ID prefix and consistent with
    - `FR_LOGIN` should be in `doc/requirements/functional/...`
    - If most `FR_` nodes are in `requirements.md`, this node should likely be there too, or in a logically related file.
 
-### 5. Template and Structure Validation (NEW)
+### 5. Template and Structure Validation
 Verify if the node's content follows the defined template and structure rules.
 1. **Retrieve Template**: Use `docgraph type <TYPE>` (e.g., `docgraph type FR`) to see the required structure and template file path.
 2. **Retrieve Content**: Use `docgraph describe <ID>` (e.g., `docgraph describe FR_LOGIN`) to see the full content of the node.
@@ -41,9 +41,16 @@ Verify if the node's content follows the defined template and structure rules.
    - Do list items (dependencies) match the expected patterns?
    - Is the overall content consistent with the type's purpose?
 
-### 6. Remediation
+### 6. Single Responsibility Principle (SRP) Check (NEW)
+Verify if the node represents a single responsibility at the appropriate granularity for its type.
+- **Goal**: One ID should correspond to one clear concept or requirement.
+- **Check**: Does this node try to address multiple unrelated issues? 
+- **Check**: Is the description or title too broad (e.g., "System Management" instead of "User Authentication")?
+
+### 7. Remediation
 If issues are found, propose:
 - **Rename ID**: Suggest a better ID (verify dependencies with `docgraph describe` first).
 - **Move File**: Suggest moving the definition to the correct file.
 - **Fix Prefix**: Correct the prefix or the file path.
 - **Fix Structure**: Propose adding missing sections or correcting the link format to match the template.
+- **Split Node**: If SRP is violated, propose splitting the node into multiple IDs with narrower scopes.
