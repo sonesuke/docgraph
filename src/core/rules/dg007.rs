@@ -161,8 +161,8 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                 let mut found_idx = None;
                 let mut header_text = String::new();
 
-                for (i, event) in events.iter().enumerate().skip(event_idx) {
-                    if let Event::Start(Tag::Heading { level: l, .. }) = event {
+                for i in event_idx..events.len() {
+                    if let Event::Start(Tag::Heading { level: l, .. }) = &events[i] {
                         if *l == *level {
                             // Extract the header text
                             let mut j = i + 1;

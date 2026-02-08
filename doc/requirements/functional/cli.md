@@ -4,7 +4,7 @@
 
 ## Lint Command
 
-The `lint` command shall parse all Markdown files in the target directory, build the graph, and report any violations of validation rules.
+The `lint` command shall parse all Markdown files in the target directory, build the graph, and report any violations of validation rules via the [Command Line Interface](../../requirements/interfaces/interfaces.md#IF_CLI).
 
 ### Realized by
 
