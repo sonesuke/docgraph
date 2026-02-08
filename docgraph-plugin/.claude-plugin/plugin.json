@@ -1,6 +1,6 @@
 {
     "name": "docgraph",
-    "description": "Docgraph plugin for Claude",
+    "description": "Spec-as-Code governance tool for Claude. Enforces deep architectural integrity and realizability through a three-gate pipeline (Validate, Align, Trace).",
     "version": "0.1.0",
     "author": {
         "name": "Sonesuke"
