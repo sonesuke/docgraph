@@ -1,6 +1,6 @@
 use crate::core::config::Config;
 use crate::core::types::{Diagnostic, Severity, SpecBlock};
-use pulldown_cmark::{Event, HeadingLevel, Parser, Tag, TagEnd};
+use pulldown_cmark::{Event, HeadingLevel, Options, Parser, Tag, TagEnd};
 use regex::Regex;
 use std::fs;
 use std::path::Path;
@@ -8,6 +8,11 @@ use std::sync::OnceLock;
 
 static RE_WS: OnceLock<Regex> = OnceLock::new();
 static RE_PLACEHOLDER: OnceLock<Regex> = OnceLock::new();
+
+fn init_regex() {
+    RE_WS.get_or_init(|| Regex::new(r" +").unwrap());
+    RE_PLACEHOLDER.get_or_init(|| Regex::new(r"\\\{[^}]+\\\}").unwrap());
+}
 
 #[derive(Debug, Clone)]
 enum TemplateElement {
@@ -23,6 +28,10 @@ enum TemplateElement {
         item_patterns: Vec<String>,
         optional: bool,
     },
+    Table {
+        headers: Vec<String>,
+        rows: Vec<Vec<String>>,
+    },
 }
 
 struct Template {
@@ -31,8 +40,7 @@ struct Template {
 }
 
 pub fn check_templates(root: &Path, spec_blocks: &[SpecBlock], config: &Config) -> Vec<Diagnostic> {
-    RE_WS.get_or_init(|| Regex::new(r" +").unwrap());
-    RE_PLACEHOLDER.get_or_init(|| Regex::new(r"\\\{[^}]+\\\}").unwrap());
+    init_regex();
     let mut diagnostics = Vec::new();
 
     for (type_name, node_config) in &config.nodes {
@@ -78,7 +86,7 @@ pub fn check_templates(root: &Path, spec_blocks: &[SpecBlock], config: &Config) 
 }
 
 fn parse_template(content: &str) -> Result<Template, String> {
-    let mut parser = Parser::new(content);
+    let mut parser = Parser::new_ext(content, Options::all());
     let mut elements = Vec::new();
     let mut root_anchor_pattern = Regex::new(".*").unwrap();
 
@@ -94,37 +102,13 @@ fn parse_template(content: &str) -> Result<Template, String> {
     while let Some(event) = parser.next() {
         match event {
             Event::Start(Tag::Heading { level, .. }) => {
-                let raw_text = get_event_text(&mut parser);
-                let optional = raw_text.contains("(Optional)");
-                let text_pattern = raw_text.replace("(Optional)", "").trim().to_string();
-                elements.push(TemplateElement::Header {
-                    level,
-                    text_pattern,
-                    optional,
-                });
+                elements.push(parse_header(&mut parser, level));
             }
             Event::Start(Tag::List(_)) => {
-                let mut item_patterns = Vec::new();
-                let mut depth = 1;
-                while let Some(event) = parser.next() {
-                    match event {
-                        Event::Start(Tag::Item) => {
-                            item_patterns.push(get_event_text(&mut parser));
-                        }
-                        Event::Start(Tag::List(_)) => depth += 1,
-                        Event::End(TagEnd::List(_)) => {
-                            depth -= 1;
-                            if depth == 0 {
-                                break;
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-                elements.push(TemplateElement::List {
-                    item_patterns,
-                    optional: false,
-                });
+                elements.push(parse_list(&mut parser));
+            }
+            Event::Start(Tag::Table(_)) => {
+                elements.push(parse_table(&mut parser));
             }
             Event::Text(t) => {
                 let s = t.trim();
@@ -144,8 +128,80 @@ fn parse_template(content: &str) -> Result<Template, String> {
     })
 }
 
+fn parse_header<'a>(parser: &mut Parser<'a>, level: HeadingLevel) -> TemplateElement {
+    let raw_text = get_event_text(parser);
+    let optional = raw_text.contains("(Optional)");
+    let text_pattern = raw_text.replace("(Optional)", "").trim().to_string();
+    TemplateElement::Header {
+        level,
+        text_pattern,
+        optional,
+    }
+}
+
+fn parse_list<'a>(parser: &mut Parser<'a>) -> TemplateElement {
+    let mut item_patterns = Vec::new();
+    let mut depth = 1;
+    while let Some(event) = parser.next() {
+        match event {
+            Event::Start(Tag::Item) => {
+                item_patterns.push(get_event_text(parser));
+            }
+            Event::Start(Tag::List(_)) => depth += 1,
+            Event::End(TagEnd::List(_)) => {
+                depth -= 1;
+                if depth == 0 {
+                    break;
+                }
+            }
+            _ => {}
+        }
+    }
+    TemplateElement::List {
+        item_patterns,
+        optional: false,
+    }
+}
+
+fn parse_table<'a>(parser: &mut Parser<'a>) -> TemplateElement {
+    let mut headers = Vec::new();
+    let mut rows = Vec::new();
+
+    while let Some(event) = parser.next() {
+        match event {
+            Event::Start(Tag::TableHead) => {
+                while let Some(event) = parser.next() {
+                    match event {
+                        Event::Start(Tag::TableCell) => {
+                            headers.push(get_event_text(parser));
+                        }
+                        Event::End(TagEnd::TableHead) => break,
+                        _ => {}
+                    }
+                }
+            }
+            Event::Start(Tag::TableRow) => {
+                let mut row = Vec::new();
+                while let Some(event) = parser.next() {
+                    match event {
+                        Event::Start(Tag::TableCell) => {
+                            row.push(get_event_text(parser));
+                        }
+                        Event::End(TagEnd::TableRow) => break,
+                        _ => {}
+                    }
+                }
+                rows.push(row);
+            }
+            Event::End(TagEnd::Table) => break,
+            _ => {}
+        }
+    }
+    TemplateElement::Table { headers, rows }
+}
+
 fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> {
-    let parser = Parser::new(&block.content);
+    let parser = Parser::new_ext(&block.content, Options::all());
     let events: Vec<Event> = parser.collect();
     let mut event_idx = 0;
     let mut section_missing = false;
@@ -157,173 +213,25 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
                 text_pattern,
                 optional,
             } => {
-                // Look ahead to find a header at the expected level
-                let mut found_idx = None;
-                let mut header_text = String::new();
-
-                for i in event_idx..events.len() {
-                    if let Event::Start(Tag::Heading { level: l, .. }) = &events[i] {
-                        if *l == *level {
-                            // Extract the header text
-                            let mut j = i + 1;
-                            while j < events.len() {
-                                match &events[j] {
-                                    Event::Text(t) | Event::Code(t) => header_text.push_str(t),
-                                    Event::End(TagEnd::Heading(_)) => break,
-                                    _ => {}
-                                }
-                                j += 1;
-                            }
-                            found_idx = Some(i);
-                            break;
-                        } else if *l > *level {
-                            // It's a subsection (e.g. H3 inside H2 search), continue looking
-                            continue;
-                        } else {
-                            // Hit a same or higher level heading (e.g. H1 inside H2 search) - stop looking
-                            break;
-                        }
-                    }
-                }
-
-                if let Some(idx) = found_idx {
-                    let normalized_header =
-                        header_text.replace("(Optional)", "").trim().to_string();
-                    if match_text(text_pattern, &normalized_header) {
-                        // Header matches - consume events up to and including this header
-                        section_missing = false;
-                        event_idx = idx;
-                        // Skip to end of this heading
-                        while event_idx < events.len() {
-                            if matches!(events[event_idx], Event::End(TagEnd::Heading(_))) {
-                                event_idx += 1;
-                                break;
-                            }
-                            event_idx += 1;
-                        }
-                    } else if *optional {
-                        // Header found but doesn't match, and it's optional - don't consume, mark as missing
-                        section_missing = true;
-                    } else {
-                        // Header found but doesn't match, and it's required - error
-                        return Err(format!(
-                            "Header text mismatch for {}. Expected '{}', found '{}'",
-                            level_to_str(*level),
-                            text_pattern,
-                            header_text
-                        ));
-                    }
-                } else if *optional {
-                    // Header not found and it's optional - skip
-                    section_missing = true;
-                } else {
-                    // Header not found and it's required - error
-                    return Err(format!("Missing required Header: {}", level_to_str(*level)));
-                }
+                section_missing =
+                    validate_header(&events, &mut event_idx, *level, text_pattern, *optional)?;
             }
             TemplateElement::List {
                 item_patterns,
                 optional,
             } => {
-                if section_missing {
-                    continue;
-                }
-
-                // Look for a list
-                let mut found_idx = None;
-                for (i, event) in events.iter().enumerate().skip(event_idx) {
-                    match event {
-                        Event::Start(Tag::List(_)) => {
-                            found_idx = Some(i);
-                            break;
-                        }
-                        Event::Start(Tag::Heading { .. }) => break, // Hit next header
-                        _ => {}
-                    }
-                }
-
-                if let Some(idx) = found_idx {
-                    event_idx = idx + 1; // Skip Start(List)
-
-                    while event_idx < events.len() {
-                        match &events[event_idx] {
-                            Event::Start(Tag::Item) => {
-                                event_idx += 1;
-                                let mut item_text = String::new();
-                                while event_idx < events.len() {
-                                    match &events[event_idx] {
-                                        Event::Text(t) | Event::Code(t) => item_text.push_str(t),
-                                        Event::Start(Tag::Link { dest_url, .. }) => {
-                                            item_text.push('[');
-                                            event_idx += 1;
-                                            while event_idx < events.len() {
-                                                match &events[event_idx] {
-                                                    Event::Text(t) | Event::Code(t) => {
-                                                        item_text.push_str(t)
-                                                    }
-                                                    Event::End(TagEnd::Link) => break,
-                                                    _ => {}
-                                                }
-                                                event_idx += 1;
-                                            }
-                                            item_text.push_str("](");
-                                            item_text.push_str(dest_url);
-                                            item_text.push(')');
-                                        }
-                                        Event::SoftBreak | Event::HardBreak => item_text.push(' '),
-                                        Event::End(TagEnd::Item) => break,
-                                        _ => {}
-                                    }
-                                    event_idx += 1;
-                                }
-
-                                if !item_patterns.is_empty() {
-                                    let matched = item_patterns
-                                        .iter()
-                                        .any(|pattern| match_text(pattern, &item_text));
-                                    if !matched {
-                                        return Err(format!(
-                                            "List item '{}' does not match any template pattern. Expected one of: {:?}",
-                                            item_text, item_patterns
-                                        ));
-                                    }
-                                }
-                            }
-                            Event::End(TagEnd::List(_)) => {
-                                event_idx += 1;
-                                break;
-                            }
-                            _ => {}
-                        }
-                        event_idx += 1;
-                    }
-                } else if !*optional {
-                    return Err("Missing required List".to_string());
+                if !section_missing {
+                    validate_list(&events, &mut event_idx, item_patterns, *optional)?;
                 }
             }
             TemplateElement::Text { pattern } => {
-                if section_missing {
-                    continue;
+                if !section_missing {
+                    validate_text(&events, &mut event_idx, pattern)?;
                 }
-
-                // Look for matching text
-                let mut found = false;
-                for (i, event) in events.iter().enumerate().skip(event_idx) {
-                    match event {
-                        Event::Text(t) | Event::Code(t) => {
-                            if match_text(pattern, t) {
-                                found = true;
-                                event_idx = i + 1;
-                                break;
-                            }
-                        }
-                        Event::Start(Tag::Heading { .. }) => break,
-                        _ => {}
-                    }
-                }
-
-                if !found {
-                    return Err(format!("Missing required text pattern: '{}'", pattern));
+            }
+            TemplateElement::Table { headers, rows } => {
+                if !section_missing {
+                    validate_table(&events, &mut event_idx, headers, rows)?;
                 }
             }
         }
@@ -354,6 +262,260 @@ fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> 
     Ok(())
 }
 
+fn validate_header(
+    events: &[Event],
+    event_idx: &mut usize,
+    level: HeadingLevel,
+    text_pattern: &str,
+    optional: bool,
+) -> Result<bool, String> {
+    let mut found_idx = None;
+    let mut header_text = String::new();
+
+    for i in *event_idx..events.len() {
+        if let Event::Start(Tag::Heading { level: l, .. }) = &events[i] {
+            if *l == level {
+                let mut j = i + 1;
+                while j < events.len() {
+                    match &events[j] {
+                        Event::Text(t) | Event::Code(t) => header_text.push_str(t),
+                        Event::End(TagEnd::Heading(_)) => break,
+                        _ => {}
+                    }
+                    j += 1;
+                }
+                found_idx = Some(i);
+                break;
+            } else if *l > level {
+                continue;
+            } else {
+                break;
+            }
+        }
+    }
+
+    if let Some(idx) = found_idx {
+        let normalized_header = header_text.replace("(Optional)", "").trim().to_string();
+        if match_text(text_pattern, &normalized_header) {
+            *event_idx = idx;
+            while *event_idx < events.len() {
+                if matches!(events[*event_idx], Event::End(TagEnd::Heading(_))) {
+                    *event_idx += 1;
+                    break;
+                }
+                *event_idx += 1;
+            }
+            Ok(false)
+        } else if optional {
+            Ok(true)
+        } else {
+            Err(format!(
+                "Header text mismatch for {}. Expected '{}', found '{}'",
+                level_to_str(level),
+                text_pattern,
+                header_text
+            ))
+        }
+    } else if optional {
+        Ok(true)
+    } else {
+        Err(format!("Missing required Header: {}", level_to_str(level)))
+    }
+}
+
+fn validate_list(
+    events: &[Event],
+    event_idx: &mut usize,
+    item_patterns: &[String],
+    optional: bool,
+) -> Result<(), String> {
+    let mut found_idx = None;
+    for (i, event) in events.iter().enumerate().skip(*event_idx) {
+        match event {
+            Event::Start(Tag::List(_)) => {
+                found_idx = Some(i);
+                break;
+            }
+            Event::Start(Tag::Heading { .. }) => break,
+            _ => {}
+        }
+    }
+
+    if let Some(idx) = found_idx {
+        *event_idx = idx + 1;
+        while *event_idx < events.len() {
+            match &events[*event_idx] {
+                Event::Start(Tag::Item) => {
+                    *event_idx += 1;
+                    let item_text = get_events_text_from_vec(events, event_idx);
+                    if !item_patterns.is_empty() {
+                        let matched = item_patterns
+                            .iter()
+                            .any(|pattern| match_text(pattern, &item_text));
+                        if !matched {
+                            return Err(format!(
+                                "List item '{}' does not match any template pattern. Expected one of: {:?}",
+                                item_text, item_patterns
+                            ));
+                        }
+                    }
+                }
+                Event::End(TagEnd::List(_)) => {
+                    *event_idx += 1;
+                    break;
+                }
+                _ => {}
+            }
+            *event_idx += 1;
+        }
+        Ok(())
+    } else if optional {
+        Ok(())
+    } else {
+        Err("Missing required List".to_string())
+    }
+}
+
+fn validate_text(events: &[Event], event_idx: &mut usize, pattern: &str) -> Result<(), String> {
+    let mut found = false;
+    for (i, event) in events.iter().enumerate().skip(*event_idx) {
+        match event {
+            Event::Text(t) | Event::Code(t) => {
+                if match_text(pattern, t) {
+                    found = true;
+                    *event_idx = i + 1;
+                    break;
+                }
+            }
+            Event::Start(Tag::Heading { .. }) => break,
+            _ => {}
+        }
+    }
+
+    if !found {
+        Err(format!("Missing required text pattern: '{}'", pattern))
+    } else {
+        Ok(())
+    }
+}
+
+fn validate_table(
+    events: &[Event],
+    event_idx: &mut usize,
+    expected_headers: &[String],
+    expected_rows: &[Vec<String>],
+) -> Result<(), String> {
+    let mut found_idx = None;
+    for (i, event) in events.iter().enumerate().skip(*event_idx) {
+        match event {
+            Event::Start(Tag::Table(_)) => {
+                found_idx = Some(i);
+                break;
+            }
+            Event::Start(Tag::Heading { .. }) => break,
+            _ => {}
+        }
+    }
+
+    if let Some(idx) = found_idx {
+        *event_idx = idx + 1;
+        let mut row_idx = 0;
+        let mut in_head = false;
+
+        while *event_idx < events.len() {
+            match &events[*event_idx] {
+                Event::Start(Tag::TableHead) => in_head = true,
+                Event::End(TagEnd::TableHead) => in_head = false,
+                Event::Start(Tag::TableRow) => {
+                    if !in_head {
+                        row_idx += 1;
+                    }
+                }
+                Event::Start(Tag::TableCell) => {
+                    *event_idx += 1;
+                    let actual_cell = get_events_text_from_vec(events, event_idx);
+
+                    if in_head {
+                        // We need a way to track column index in head
+                        // For simplicity in this stream, we'll count cells
+                        let col_idx = count_cells_in_current_row(events, idx, *event_idx);
+                        if col_idx > expected_headers.len() {
+                            return Err(format!(
+                                "Table header column count mismatch. Expected {}, found more",
+                                expected_headers.len()
+                            ));
+                        }
+                        let expected = &expected_headers[col_idx - 1];
+                        if !match_text(expected, &actual_cell) {
+                            return Err(format!(
+                                "Table header mismatch at column {}. Expected pattern '{}', found '{}'",
+                                col_idx, expected, actual_cell
+                            ));
+                        }
+                    } else {
+                        let cur_row = &expected_rows.get(row_idx - 1).ok_or_else(|| {
+                            format!(
+                                "Table row count mismatch. Expected {}, found more",
+                                expected_rows.len()
+                            )
+                        })?;
+
+                        let col_idx = count_cells_in_current_row(events, idx, *event_idx);
+                        if col_idx > cur_row.len() {
+                            return Err(format!(
+                                "Table column count mismatch at row {}. Expected {}, found more",
+                                row_idx,
+                                cur_row.len()
+                            ));
+                        }
+                        let expected = &cur_row[col_idx - 1];
+                        if !match_text(expected, &actual_cell) {
+                            return Err(format!(
+                                "Table cell mismatch at row {}, col {}. Expected pattern '{}', found '{}'",
+                                row_idx, col_idx, expected, actual_cell
+                            ));
+                        }
+                    }
+                }
+                Event::End(TagEnd::Table) => {
+                    *event_idx += 1;
+                    break;
+                }
+                _ => {}
+            }
+            *event_idx += 1;
+        }
+
+        // Final validation for row counts
+        if row_idx != expected_rows.len() {
+            return Err(format!(
+                "Table row count mismatch. Expected {}, found {}",
+                expected_rows.len(),
+                row_idx
+            ));
+        }
+
+        Ok(())
+    } else {
+        Err("Missing required Table".to_string())
+    }
+}
+
+fn count_cells_in_current_row(events: &[Event], table_start: usize, current_idx: usize) -> usize {
+    let mut count = 0;
+    let mut i = current_idx;
+    // Walk backwards to the start of the row to count preceding cells
+    while i > table_start {
+        match &events[i] {
+            Event::Start(Tag::TableCell) => count += 1,
+            Event::Start(Tag::TableRow) | Event::Start(Tag::TableHead) => break,
+            _ => {}
+        }
+        i -= 1;
+    }
+    count
+}
+
 fn get_event_text<'a>(iter: &mut impl Iterator<Item = Event<'a>>) -> String {
     let mut text = String::new();
     while let Some(e) = iter.next() {
@@ -368,9 +530,34 @@ fn get_event_text<'a>(iter: &mut impl Iterator<Item = Event<'a>>) -> String {
             Event::SoftBreak | Event::HardBreak => text.push(' '),
             Event::End(TagEnd::Link)
             | Event::End(TagEnd::Heading(_))
-            | Event::End(TagEnd::Item) => break,
+            | Event::End(TagEnd::Item)
+            | Event::End(TagEnd::TableCell) => break,
             _ => {}
         }
+    }
+    text
+}
+
+fn get_events_text_from_vec(events: &[Event], idx: &mut usize) -> String {
+    let mut text = String::new();
+    while *idx < events.len() {
+        match &events[*idx] {
+            Event::Text(t) | Event::Code(t) => text.push_str(t),
+            Event::Start(Tag::Link { dest_url, .. }) => {
+                *idx += 1;
+                let inner = get_events_text_from_vec(events, idx);
+                text.push_str(&format!("[{}](", inner));
+                text.push_str(dest_url);
+                text.push(')');
+            }
+            Event::SoftBreak | Event::HardBreak => text.push(' '),
+            Event::End(TagEnd::Link)
+            | Event::End(TagEnd::Heading(_))
+            | Event::End(TagEnd::Item)
+            | Event::End(TagEnd::TableCell) => break,
+            _ => {}
+        }
+        *idx += 1;
     }
     text
 }
@@ -421,11 +608,14 @@ fn match_text(pattern: &str, target: &str) -> bool {
 mod tests {
     use super::*;
 
+    fn init_regex() {
+        RE_WS.get_or_init(|| Regex::new(r" +").unwrap());
+        RE_PLACEHOLDER.get_or_init(|| Regex::new(r"\\\{[^}]+\\\}").unwrap());
+    }
+
     #[test]
     fn test_optional_header_can_be_skipped() {
-        // Initialize regex patterns
-        RE_WS.get_or_init(|| Regex::new(r" +").unwrap());
-        RE_PLACEHOLDER.get_or_init(|| Regex::new(r"\{[^}]+\}").unwrap());
+        init_regex();
 
         // Template: Required H3 -> Optional H3 -> Required H3
         let template_content = r#"<a id="TEST_*"></a>
@@ -487,9 +677,7 @@ Test description.
 
     #[test]
     fn test_optional_header_with_list_can_be_skipped() {
-        // Initialize regex patterns
-        RE_WS.get_or_init(|| Regex::new(r" +").unwrap());
-        RE_PLACEHOLDER.get_or_init(|| Regex::new(r"\{[^}]+\}").unwrap());
+        init_regex();
 
         // Template: Required H3 -> Optional H3 with list -> Required H3
         let template_content = r#"<a id="FR_*"></a>
@@ -551,9 +739,7 @@ Description.
 
     #[test]
     fn test_extra_sections_should_be_detected() {
-        // Initialize regex patterns
-        RE_WS.get_or_init(|| Regex::new(r" +").unwrap());
-        RE_PLACEHOLDER.get_or_init(|| Regex::new(r"\{[^}]+\}").unwrap());
+        init_regex();
 
         // Template: Only defines Realized by section
         let template_content = r#"<a id="IF_*"></a>
@@ -617,9 +803,7 @@ This is an exposed capabilities section.
     }
     #[test]
     fn test_extra_h2_sections_should_be_detected() {
-        // Initialize regex patterns
-        RE_WS.get_or_init(|| Regex::new(r" +").unwrap());
-        RE_PLACEHOLDER.get_or_init(|| Regex::new(r"\{[^}]+\}").unwrap());
+        init_regex();
 
         // Template: Only defines Realized by section
         let template_content = r#"<a id="IF_*"></a>
@@ -679,9 +863,7 @@ This should be detected as unexpected.
     }
     #[test]
     fn test_missing_text_should_be_detected() {
-        // Initialize regex patterns
-        RE_WS.get_or_init(|| Regex::new(r" +").unwrap());
-        RE_PLACEHOLDER.get_or_init(|| Regex::new(r"\\\{[^}]+\\\}").unwrap());
+        init_regex();
 
         // Template: H1 -> Text({Description}) -> H2
         let template_content = r#"<a id="ADR_*"></a>
@@ -730,5 +912,47 @@ This should be detected as unexpected.
                 e
             );
         }
+    }
+
+    #[test]
+    fn test_table_formatting_flexibility() {
+        init_regex();
+
+        // Template: Table with minimal formatting
+        let template_content = r#"<a id="TBL_*"></a>
+
+| col1 | col2 |
+|---|---|
+| {val1} | {val2} |
+"#;
+
+        // Document: Table with expanded formatting
+        let block_content = r#"<a id="TBL_001"></a>
+
+| col1     | col2     |
+|----------|----------|
+| value A  | value B  |
+"#;
+
+        let template = parse_template(template_content).expect("Failed to parse template");
+
+        let block = SpecBlock {
+            id: "TBL_001".to_string(),
+            node_type: "TBL".to_string(),
+            name: Some("Table Test".to_string()),
+            edges: vec![],
+            file_path: "test.md".into(),
+            line_start: 1,
+            line_end: 10,
+            content: block_content.to_string(),
+        };
+
+        // This should pass if table formatting is ignored or handled flexibly
+        let result = validate_block(&block, &template);
+        assert!(
+            result.is_ok(),
+            "Table formatting should be flexible, but got error: {:?}",
+            result.err()
+        );
     }
 }
