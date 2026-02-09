@@ -5,25 +5,29 @@ description: Deep Consistency Gate - Verify Vertical and Horizontal relationship
 
 # Deep Consistency Gate (Architecture & Meaning)
 
-This skill serves as the **gate for depth and relationship integrity** within the documentation graph. It focuses on ensuring that nodes are not only correct in isolation (as verified by `validate`) but also perfectly aligned with their context (Vertical) and their peers (Horizontal).
+This skill serves as the **gate for depth and relationship integrity** within the documentation graph. It focuses on
+ensuring that nodes are not only correct in isolation (as verified by `validate`) but also perfectly aligned with their
+context (Vertical) and their peers (Horizontal).
 
-> [!IMPORTANT]
-> This is an **Architecture & Meaning Gate**. Flag any semantic "fog" (unclear boundaries, implicit assumptions, or overloaded terms). Every node must be fully justified by its context.
+> [!IMPORTANT] This is an **Architecture & Meaning Gate**. Flag any semantic "fog" (unclear boundaries, implicit
+> assumptions, or overloaded terms). Every node must be fully justified by its context.
 
 ## Workflow Steps
 
 ### 0. Validation Pre-requisite
+
 - **Level**: STRICT
-- **Policy**: 
+- **Policy**:
   - If `validate` status is unknown or FAIL -> **STOP** and return FAIL.
   - Do not re-evaluate surface items (naming, templates) already covered by `validate`.
 
 ### 1. Vertical Consistency (Traceability & Context)
+
 - **Level**: STRICT for missing links, HEURISTIC for semantic clarity.
 - **Vertical Expectations**:
-    - **Parents (Inbound)**: Define the "Why" (intent, requirement, or goal).
-    - **This Node**: Defines the "What" at its specific abstraction level.
-    - **Children (Outbound)**: Define the "How" (realization, implementation, or breakdown).
+  - **Parents (Inbound)**: Define the "Why" (intent, requirement, or goal).
+  - **This Node**: Defines the "What" at its specific abstraction level.
+  - **Children (Outbound)**: Define the "How" (realization, implementation, or breakdown).
 
 1. **Context Check**: Use `docgraph describe <ID>` and verify:
    - Does the parent node explicitly justify the existence of this node?
@@ -32,8 +36,10 @@ This skill serves as the **gate for depth and relationship integrity** within th
    - Is this node's responsibility fully and exclusively covered by its children?
 
 ### 2. Horizontal Consistency (Peer Alignment & MECE)
+
 - **Level**: HEURISTIC
-- **Baseline Rule**: Use the dominant pattern among existing peer nodes. Do not invent new abstraction levels unless proposing an explicit refactor.
+- **Baseline Rule**: Use the dominant pattern among existing peer nodes. Do not invent new abstraction levels unless
+  proposing an explicit refactor.
 
 1. **Peer Identification**: Use `docgraph list "<PREFIX>_*"`.
 2. **Overlap Check**: Verify Mutually Exclusive and Collectively Exhaustive (MECE) status.
@@ -41,6 +47,7 @@ This skill serves as the **gate for depth and relationship integrity** within th
    - Is the granularity consistent with the peer baseline?
 
 ### 3. Structural SRP Check
+
 - **Level**: HEURISTIC
 - **Note**: `validate` checks surface SRP; `align` checks structural SRP (depth, cohesion, and abstraction fit).
 
@@ -48,9 +55,11 @@ This skill serves as the **gate for depth and relationship integrity** within th
 2. **Abstraction**: Is the node at the correct level relative to its parents and peers?
 
 ### 4. Proposals & Impact Analysis
+
 - **Level**: MANDATORY
 
 When proposing changes (Clarify Context, Split, Merge, or Move):
+
 1. **Affected Nodes**: List all nodes (parents, peers, children) that will be affected.
 2. **Re-validation**: Indicate whether `validate` must be re-run for any affected nodes.
 3. **Safety**: Ensure no existing references are broken without a remediation plan.
@@ -58,34 +67,42 @@ When proposing changes (Clarify Context, Split, Merge, or Move):
 ## Workflow Cases
 
 ### Case 1: TYPE_ID (e.g., FR, MOD)
+
 - Perform a full graph consistency review for the given type.
 
 ### Case 2: NODE_ID (e.g., FR_LOGIN)
+
 - **Status**: Focused Refinement.
-- Perform a deep analysis specifically for the node and its immediate relations. Do not scan the entire graph unless necessary for baseline identification.
+- Perform a deep analysis specifically for the node and its immediate relations. Do not scan the entire graph unless
+  necessary for baseline identification.
 
 ## Alignment Analysis Report
+
 You **must** provide the analysis in the following format:
 
 ### Target
+
 - **Node/Scope**: [ID or Type]
 - **Baseline Peer Pattern**: [Description of dominant convention]
 
 ### Consistency Analysis
-| Dimension | Check Item | Result | Analysis / Evidence |
-|:---|:---|:---|:---|
-| **Prerequisite** | Validate PASS | PASS/FAIL | |
-| **Vertical** | Parents (Why) | PASS/FAIL | |
-| **Vertical** | Children (How) | PASS/FAIL | |
-| **Horizontal** | Peer MECE | PASS/FAIL | |
-| **SRP** | Abstraction Fit | PASS/FAIL | |
+
+| Dimension        | Check Item      | Result    | Analysis / Evidence |
+| :--------------- | :-------------- | :-------- | :------------------ |
+| **Prerequisite** | Validate PASS   | PASS/FAIL |                     |
+| **Vertical**     | Parents (Why)   | PASS/FAIL |                     |
+| **Vertical**     | Children (How)  | PASS/FAIL |                     |
+| **Horizontal**   | Peer MECE       | PASS/FAIL |                     |
+| **SRP**          | Abstraction Fit | PASS/FAIL |                     |
 
 ### Refinement Proposals
+
 - **Proposal**: [Description]
 - **Affected IDs**: [List]
 - **Re-validate Required**: [Yes/No]
 
 ### Quality Gate Checklist
+
 In your final report, you **must** include this checklist to demonstrate deep architectural verification:
 
 - [ ] **Prerequisite PASS**: The node has successfully cleared the `validate` skill (Quality Gate).
@@ -95,7 +112,9 @@ In your final report, you **must** include this checklist to demonstrate deep ar
 - [ ] **Impact Analysis**: All affected nodes are listed, and re-validation needs are clearly stated.
 
 ## Final Decision
+
 ### Decision Semantics
+
 - **PASS**: Node shows deep integrity and may be merged/applied.
 - **FAIL**: Structural or semantic issues identified. MUST NOT be merged.
 

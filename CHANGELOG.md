@@ -6,21 +6,21 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 
-- *(test)* Resolve clippy cloned_ref_to_slice_refs warnings
-- *(parser)* Prevent block name overwrite by subsequent headings
-- *(vsix)* Resolve npm vulnerabilities and enable ci check (#72)
-- *(devcontainer)* Propagate CI env var for startup optimization (#84)
+- _(test)_ Resolve clippy cloned_ref_to_slice_refs warnings
+- _(parser)_ Prevent block name overwrite by subsequent headings
+- _(vsix)_ Resolve npm vulnerabilities and enable ci check (#72)
+- _(devcontainer)_ Propagate CI env var for startup optimization (#84)
 - Add tmux to devcontainer and fix remoteUser (#93)
 - Improve devcontainer configuration (#98)
 
 ### Features
 
-- *(docker)* Optimize image size & fix CI environment (#86)
+- _(docker)_ Optimize image size & fix CI environment (#86)
 - Enhance template validation (DG007) and standardize use cases (#87)
-- *(core)* Implement DG007 template validation and fix templates (#88)
+- _(core)_ Implement DG007 template validation and fix templates (#88)
 - Refactor Configuration Specs and Enforce Strict Dependencies (#90)
 - Semantic error messages and traceability refactoring (#94)
-- *(cli)* Improve type, describe, and list command output (#95)
+- _(cli)_ Improve type, describe, and list command output (#95)
 - Enhance validate skill with template and structure checks
 - Enhance file placement validation with consistency checks
 - Add SRP check to validate skill
@@ -39,17 +39,17 @@ All notable changes to this project will be documented in this file.
 ### Miscellaneous Tasks
 
 - Update dependencies
-- *(deps)* Bump actions/download-artifact from 4 to 7 (#73)
-- *(deps)* Bump actions/checkout from 4 to 6 (#74)
-- *(deps)* Bump actions/upload-artifact from 4 to 6 (#78)
-- *(deps-dev)* Bump @types/node from 25.1.0 to 25.2.1 in /vsix (#77)
-- *(deps)* Bump github/codeql-action from 3 to 4 (#76)
-- *(deps-dev)* Bump @biomejs/biome from 2.3.13 to 2.3.14 in /vsix (#79)
-- *(ci)* Suppress git init default branch warning (conflict resolved) (#83)
-- *(devcontainer)* Wrap dev setup in CI check for startup optimization (#82)
-- *(deps)* Bump the dependencies group with 2 updates (#80)
-- *(deps-dev)* Bump @types/vscode from 1.108.1 to 1.109.0 in /vsix (#75)
-- *(deps)* Bump lsp-types from 0.94.1 to 0.97.0 in the dependencies group (#89)
+- _(deps)_ Bump actions/download-artifact from 4 to 7 (#73)
+- _(deps)_ Bump actions/checkout from 4 to 6 (#74)
+- _(deps)_ Bump actions/upload-artifact from 4 to 6 (#78)
+- _(deps-dev)_ Bump @types/node from 25.1.0 to 25.2.1 in /vsix (#77)
+- _(deps)_ Bump github/codeql-action from 3 to 4 (#76)
+- _(deps-dev)_ Bump @biomejs/biome from 2.3.13 to 2.3.14 in /vsix (#79)
+- _(ci)_ Suppress git init default branch warning (conflict resolved) (#83)
+- _(devcontainer)_ Wrap dev setup in CI check for startup optimization (#82)
+- _(deps)_ Bump the dependencies group with 2 updates (#80)
+- _(deps-dev)_ Bump @types/vscode from 1.108.1 to 1.109.0 in /vsix (#75)
+- _(deps)_ Bump lsp-types from 0.94.1 to 0.97.0 in the dependencies group (#89)
 - Integrate prettier for markdown formatting (#96)
 - Migrate slash commands to antigravity skills
 - Remove redundant docgraph skill and simplify align/refine skills
@@ -63,18 +63,17 @@ All notable changes to this project will be documented in this file.
 
 ### Performance
 
-- *(ci)* Implement granular steps with persistent workspace cache (#85)
+- _(ci)_ Implement granular steps with persistent workspace cache (#85)
 
 ### Refactor
 
 - Replace rumdl with custom pulldown-cmark parser and restore rules
-- *(lsp)* Remove tower-lsp and optimize dependencies (#69)
+- _(lsp)_ Remove tower-lsp and optimize dependencies (#69)
 
 ### Ci
 
 - Use devcontainers/ci for release workflow (#70)
-- *(dependabot)* Add zed-extension config (#71)
-
+- _(dependabot)_ Add zed-extension config (#71)
 
 ## [0.2.1] - 2026-02-06
 
@@ -89,36 +88,36 @@ All notable changes to this project will be documented in this file.
 - Dummy bench file and doc lints
 - Move CARGO_TARGET_DIR to user home to fix permission denied in CI
 - Move CARGO_HOME to user home to resolve registry permission errors
-- *(ci)* Add packages:read permission to CI workflow for GHCR cache access
-- *(ci)* Add explicit ghcr login and use full image URL for cache
-- *(ci)* Pre-build debug dependency artifacts in Dockerfile to speed up CI
-- *(zed)* Update zed_extension_api to 0.7.0 and bind to Markdown language
+- _(ci)_ Add packages:read permission to CI workflow for GHCR cache access
+- _(ci)_ Add explicit ghcr login and use full image URL for cache
+- _(ci)_ Pre-build debug dependency artifacts in Dockerfile to speed up CI
+- _(zed)_ Update zed_extension_api to 0.7.0 and bind to Markdown language
 - Optimize devcontainer build config (#65)
 
 ### Documentation
 
-- *(zed)* Add zed extension design and update installation guide
-- *(zed)* Separate zed installation into dedicated use case and add settings guide
-- *(readme)* Update zed installation guide and reorder options
+- _(zed)_ Add zed extension design and update installation guide
+- _(zed)_ Separate zed installation into dedicated use case and add settings guide
+- _(readme)_ Update zed installation guide and reorder options
 
 ### Features
 
 - Consolidate development norms and add OSS constraint
 - Use GHCR for pre-built dev container for faster setup
-- *(lsp)* Implement real-time diagnostics and decouple core
-- *(zed)* Add zed extension, update docs and workflow
+- _(lsp)_ Implement real-time diagnostics and decouple core
+- _(zed)_ Add zed extension, update docs and workflow
 
 ### Miscellaneous Tasks
 
 - Set default user to vscode in Dockerfile
 - Remove zed-extension/target from git and add .gitignore
 - Cleanup zed-extension artifacts and update .gitignore
-- *(release)* Automate CHANGELOG.md generation and commitment
-- *(release)* Bump version to 0.2.1 (#62)
-- *(release)* Allow release to continue if changelog push fails (#63)
-- *(release)* Remove zed extension from release and ci (#64)
+- _(release)_ Automate CHANGELOG.md generation and commitment
+- _(release)_ Bump version to 0.2.1 (#62)
+- _(release)_ Allow release to continue if changelog push fails (#63)
+- _(release)_ Remove zed extension from release and ci (#64)
 - Refine release workflow and documentation (#66)
-- *(release)* Prepare v0.2.1 (#67)
+- _(release)_ Prepare v0.2.1 (#67)
 
 ### Performance
 
@@ -135,7 +134,7 @@ All notable changes to this project will be documented in this file.
 ### Bug Fixes
 
 - Ci failures (rustfmt and package-lock.json)
-- *(vscode)* Update @types/node to 20 and sync lockfile
+- _(vscode)_ Update @types/node to 20 and sync lockfile
 - Resolve unused variable warning
 - Ignore anchors and links inside code fences
 - Strip ID prefix from node name in headings
@@ -147,7 +146,7 @@ All notable changes to this project will be documented in this file.
 - Enforce ACT must be referenced by UC, update UC-WRITE actor
 - Clippy warnings
 - Run cargo fmt to resolve CI formatting failures
-- *(cli)* Resolve clippy warning in glob_to_regex
+- _(cli)_ Resolve clippy warning in glob_to_regex
 - Format code with cargo fmt
 - Ignore IDs and references inside code blocks
 - Format code with cargo fmt
@@ -155,24 +154,24 @@ All notable changes to this project will be documented in this file.
 - Resolve clippy lint errors and borrow checker issues
 - Split cargo llvm-cov to support both lcov and html
 - Resolve TOML parse error in docgraph.toml
-- *(lsp)* Pass ignore config and add SECURITY.md to ignore list
+- _(lsp)_ Pass ignore config and add SECURITY.md to ignore list
 - Resolve clippy and fmt issues
-- *(ci)* Fix clippy warnings and include all files
+- _(ci)_ Fix clippy warnings and include all files
 - Apply cargo fmt to CLI handlers
 - Allow dead_code in common test utilities to fix CI failure
 - Consolidate LSP tests and fix formatting
 - Resolve unused code warnings by moving helpers and removing allow(dead_code)
 - Resolve deprecation warnings for assert_cmd and fix CI failure
 - Resolve all E2E test failures and deprecation warnings
-- *(core)* Ignore anchors and links within inline code and code blocks
+- _(core)_ Ignore anchors and links within inline code and code blocks
 - Resolve clippy warnings and formatting issues
 - Resolve clippy manual_pattern_char_comparison lints
 - Robust rename handler logic
-- *(lsp)* Resolve overlapping edits and canonicalize paths in rename
+- _(lsp)_ Resolve overlapping edits and canonicalize paths in rename
 - Resolve clippy lints and syntax errors in LSP handlers
-- *(core)* Resolve collapsible_if clippy warning in walk.rs
-- *(lsp)* Include ID in symbol names for workspace/document symbol search
-- *(test)* Update DG004 unit tests to match new function signature
+- _(core)_ Resolve collapsible_if clippy warning in walk.rs
+- _(lsp)_ Include ID in symbol names for workspace/document symbol search
+- _(test)_ Update DG004 unit tests to match new function signature
 - Replace verify command with type refinement workflow
 - Update docgraph.toml to explicitly define UC reference rules
 - Add --force to cargo install in devcontainer.json to avoid prompts
@@ -235,7 +234,7 @@ All notable changes to this project will be documented in this file.
 - Register new rules and dependencies
 - Add architecture node types (CTX, BB, RT, DEP, CC)
 - Finalize all reference rules and direction alignment
-- *(dg003)* Add strict file link validation with auto-fix
+- _(dg003)_ Add strict file link validation with auto-fix
 - Add list command with prefix matching support
 - Add trace command with up/down direction support
 - Add describe command for bidirectional relationship view
@@ -255,14 +254,14 @@ All notable changes to this project will be documented in this file.
 - Implement error handling strategy with thiserror and anyhow
 - Implement E2E testing strategy with assert_cmd
 - Introduce Biome for VSIX project and update CI/CD
-- *(cli)* Add type subcommand to display node types
+- _(cli)_ Add type subcommand to display node types
 - Optimize lint performance by refactoring DG004
 - Add CLI wrapper commands to docgraph-plugin
 - Add verify workflow command
 - Add refine-type workflow command
 - Add tidy workflow command
 - Add dev container configuration and update developer guide
-- *(devcontainer)* Add Claude Code installation and configuration
+- _(devcontainer)_ Add Claude Code installation and configuration
 - Add github release workflow and changelog configuration
 - Add installation scripts for macOS/Linux and Windows
 
@@ -272,12 +271,12 @@ All notable changes to this project will be documented in this file.
 - Final formatting and lint fixes for describe command
 - Update Cargo.lock for LSP dependencies
 - Security hardening (CI audit, permissions, policy)
-- *(deps)* Bump softprops/action-gh-release from 1 to 2
+- _(deps)_ Bump softprops/action-gh-release from 1 to 2
 - Refactor ci.yml for efficiency and speed
 - Parallelize ci jobs (lint and test)
-- *(deps)* Bump toml in the dependencies group
+- _(deps)_ Bump toml in the dependencies group
 - Cleanup redundant release workflow and refine coverage visibility
-- *(deps)* Bump actions/checkout from 4 to 6
+- _(deps)_ Bump actions/checkout from 4 to 6
 - Relocate security policy to root as SECURITY.md
 - Rename doc/devel/README.md to guide.md
 - Split core_workflows.md and remove tests
@@ -287,19 +286,19 @@ All notable changes to this project will be documented in this file.
 - Rename markdown files to use kebab-case
 - Replace test_data with real docs in CI and guide
 - Remove empty tests directory
-- *(core)* Improve coverage and fix warnings
+- _(core)_ Improve coverage and fix warnings
 - Add blank lines for readability in SECURITY.md
 - Rename all IDs to underscore-separated format
 - Sync remaining LSP handlers with ID renaming
-- *(deps)* Bump actions/upload-artifact from 4 to 6
-- *(deps-dev)* Bump @types/node from 16.18.126 to 25.1.0 in /vsix
-- *(deps)* Bump vscode-languageclient from 8.1.0 to 9.0.1 in /vsix
-- *(deps-dev)* Bump typescript from 4.9.5 to 5.9.3 in /vsix
-- *(deps-dev)* Bump @vscode/vsce from 2.32.0 to 3.7.1 in /vsix
+- _(deps)_ Bump actions/upload-artifact from 4 to 6
+- _(deps-dev)_ Bump @types/node from 16.18.126 to 25.1.0 in /vsix
+- _(deps)_ Bump vscode-languageclient from 8.1.0 to 9.0.1 in /vsix
+- _(deps-dev)_ Bump typescript from 4.9.5 to 5.9.3 in /vsix
+- _(deps-dev)_ Bump @vscode/vsce from 2.32.0 to 3.7.1 in /vsix
 - Cleanup unused shell scripts and update documentation
 - Enforce strict consistency rules for Use Cases in docgraph.toml
 - Run docgraph check --fix
-- *(devcontainer)* Optimize startup speed using cargo-binstall
+- _(devcontainer)_ Optimize startup speed using cargo-binstall
 - Bump version to 0.2.0
 
 ### Refactor
