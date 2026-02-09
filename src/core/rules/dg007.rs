@@ -137,7 +137,10 @@ fn parse_template(content: &str) -> Result<Template, String> {
     })
 }
 
-fn parse_header<'a>(parser: &mut impl Iterator<Item = Event<'a>>, level: HeadingLevel) -> TemplateElement {
+fn parse_header<'a>(
+    parser: &mut impl Iterator<Item = Event<'a>>,
+    level: HeadingLevel,
+) -> TemplateElement {
     let raw_text = get_event_text(parser);
     let optional = raw_text.contains("(Optional)");
     let text_pattern = raw_text.replace("(Optional)", "").trim().to_string();
@@ -990,7 +993,10 @@ Some content.
 
         // Verify that the header pattern was parsed correctly and is NOT empty
         if let Some(TemplateElement::Header { text_pattern, .. }) = template.elements.get(0) {
-            assert!(!text_pattern.is_empty(), "Header pattern should not be empty");
+            assert!(
+                !text_pattern.is_empty(),
+                "Header pattern should not be empty"
+            );
             assert!(
                 text_pattern.contains("{Title}"),
                 "Header pattern should contain {{Title}}, found: '{}'",
