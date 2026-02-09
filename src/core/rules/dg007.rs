@@ -14,6 +14,12 @@ fn init_regex() {
     RE_PLACEHOLDER.get_or_init(|| Regex::new(r"\\\{[^}]+\\\}").unwrap());
 }
 
+fn get_safe_options() -> Options {
+    let mut options = Options::all();
+    options.remove(Options::ENABLE_HEADING_ATTRIBUTES);
+    options
+}
+
 #[derive(Debug, Clone)]
 enum TemplateElement {
     Header {
@@ -86,16 +92,19 @@ pub fn check_templates(root: &Path, spec_blocks: &[SpecBlock], config: &Config) 
 }
 
 fn parse_template(content: &str) -> Result<Template, String> {
-    let mut parser = Parser::new_ext(content, Options::all());
+    let parser = Parser::new_ext(content, get_safe_options());
     let mut elements = Vec::new();
     let mut root_anchor_pattern = Regex::new(".*").unwrap();
 
-    if let Some(Event::Html(html)) = parser.next() {
+    let mut parser = parser.peekable();
+
+    if let Some(Event::Html(html)) = parser.peek() {
         let re = Regex::new(r#"<a\s+id=["']([^"']+)["']"#).unwrap();
-        if let Some(caps) = re.captures(&html) {
+        if let Some(caps) = re.captures(html) {
             let id_pattern = caps.get(1).unwrap().as_str();
             let pattern_str = format!("^{}$", regex::escape(id_pattern).replace("\\*", ".*"));
             root_anchor_pattern = Regex::new(&pattern_str).map_err(|e| e.to_string())?;
+            parser.next(); // Consume only if it was an anchor
         }
     }
 
@@ -128,7 +137,7 @@ fn parse_template(content: &str) -> Result<Template, String> {
     })
 }
 
-fn parse_header<'a>(parser: &mut Parser<'a>, level: HeadingLevel) -> TemplateElement {
+fn parse_header<'a>(parser: &mut impl Iterator<Item = Event<'a>>, level: HeadingLevel) -> TemplateElement {
     let raw_text = get_event_text(parser);
     let optional = raw_text.contains("(Optional)");
     let text_pattern = raw_text.replace("(Optional)", "").trim().to_string();
@@ -139,7 +148,7 @@ fn parse_header<'a>(parser: &mut Parser<'a>, level: HeadingLevel) -> TemplateEle
     }
 }
 
-fn parse_list<'a>(parser: &mut Parser<'a>) -> TemplateElement {
+fn parse_list<'a>(parser: &mut impl Iterator<Item = Event<'a>>) -> TemplateElement {
     let mut item_patterns = Vec::new();
     let mut depth = 1;
     while let Some(event) = parser.next() {
@@ -163,7 +172,7 @@ fn parse_list<'a>(parser: &mut Parser<'a>) -> TemplateElement {
     }
 }
 
-fn parse_table<'a>(parser: &mut Parser<'a>) -> TemplateElement {
+fn parse_table<'a>(parser: &mut impl Iterator<Item = Event<'a>>) -> TemplateElement {
     let mut headers = Vec::new();
     let mut rows = Vec::new();
 
@@ -201,7 +210,7 @@ fn parse_table<'a>(parser: &mut Parser<'a>) -> TemplateElement {
 }
 
 fn validate_block(block: &SpecBlock, template: &Template) -> Result<(), String> {
-    let parser = Parser::new_ext(&block.content, Options::all());
+    let parser = Parser::new_ext(&block.content, get_safe_options());
     let events: Vec<Event> = parser.collect();
     let mut event_idx = 0;
     let mut section_missing = false;
@@ -952,6 +961,60 @@ This should be detected as unexpected.
         assert!(
             result.is_ok(),
             "Table formatting should be flexible, but got error: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn test_header_placeholder_support() {
+        init_regex();
+
+        // Template used in docgraph (simplified):
+        // ## {Title}
+        let template_content = r#"<a id="TEST_*"></a>
+
+## {Title}
+
+Some content.
+"#;
+
+        // Document
+        let block_content = r#"<a id="TEST_001"></a>
+
+## Actual Title
+
+Some content.
+"#;
+
+        let template = parse_template(template_content).expect("Failed to parse template");
+
+        // Verify that the header pattern was parsed correctly and is NOT empty
+        if let Some(TemplateElement::Header { text_pattern, .. }) = template.elements.get(0) {
+            assert!(!text_pattern.is_empty(), "Header pattern should not be empty");
+            assert!(
+                text_pattern.contains("{Title}"),
+                "Header pattern should contain {{Title}}, found: '{}'",
+                text_pattern
+            );
+        } else {
+            panic!("First element should be a Header");
+        }
+
+        let block = SpecBlock {
+            id: "TEST_001".to_string(),
+            node_type: "TEST".to_string(),
+            name: Some("Actual Title".to_string()),
+            edges: vec![],
+            file_path: "test.md".into(),
+            line_start: 1,
+            line_end: 10,
+            content: block_content.to_string(),
+        };
+
+        let result = validate_block(&block, &template);
+        assert!(
+            result.is_ok(),
+            "Validation should pass for header with placeholder, but got: {:?}",
             result.err()
         );
     }
