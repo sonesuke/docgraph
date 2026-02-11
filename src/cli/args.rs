@@ -53,11 +53,20 @@ pub enum Commands {
     },
     /// List spec blocks matching a query
     List {
-        /// Query pattern (e.g., "FR-*")
-        query: String,
+        /// Query pattern (e.g., "FR-01", "FR-*"). If omitted, all blocks are listed.
+        ///
+        /// Examples:
+        ///
+        /// - docgraph list "FR-*"
+        ///
+        /// - docgraph list FR
+        ///
+        /// - docgraph list
+        #[arg(index = 1)]
+        query: Option<String>,
 
         /// Path to search for markdown files (defaults to current directory)
-        #[arg(default_value = ".")]
+        #[arg(index = 2, default_value = ".")]
         path: PathBuf,
     },
     /// Trace relationships between spec blocks
@@ -150,7 +159,19 @@ mod tests {
         let cli = Cli::parse_from(["docgraph", "list", "FR-*"]);
         match cli.command {
             Commands::List { query, path } => {
-                assert_eq!(query, "FR-*");
+                assert_eq!(query, Some("FR-*".to_string()));
+                assert_eq!(path, PathBuf::from("."));
+            }
+            _ => panic!("Expected List command"),
+        }
+    }
+
+    #[test]
+    fn test_list_no_query() {
+        let cli = Cli::parse_from(["docgraph", "list"]);
+        match cli.command {
+            Commands::List { query, path } => {
+                assert!(query.is_none());
                 assert_eq!(path, PathBuf::from("."));
             }
             _ => panic!("Expected List command"),
