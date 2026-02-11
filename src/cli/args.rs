@@ -59,14 +59,12 @@ pub enum Commands {
         ///
         /// - docgraph list "FR-*"
         ///
-        /// - docgraph list FR
-        ///
         /// - docgraph list
         #[arg(index = 1)]
         query: Option<String>,
 
         /// Path to search for markdown files (defaults to current directory)
-        #[arg(index = 2, default_value = ".")]
+        #[arg(long, short, default_value = ".")]
         path: PathBuf,
     },
     /// Trace relationships between spec blocks
@@ -173,6 +171,30 @@ mod tests {
             Commands::List { query, path } => {
                 assert!(query.is_none());
                 assert_eq!(path, PathBuf::from("."));
+            }
+            _ => panic!("Expected List command"),
+        }
+    }
+
+    #[test]
+    fn test_list_with_path() {
+        let cli = Cli::parse_from(["docgraph", "list", "--path", "./doc"]);
+        match cli.command {
+            Commands::List { query, path } => {
+                assert!(query.is_none());
+                assert_eq!(path, PathBuf::from("./doc"));
+            }
+            _ => panic!("Expected List command"),
+        }
+    }
+
+    #[test]
+    fn test_list_query_with_path() {
+        let cli = Cli::parse_from(["docgraph", "list", "FR-*", "-p", "./doc"]);
+        match cli.command {
+            Commands::List { query, path } => {
+                assert_eq!(query, Some("FR-*".to_string()));
+                assert_eq!(path, PathBuf::from("./doc"));
             }
             _ => panic!("Expected List command"),
         }
