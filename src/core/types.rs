@@ -58,4 +58,5 @@ pub struct Range {
 pub struct RuleMetadata {
     pub code: &'static str,
     pub summary: &'static str,
+    pub description: &'static str,
 }

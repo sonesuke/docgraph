@@ -8,6 +8,7 @@ pub fn metadata() -> RuleMetadata {
     RuleMetadata {
         code: "DG006",
         summary: "Enforce strict relationships (allowed_dependencies/derived_from)",
+        description: "Validates that all relationships between nodes adhere to the rules defined in the [references] section of docgraph.toml. It ensures mandatory relationships (min count), limits on relationships (max count), and that only permitted node type connections are made.",
     }
 }
 

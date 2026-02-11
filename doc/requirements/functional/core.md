@@ -63,15 +63,45 @@ templates.
 
 **Validation Rules:**
 
-- **Structure Matching**: The hierarchy of headers and lists in the document must strictly match the template.
-- **Text Patterns**: Use `{...}` placeholders in templates to match variable content. Fixed text outside placeholders
-  must match exactly.
+- **Structure Matching**: The hierarchy of headers in the document must match the template.
+- **Repeating Elements**: Lists and tables act as "schemas". A document can have multiple items or rows, provided each matches at least one of the patterns defined in the template.
+- **Text Patterns**: Use `{...}` placeholders in templates to match variable content. Fixed text outside placeholders must match exactly.
 - **Wildcards**: Supports `*` for ID matching and substring matching in links.
 - **Optional Sections**: Use `(Optional)` in headers to mark sections that can be omitted.
 
 ### Realized by
 
 - [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
+
+**Template Example:**
+
+The following is an example of a template (`doc/templates/functional.md`) that leverages placeholders, wildcards, and repeating schemas.
+
+```markdown
+<a id="FR_*"></a>
+
+# {Title}
+
+This requirement defines the behavior for {Feature}.
+
+## Realized by
+
+- [MOD_*(*)](*#MOD*)
+
+## Parameters (Optional)
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| {ParamName} | {Type} | {Description} |
+```
+
+**How it works:**
+
+- **ID Wildcard**: `<a id="FR_*"></a>` ensures that the document ID starts with `FR_`.
+- **Placeholders**: `{Title}` and `{Feature}` match any text in the document.
+- **List Schema**: The single list item `- [MOD_*(*)](*#MOD*)` allows multiple module links.
+- **Optional Header**: The `## Parameters (Optional)` section can be omitted from the document.
+- **Table Schema**: The single row in the template acts as a schema. The doc can have multiple parameter rows, provided each matches the columns.
 
 ---
 

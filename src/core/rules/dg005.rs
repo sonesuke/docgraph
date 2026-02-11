@@ -7,6 +7,7 @@ pub fn metadata() -> RuleMetadata {
     RuleMetadata {
         code: "DG005",
         summary: "Enforce strict node types defined in docgraph.toml",
+        description: "All documented node IDs must start with a registered prefix (e.g., 'UC', 'FR', 'MOD') as defined in the [node_types] section of your docgraph.toml configuration file.",
     }
 }
 

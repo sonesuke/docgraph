@@ -11,6 +11,7 @@ pub fn metadata() -> RuleMetadata {
     RuleMetadata {
         code: "DG004",
         summary: "Link text must match target title (or expected format)",
+        description: "To maintain consistency and readability, the text of internal links should match the title of the target node. For traceability links, it should follow the standard format: 'TARGET_ID (Target Title)'.",
     }
 }
 

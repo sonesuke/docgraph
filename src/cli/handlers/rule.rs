@@ -23,7 +23,7 @@ fn try_rule(rule: Option<String>) -> anyhow::Result<ExitCode> {
         if let Some(meta) = found {
             println!(
                 "{} - {}\n\nDescription:\n  {}",
-                meta.code, meta.summary, meta.summary
+                meta.code, meta.summary, meta.description
             );
         } else {
             anyhow::bail!("Rule '{}' not found", rule_query);

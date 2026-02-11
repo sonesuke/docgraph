@@ -49,6 +49,28 @@ pub fn metadata() -> RuleMetadata {
     RuleMetadata {
         code: "DG007",
         summary: "Enforce template adherence for node types",
+        description: r#"Validates that nodes conform to their associated Markdown templates.
+
+Usage Examples:
+
+- Placeholders: Use '{...}' to match variable text (e.g., '# {Title}').
+- Wildcards: Use '*' within links or IDs (e.g., '[MOD_*(*)](*)').
+- Optional Sections: Append '(Optional)' to a header to make that section optional.
+- Repeating Lists: A list item in the template acts as a schema. The document can have multiple items matching the pattern.
+- Repeating Tables: A table row in the template acts as a schema. The document can have multiple rows matching the pattern.
+
+Template Example:
+
+  <a id="FR_*"></a>
+  # {Title}
+  
+  ## Realized by
+  - [MOD_*(*)](*#MOD*)
+  
+  ## Parameters (Optional)
+  | Name | Type |
+  | :--- | :--- |
+  | {Name} | {Type} |"#,
     }
 }
 
@@ -455,8 +477,6 @@ fn validate_table(
                     let actual_cell = get_events_text_from_vec(events, event_idx);
 
                     if in_head {
-                        // We need a way to track column index in head
-                        // For simplicity in this stream, we'll count cells
                         let col_idx = count_cells_in_current_row(events, idx, *event_idx);
                         if col_idx > expected_headers.len() {
                             return Err(format!(
@@ -472,26 +492,33 @@ fn validate_table(
                             ));
                         }
                     } else {
-                        let cur_row = &expected_rows.get(row_idx - 1).ok_or_else(|| {
-                            format!(
-                                "Table row count mismatch. Expected {}, found more",
-                                expected_rows.len()
-                            )
-                        })?;
-
                         let col_idx = count_cells_in_current_row(events, idx, *event_idx);
-                        if col_idx > cur_row.len() {
-                            return Err(format!(
-                                "Table column count mismatch at row {}. Expected {}, found more",
-                                row_idx,
-                                cur_row.len()
-                            ));
+
+                        // We are in a cell. We check if the cell value matches the expected value
+                        // for this column in ANY of the allowed row templates.
+                        let mut matched_any = false;
+                        let mut errors = Vec::new();
+
+                        for (expected_row_idx, expected_row) in expected_rows.iter().enumerate() {
+                            if col_idx <= expected_row.len() {
+                                let expected = &expected_row[col_idx - 1];
+                                if match_text(expected, &actual_cell) {
+                                    matched_any = true;
+                                    break;
+                                } else {
+                                    errors.push(format!(
+                                        "Row-pattern {}: '{}'",
+                                        expected_row_idx + 1,
+                                        expected
+                                    ));
+                                }
+                            }
                         }
-                        let expected = &cur_row[col_idx - 1];
-                        if !match_text(expected, &actual_cell) {
+
+                        if !matched_any {
                             return Err(format!(
-                                "Table cell mismatch at row {}, col {}. Expected pattern '{}', found '{}'",
-                                row_idx, col_idx, expected, actual_cell
+                                "Table cell mismatch at row {}, col {}. Found '{}', but it doesn't match any allowed patterns: {:?}",
+                                row_idx, col_idx, actual_cell, errors
                             ));
                         }
                     }
@@ -505,13 +532,9 @@ fn validate_table(
             *event_idx += 1;
         }
 
-        // Final validation for row counts
-        if row_idx != expected_rows.len() {
-            return Err(format!(
-                "Table row count mismatch. Expected {}, found {}",
-                expected_rows.len(),
-                row_idx
-            ));
+        // Final validation: Ensure it matched at least one row if templates exist
+        if !expected_rows.is_empty() && row_idx == 0 {
+            return Err("Table row count mismatch. Expected at least 1 row".to_string());
         }
 
         Ok(())
@@ -1029,6 +1052,131 @@ Some content.
             result.is_ok(),
             "Validation should pass for header with placeholder, but got: {:?}",
             result.err()
+        );
+    }
+
+    #[test]
+    fn test_table_repeating_rows() {
+        init_regex();
+
+        // Template: Table with 1 row (schema)
+        let template_content = r#"<a id="TBL_*"></a>
+| col1 | col2 |
+|---|---|
+| {val1} | {val2} |
+"#;
+
+        // Document: Table with 3 matching rows
+        let block_content = r#"<a id="TBL_001"></a>
+| col1 | col2 |
+|---|---|
+| v1-1 | v1-2 |
+| v2-1 | v2-2 |
+| v3-1 | v3-2 |
+"#;
+
+        let template = parse_template(template_content).expect("Failed to parse template");
+        let block = SpecBlock {
+            id: "TBL_001".to_string(),
+            node_type: "TBL".to_string(),
+            name: None,
+            edges: vec![],
+            file_path: "test.md".into(),
+            line_start: 1,
+            line_end: 10,
+            content: block_content.to_string(),
+        };
+
+        // Should pass with multiple matching rows
+        let result = validate_block(&block, &template);
+        assert!(
+            result.is_ok(),
+            "Table should allow multiple rows matching a single-row template, but got error: {:?}",
+            result.err()
+        );
+
+        // Document: Table with a mismatching row
+        let block_content_fail = r#"<a id="TBL_001"></a>
+| col1 | col2 |
+|---|---|
+| v1-1 | v1-2 |
+| mismatch |
+"#;
+        let block_fail = SpecBlock {
+            id: "TBL_001".to_string(),
+            node_type: "TBL".to_string(),
+            name: None,
+            edges: vec![],
+            file_path: "test.md".into(),
+            line_start: 1,
+            line_end: 10,
+            content: block_content_fail.to_string(),
+        };
+
+        let result_fail = validate_block(&block_fail, &template);
+        assert!(
+            result_fail.is_err(),
+            "Table should fail if a row doesn't match the column count"
+        );
+    }
+
+    #[test]
+    fn test_table_strict_multiple_rows_become_flexible() {
+        init_regex();
+
+        // Template: Table with 2 specific allowed row patterns
+        let template_content = r#"<a id="TBL_*"></a>
+| col1 | col2 |
+|---|---|
+| rowA | rowA |
+| rowB | rowB |
+"#;
+
+        let template = parse_template(template_content).expect("Failed to parse template");
+
+        // Document: Table with matching 2 rows
+        let block_content = r#"<a id="TBL_001"></a>
+| col1 | col2 |
+|---|---|
+| rowA | rowA |
+| rowB | rowB |
+"#;
+        let block = SpecBlock {
+            id: "TBL_001".to_string(),
+            node_type: "TBL".to_string(),
+            name: None,
+            edges: vec![],
+            file_path: "test.md".into(),
+            line_start: 1,
+            line_end: 10,
+            content: block_content.to_string(),
+        };
+
+        assert!(validate_block(&block, &template).is_ok());
+
+        // Document: Table with 3 rows (now allowed, as long as each matches one pattern)
+        let block_content_extra = r#"<a id="TBL_001"></a>
+| col1 | col2 |
+|---|---|
+| rowA | rowA |
+| rowB | rowB |
+| rowA | rowA |
+"#;
+        let block_extra = SpecBlock {
+            id: "TBL_001".to_string(),
+            node_type: "TBL".to_string(),
+            name: None,
+            edges: vec![],
+            file_path: "test.md".into(),
+            line_start: 1,
+            line_end: 10,
+            content: block_content_extra.to_string(),
+        };
+
+        let result_extra = validate_block(&block_extra, &template);
+        assert!(
+            result_extra.is_ok(),
+            "Should now allow extra rows if they match any template pattern"
         );
     }
 }
