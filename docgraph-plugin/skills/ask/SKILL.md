@@ -12,14 +12,26 @@ about its contents, relationships, and structure. It emphasizes using `docgraph`
 > [!TIP] Use this skill whenever you need to understand "how things are connected", "where a requirement is defined", or
 > "what is the impact of a change".
 
+## Prerequisites
+
+- **`docgraph` CLI must be installed as a system binary**
+  - Install via: `curl -fsSL https://raw.githubusercontent.com/sonesuke/docgraph/main/install.sh | bash`
+  - Or build from source: `cargo install --path .`
+- **This is NOT an npm or Python package** - do NOT use `npx` or `pipx`
+- **Installation Verification**: Run `docgraph --version` to confirm the binary is available
+
 ## Exploration Tools
 
 ### 1. `docgraph list` (Discovery)
 
 Use to find nodes matching a pattern or within a scope.
 
-- **Usage**: `docgraph list "<ID_PATTERN>"`
-- **Example**: `docgraph list "FR_LOGIN_*"`
+- **Usage**: `docgraph list ["<QUERY>"] [--path <PATH>]`
+- **Examples**:
+  - `docgraph list` - List all nodes in current directory
+  - `docgraph list --path ./doc` - List all nodes in ./doc
+  - `docgraph list "FR_*"` - List nodes matching pattern
+  - `docgraph list "FR_*" --path ./doc` - List FR nodes in ./doc
 - **Benefit**: Quickly identifies relevant IDs without wading through raw file content.
 
 ### 2. `docgraph type` (Structural Context)
