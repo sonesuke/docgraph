@@ -9,6 +9,13 @@ if [ -z "$CI" ] && [ -z "$GITHUB_ACTIONS" ]; then
         echo "[Devcontainer Setup] Installing Claude CLI..."
         curl -fsSL https://claude.ai/install.sh | bash
 
+    echo "[Devcontainer Setup] Configuring tmux..."
+    cat > $HOME/.tmux.conf << 'EOF'
+# Display pane number
+bind-key p display-panes
+set display-panes-time 10000
+EOF
+
         # Add .local/bin to PATH for current session
         export PATH="$HOME/.local/bin:$PATH"
 

@@ -31,6 +31,3 @@ ENV PATH=/usr/local/cargo/bin:$PATH
 RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash \
     && rustup component add rustfmt clippy llvm-tools-preview \
     && cargo binstall -y cargo-audit cargo-llvm-cov
-
-# Configure tmux with mouse support for all users
-RUN echo 'set -g mouse on' > /etc/skel/.tmux.conf
