@@ -32,6 +32,10 @@ pub fn run() -> ExitCode {
         } => handlers::trace::handle_trace(from, to, path, direction),
         Commands::Describe { id, path } => handlers::describe::handle_describe(id, path),
         Commands::Type { type_id } => handlers::type_cmd::handle_type(type_id),
-        Commands::Query { query, format, path } => handlers::query::handle_query(query, format, path),
+        Commands::Query {
+            query,
+            format,
+            path,
+        } => handlers::query::handle_query(query, format, path),
     }
 }

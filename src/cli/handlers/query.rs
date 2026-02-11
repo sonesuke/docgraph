@@ -45,13 +45,14 @@ fn try_query(query_str: String, format: OutputFormat, path: PathBuf) -> anyhow::
             for row in result.rows {
                 let mut obj = serde_json::Map::new();
                 for (i, col_name) in result.columns.iter().enumerate() {
-                     if let Some(val) = row.get(i) {
-                         obj.insert(col_name.clone(), serde_json::Value::String(val.clone()));
-                     }
+                    if let Some(val) = row.get(i) {
+                        obj.insert(col_name.clone(), serde_json::Value::String(val.clone()));
+                    }
                 }
                 json_rows.push(serde_json::Value::Object(obj));
             }
-            let json_out = serde_json::to_string_pretty(&json_rows).context("failed to serialize to JSON")?;
+            let json_out =
+                serde_json::to_string_pretty(&json_rows).context("failed to serialize to JSON")?;
             println!("{}", json_out);
         }
     }

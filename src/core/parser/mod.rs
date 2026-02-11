@@ -172,29 +172,29 @@ fn parse_range_literal(pair: Pair<Rule>) -> Result<ast::Range> {
             // range_quantifier -> (range_start? ~ ".." ~ range_end?) | range_exact
             let inner = p.clone().into_inner().next().unwrap();
             match inner.as_rule() {
-                 Rule::range_exact => {
-                     let val = inner.as_str().parse::<usize>().ok();
-                     start = val;
-                     end = val;
-                 }
-                 _ => {
-                     // It's a range start/end sequence
-                     // We need to re-iterate because `inner` is just the first match, 
-                     // but `range_quantifier` can have start, "..", end.
-                     // Actually, `range_quantifier` definition: { (range_start? ~ ".." ~ range_end?) | range_exact }
-                     // If it matched the first part, we need to iterate over `p.into_inner()` again properly.
-                     for q in p.into_inner() {
+                Rule::range_exact => {
+                    let val = inner.as_str().parse::<usize>().ok();
+                    start = val;
+                    end = val;
+                }
+                _ => {
+                    // It's a range start/end sequence
+                    // We need to re-iterate because `inner` is just the first match,
+                    // but `range_quantifier` can have start, "..", end.
+                    // Actually, `range_quantifier` definition: { (range_start? ~ ".." ~ range_end?) | range_exact }
+                    // If it matched the first part, we need to iterate over `p.into_inner()` again properly.
+                    for q in p.into_inner() {
                         match q.as_rule() {
                             Rule::range_start => {
-                                 start = q.as_str().parse::<usize>().ok();
+                                start = q.as_str().parse::<usize>().ok();
                             }
                             Rule::range_end => {
-                                 end = q.as_str().parse::<usize>().ok();
+                                end = q.as_str().parse::<usize>().ok();
                             }
                             _ => {}
                         }
-                     }
-                 }
+                    }
+                }
             }
         }
     }

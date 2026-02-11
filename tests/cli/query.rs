@@ -3,7 +3,7 @@ use predicates::prelude::*;
 #[test]
 fn test_query_basic_match() {
     let tmp = crate::common::setup_temp_dir();
-    
+
     // Define UC and FR node types
     let config = r#"
 [nodes.UC]
@@ -17,7 +17,7 @@ desc = "Functional Requirement"
     crate::common::create_test_doc(
         tmp.path(),
         "uc.md",
-        "<a id=\"UC_001\"></a>\n\n# User Login\nUser logs in.\n"
+        "<a id=\"UC_001\"></a>\n\n# User Login\nUser logs in.\n",
     );
 
     assert_cmd::cargo_bin_cmd!("docgraph")
@@ -41,12 +41,12 @@ desc = "Use Case"
     crate::common::create_test_doc(
         tmp.path(),
         "uc1.md",
-        "<a id=\"UC_001\"></a>\n\n# User Login\nUser logs in.\n"
+        "<a id=\"UC_001\"></a>\n\n# User Login\nUser logs in.\n",
     );
     crate::common::create_test_doc(
         tmp.path(),
         "uc2.md",
-        "<a id=\"UC_002\"></a>\n\n# User Logout\nUser logs out.\n"
+        "<a id=\"UC_002\"></a>\n\n# User Logout\nUser logs out.\n",
     );
 
     // Filter by name (which comes from the heading)
@@ -76,7 +76,7 @@ desc = "Use Case"
     crate::common::create_test_doc(
         &sub,
         "export.md",
-        "<a id=\"UC_003\"></a>\n\n# Data Export\nExport user data.\n"
+        "<a id=\"UC_003\"></a>\n\n# Data Export\nExport user data.\n",
     );
 
     // Query name, file, line
@@ -126,15 +126,15 @@ Realizes: [UC_001](#UC_001)
 
 # AuthModule
 Realizes: [FR_001](#FR_001)
-"#
+"#,
     );
 
     // Query with variable length path: UC -> ... -> MOD
-    // Note: The relationship direction in doc is "realizes", so FR realizes UC (FR -> UC). 
+    // Note: The relationship direction in doc is "realizes", so FR realizes UC (FR -> UC).
     // MOD realizes FR (MOD -> FR).
     // So distinct path is MOD -> FR -> UC.
     // Let's query: MATCH (m:MOD)-[*1..2]->(u:UC) RETURN m.id, u.id
-    
+
     assert_cmd::cargo_bin_cmd!("docgraph")
         .arg("query")
         .arg("MATCH (m:MOD)-[*1..2]->(u:UC) RETURN m.id, u.id")
@@ -176,7 +176,7 @@ Link to C: [C_001](#C_001)
 <a id="C_001"></a>
 # Node C
 End.
-"#
+"#,
     );
 
     // 1. Forward: (a)-[right]->(c)
@@ -191,14 +191,15 @@ End.
         .success();
     let output = assert.get_output();
     let stdout = String::from_utf8_lossy(&output.stdout);
-    let json: serde_json::Value = serde_json::from_str(&stdout).expect("Failed to parse JSON output");
+    let json: serde_json::Value =
+        serde_json::from_str(&stdout).expect("Failed to parse JSON output");
     assert!(json.is_array());
     let arr = json.as_array().unwrap();
     assert!(!arr.is_empty(), "Forward match failed: empty result");
     // Check content
-    let found = arr.iter().any(|row| 
-        row["a.id"] == "A_001" && row["c.id"] == "C_001"
-    );
+    let found = arr
+        .iter()
+        .any(|row| row["a.id"] == "A_001" && row["c.id"] == "C_001");
     assert!(found, "Forward match failed: content mismatch");
 
     // 2. Backward: (c)<-[left]-(a)
@@ -213,13 +214,14 @@ End.
         .success();
     let output = assert.get_output();
     let stdout = String::from_utf8_lossy(&output.stdout);
-    let json: serde_json::Value = serde_json::from_str(&stdout).expect("Failed to parse JSON output");
+    let json: serde_json::Value =
+        serde_json::from_str(&stdout).expect("Failed to parse JSON output");
     assert!(json.is_array());
     let arr = json.as_array().unwrap();
     assert!(!arr.is_empty(), "Backward match failed: empty result");
-    let found = arr.iter().any(|row| 
-        row["a.id"] == "A_001" && row["c.id"] == "C_001"
-    );
+    let found = arr
+        .iter()
+        .any(|row| row["a.id"] == "A_001" && row["c.id"] == "C_001");
     assert!(found, "Backward match failed: content mismatch");
 
     // 3. Wrong Direction Forward: (c)-[right]->(a)
@@ -234,12 +236,14 @@ End.
         .success();
     let output = assert.get_output();
     let stdout = String::from_utf8_lossy(&output.stdout);
-    // Expect empty JSON array "[]" or similar null result depending on implementation
-    if let Ok(json) = serde_json::from_str::<serde_json::Value>(&stdout) {
-         if let Some(arr) = json.as_array() {
-             assert!(arr.is_empty(), "Wrong Forward match succeeded (should be empty): {}", stdout);
-         }
-    } else {
+    let json: serde_json::Value = serde_json::from_str(&stdout).unwrap_or(serde_json::Value::Null);
+    if let Some(arr) = json.as_array() {
+        assert!(
+            arr.is_empty(),
+            "Wrong Forward match succeeded (should be empty): {}",
+            stdout
+        );
+    } else if serde_json::from_str::<serde_json::Value>(&stdout).is_err() {
         // If it outputs "No results found." text (which it shouldn't in JSON mode ideally, but handlers/query.rs handles it)
         // Wait, handlers/query.rs for JSON:
         // if result.rows.is_empty() -> "[]" ?
@@ -260,10 +264,13 @@ End.
         .success();
     let output = assert.get_output();
     let stdout = String::from_utf8_lossy(&output.stdout);
-    if let Ok(json) = serde_json::from_str::<serde_json::Value>(&stdout) {
-         if let Some(arr) = json.as_array() {
-             assert!(arr.is_empty(), "Wrong Backward match succeeded (should be empty): {}", stdout);
-         }
+    let json: serde_json::Value = serde_json::from_str(&stdout).unwrap_or(serde_json::Value::Null);
+    if let Some(arr) = json.as_array() {
+        assert!(
+            arr.is_empty(),
+            "Wrong Backward match succeeded (should be empty): {}",
+            stdout
+        );
     }
 }
 
@@ -279,7 +286,7 @@ desc = "Use Case"
     crate::common::create_test_doc(
         tmp.path(),
         "uc.md",
-        "<a id=\"UC_JSON\"></a>\n\n# JSON Test\nContent.\n"
+        "<a id=\"UC_JSON\"></a>\n\n# JSON Test\nContent.\n",
     );
 
     // 1. JSON Output
@@ -293,9 +300,10 @@ desc = "Use Case"
         .success();
     let output = assert.get_output();
     let stdout = String::from_utf8_lossy(&output.stdout);
-    
+
     // Validate JSON structure
-    let json: serde_json::Value = serde_json::from_str(&stdout).expect("Failed to parse JSON output");
+    let json: serde_json::Value =
+        serde_json::from_str(&stdout).expect("Failed to parse JSON output");
     assert!(json.is_array());
     let arr = json.as_array().unwrap();
     assert_eq!(arr.len(), 1);
@@ -312,11 +320,11 @@ desc = "Use Case"
         .success();
     let output = assert.get_output();
     let stdout = String::from_utf8_lossy(&output.stdout);
-    
+
     // Check for UTF-8 borders (e.g., top-left corner '┌')
     // Note: Depends on comfy-table implementation details, but specific enough.
     assert!(stdout.contains("UC_JSON"));
-    assert!(stdout.contains("┌")); 
+    assert!(stdout.contains("┌"));
     assert!(stdout.contains("n.id"));
 }
 
@@ -351,11 +359,16 @@ This is content.
     let output = assert.get_output();
     let json_output: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
     let results = json_output.as_array().unwrap();
-    
+
     assert_eq!(results.len(), 1);
     let row = &results[0];
     assert_eq!(row["n.id"], "UC_001");
     assert_eq!(row["n.type"], "UC");
     assert_eq!(row["n.name"], "User Login");
-    assert!(row["n.content"].as_str().unwrap().contains("This is content."));
+    assert!(
+        row["n.content"]
+            .as_str()
+            .unwrap()
+            .contains("This is content.")
+    );
 }
