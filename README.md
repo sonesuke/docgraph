@@ -62,14 +62,22 @@ IF = { desc = "Interface", template = "doc/templates/interface.md" }
 
 [references.FR]
 rules = [
-  { dir = "from", targets = ["UC"], min = 1, desc = "Requirements must be derived from a use case" },
-  { dir = "to", targets = ["MOD"], min = 1, desc = "Requirements must be realized by a module" }
+  { dir = "from", targets = [
+    "UC",
+  ], min = 1, desc = "Requirements must be derived from a use case" },
+  { dir = "to", targets = [
+    "MOD",
+  ], min = 1, desc = "Requirements must be realized by a module" },
 ]
 
 [references.IF]
 rules = [
-  { dir = "from", targets = ["UC"], min = 1, desc = "Interfaces must be justified by a use case" },
-  { dir = "from", targets = ["FR"], min = 1, desc = "Interfaces must be defined by a functional requirement" }
+  { dir = "from", targets = [
+    "UC",
+  ], min = 1, desc = "Interfaces must be justified by a use case" },
+  { dir = "from", targets = [
+    "FR",
+  ], min = 1, desc = "Interfaces must be defined by a functional requirement" },
 ]
 ```
 
@@ -136,6 +144,21 @@ docgraph check .
 # Trace relationships
 docgraph trace UC_LOGIN FR_EMAIL_LOGIN
 ```
+
+#### Development Setup
+
+If you are contributing to `docgraph`, please set up the pre-commit hooks to ensure code quality.
+
+1. **Install prek**:
+   ```bash
+   cargo install prek
+   ```
+2. **Install Git Hooks**:
+   ```bash
+   prek install -f
+   ```
+
+This will automatically run `cargo fmt`, `clippy`, `prettier`, `test`, and `docgraph check` before every commit.
 
 ## CLI Commands Reference
 
