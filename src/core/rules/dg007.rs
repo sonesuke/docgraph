@@ -992,7 +992,7 @@ Some content.
         let template = parse_template(template_content).expect("Failed to parse template");
 
         // Verify that the header pattern was parsed correctly and is NOT empty
-        if let Some(TemplateElement::Header { text_pattern, .. }) = template.elements.get(0) {
+        if let Some(TemplateElement::Header { text_pattern, .. }) = template.elements.first() {
             assert!(
                 !text_pattern.is_empty(),
                 "Header pattern should not be empty"
