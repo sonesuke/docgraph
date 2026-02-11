@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Features
+
+- _(cli)_ Improve `list` command readability and make `QUERY` optional
+- _(core)_ Support repeating schemas for lists and tables in template validation (DG007)
+
+### Documentation
+
+- Update template validation rules and add comprehensive usage examples in `doc/requirements/functional/core.md`
+
 ## [0.3.0] - 2026-02-08
 
 ### Bug Fixes

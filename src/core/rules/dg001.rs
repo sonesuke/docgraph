@@ -6,6 +6,7 @@ pub fn metadata() -> RuleMetadata {
     RuleMetadata {
         code: "DG001",
         summary: "Anchor must be followed by a heading",
+        description: "Each HTML anchor <a id=\"...\"></a> used for node identification must be immediately followed by a Markdown heading on the next line to provide a human-readable title for the node.",
     }
 }
 

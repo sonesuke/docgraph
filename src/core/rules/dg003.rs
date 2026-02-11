@@ -5,6 +5,7 @@ pub fn metadata() -> RuleMetadata {
     RuleMetadata {
         code: "DG003",
         summary: "Links must point to valid anchor IDs",
+        description: "All internal Markdown links must point to existing node IDs defined within the workspace. Broken links prevent the construction of a complete and accurate traceability graph.",
     }
 }
 

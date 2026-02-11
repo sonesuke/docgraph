@@ -5,6 +5,7 @@ pub fn metadata() -> RuleMetadata {
     RuleMetadata {
         code: "DG002",
         summary: "No duplicate anchor IDs allowed",
+        description: "All node IDs defined via <a id=\"...\"></a> must be unique across the entire workspace to ensure clear and unambiguous traceability and linking.",
     }
 }
 
