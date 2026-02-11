@@ -4,7 +4,7 @@ use anyhow::Context;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-pub fn handle_list(query: String, path: PathBuf) -> ExitCode {
+pub fn handle_list(query: Option<String>, path: PathBuf) -> ExitCode {
     match try_list(query, path) {
         Ok(code) => code,
         Err(e) => {
@@ -14,9 +14,11 @@ pub fn handle_list(query: String, path: PathBuf) -> ExitCode {
     }
 }
 
-fn try_list(query: String, path: PathBuf) -> anyhow::Result<ExitCode> {
+fn try_list(query: Option<String>, path: PathBuf) -> anyhow::Result<ExitCode> {
     let config = config::Config::load(&path).context("failed to load docgraph.toml")?;
     let (blocks, _refs) = collect::collect_workspace_all(&path, &config.graph.ignore, None);
+
+    let query = query.unwrap_or_else(|| "*".to_string());
     let regex_str = glob_to_regex(&query);
     let re = regex::Regex::new(&regex_str)
         .with_context(|| format!("Invalid query pattern: '{}'", query))?;
