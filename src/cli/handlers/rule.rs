@@ -28,6 +28,7 @@ fn try_rule(rule: Option<String>) -> anyhow::Result<ExitCode> {
             "DG006",
             "Enforce strict relationships (allowed_dependencies/derived_from)",
         ),
+        ("DG007", "Enforce template adherence for node types"),
     ];
 
     if let Some(rule_query) = rule {
