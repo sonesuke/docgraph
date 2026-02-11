@@ -1,6 +1,13 @@
-use crate::core::types::{Diagnostic, Range, Severity, SpecBlock};
+use crate::core::types::{Diagnostic, Range, RuleMetadata, Severity, SpecBlock};
 
 use std::path::PathBuf;
+
+pub fn metadata() -> RuleMetadata {
+    RuleMetadata {
+        code: "DG001",
+        summary: "Anchor must be followed by a heading",
+    }
+}
 
 pub fn check_anchor_headings(_files: &[PathBuf], blocks: &[SpecBlock]) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();

@@ -1,9 +1,9 @@
 use crate::core::config::Config;
-use crate::core::types::{Diagnostic, Severity, SpecBlock};
+use crate::core::types::{Diagnostic, RuleMetadata, Severity, SpecBlock};
 use pulldown_cmark::{Event, HeadingLevel, Options, Parser, Tag, TagEnd};
 use regex::Regex;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
 static RE_WS: OnceLock<Regex> = OnceLock::new();
@@ -45,13 +45,20 @@ struct Template {
     _root_anchor_pattern: Regex,
 }
 
-pub fn check_templates(root: &Path, spec_blocks: &[SpecBlock], config: &Config) -> Vec<Diagnostic> {
+pub fn metadata() -> RuleMetadata {
+    RuleMetadata {
+        code: "DG007",
+        summary: "Enforce template adherence for node types",
+    }
+}
+
+pub fn check(root: &Path, config: &Config, spec_blocks: &[SpecBlock]) -> Vec<Diagnostic> {
     init_regex();
     let mut diagnostics = Vec::new();
 
     for (type_name, node_config) in &config.nodes {
         if let Some(template_path) = &node_config.template {
-            let full_template_path: std::path::PathBuf = if template_path.exists() {
+            let full_template_path: PathBuf = if template_path.exists() {
                 template_path.to_path_buf()
             } else {
                 root.join(template_path)
@@ -992,7 +999,7 @@ Some content.
         let template = parse_template(template_content).expect("Failed to parse template");
 
         // Verify that the header pattern was parsed correctly and is NOT empty
-        if let Some(TemplateElement::Header { text_pattern, .. }) = template.elements.get(0) {
+        if let Some(TemplateElement::Header { text_pattern, .. }) = template.elements.first() {
             assert!(
                 !text_pattern.is_empty(),
                 "Header pattern should not be empty"
