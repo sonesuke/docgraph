@@ -14,11 +14,14 @@ thiserror = "2.0"
 toml = "0.9.12"
 lsp-server = "0.7.6"
 lsp-types = "0.97.0"
+pest = "2.7"
+pest_derive = "2.7"
 
 dashmap = "6.1.0"
 pulldown-cmark = "0.13.0"
 crossbeam-channel = "0.5.15"
 url = "2.5.8"
+comfy-table = "7.2.2"
 
 [dev-dependencies]
 tempfile = "3.25.0"

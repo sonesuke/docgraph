@@ -168,5 +168,62 @@ The `version` command shall display the current version of the `docgraph` tool.
 The `help` command shall display usage information for `docgraph` and its subcommands.
 
 ### Realized by
+ 
+- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
+
+<a id="FR_CLI_QUERY"></a>
+
+## Query Command
+
+The `query` command shall execute Cypher-like queries against the documentation graph to retrieve nodes and relationships matching specific patterns.
+
+**Usage:**
+
+```bash
+docgraph query "MATCH (n:UC) WHERE n.name CONTAINS 'Login' RETURN n.id" [--format <table|json>]
+```
+
+- Query string: A Cypher-like pattern matching string.
+  - Supports `MATCH` clause with node and relationship patterns (e.g., `(n:Type)`, `(a)-[r]->(b)`).
+  - Supports `WHERE` clause with operators: `=`, `<>`, `<`, `>`, `<=`, `>=`, `CONTAINS`, `AND`, `OR`.
+  - Supports `RETURN` clause to select specific properties (`n.id`, `n.file`, etc.).
+- `--format`: Output format.
+  - `table` (default): Tidy ASCII table.
+  - `json`: Structured JSON output.
+
+**Supported Properties:**
+
+Returning the node variable itself (e.g., `RETURN n`) extends to all available properties.
+
+- `id`: Node ID.
+- `name`: Node name (Markdown heading).
+- `type` / `node_type`: Node type identifier.
+- `file`: Relative file path.
+- `line`: Start line number.
+- `content`: Raw Markdown content.
+
+**Output format (table):**
+
+```text
+┌────────┬─────────────┐
+│ n.id   ┆ n.name      │
+╞════════╪═════════════╡
+│ UC_001 ┆ User Login  │
+└────────┴─────────────┘
+```
+
+**Output format (json):**
+
+```json
+[
+  {
+    "n.id": "UC_001",
+    "n.name": "User Login"
+  }
+]
+```
+
+### Realized by
 
 - [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
+- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)

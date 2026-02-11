@@ -100,8 +100,27 @@ pub enum Commands {
         #[arg(index = 1)]
         type_id: Option<String>,
     },
+    /// Query the documentation graph using Cypher
+    Query {
+        /// Cypher query string
+        query: String,
+
+        /// Output format
+        #[arg(long, value_enum, default_value_t = OutputFormat::Table)]
+        format: OutputFormat,
+
+        /// Path to search for markdown files (defaults to current directory)
+        #[arg(default_value = ".")]
+        path: PathBuf,
+    },
     /// Start the language server
     Lsp,
+}
+
+#[derive(clap::ValueEnum, Clone, Debug)]
+pub enum OutputFormat {
+    Table,
+    Json,
 }
 
 #[cfg(test)]

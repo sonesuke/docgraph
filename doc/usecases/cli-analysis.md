@@ -23,6 +23,8 @@ The developer runs the `docgraph` CLI to analyze the documentation graph.
   monitoring
 - [FR_CLI_TRACE (Trace Command)](../requirements/functional/cli.md#FR_CLI_TRACE) Analyzing dependency paths between
   nodes
+- [FR_CLI_QUERY (Query Command)](../requirements/functional/cli.md#FR_CLI_QUERY) Advanced pattern matching and graph
+  analysis
 - [FR_CLI_DESCRIBE (Describe Command)](../requirements/functional/cli.md#FR_CLI_DESCRIBE) Showing detailed metadata for
   a specific node
 - [FR_CLI_TYPE (Type Command)](../requirements/functional/cli.md#FR_CLI_TYPE) Filtering nodes by their defined types
