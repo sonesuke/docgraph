@@ -1,12 +1,14 @@
-use crate::core::types::{Diagnostic, Range, RefUse, Severity, SpecBlock};
+use crate::core::types::{Diagnostic, Range, RefUse, RuleMetadata, Severity, SpecBlock};
 use std::collections::HashSet;
-use std::path::PathBuf;
 
-pub fn check_broken_links(
-    _files: &[PathBuf],
-    blocks: &[SpecBlock],
-    standalone_refs: &[RefUse],
-) -> Vec<Diagnostic> {
+pub fn metadata() -> RuleMetadata {
+    RuleMetadata {
+        code: "DG003",
+        summary: "Links must point to valid anchor IDs",
+    }
+}
+
+pub fn check_broken_links(blocks: &[SpecBlock], standalone_refs: &[RefUse]) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
     let known_ids: HashSet<String> = blocks.iter().map(|b| b.id.clone()).collect();
 
@@ -55,6 +57,7 @@ pub fn check_broken_links(
 mod tests {
     use super::*;
     use crate::core::parse::extract_all;
+    use std::path::PathBuf;
 
     #[test]
     fn test_dg003_broken_links() {
@@ -67,7 +70,7 @@ mod tests {
         let (blocks, _) = extract_all(content, &path);
 
         assert_eq!(blocks.len(), 1);
-        let diags = check_broken_links(std::slice::from_ref(&path), &blocks, &[]);
+        let diags = check_broken_links(&blocks, &[]);
         assert_eq!(diags.len(), 1);
         assert!(diags[0].message.contains("UNKNOWN"));
     }
@@ -81,7 +84,7 @@ mod tests {
         let (blocks, refs) = extract_all(content, &path);
 
         assert_eq!(blocks.len(), 0);
-        let diags = check_broken_links(std::slice::from_ref(&path), &blocks, &refs);
+        let diags = check_broken_links(&blocks, &refs);
         assert_eq!(diags.len(), 1);
         assert!(diags[0].message.contains("UNKNOWN"));
     }

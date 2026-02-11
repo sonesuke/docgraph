@@ -53,3 +53,9 @@ pub struct Range {
     pub end_line: usize,
     pub end_col: usize,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RuleMetadata {
+    pub code: &'static str,
+    pub summary: &'static str,
+}

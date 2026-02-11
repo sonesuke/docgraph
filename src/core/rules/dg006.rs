@@ -1,10 +1,17 @@
 use crate::core::config::Config;
-use crate::core::types::{Diagnostic, Range, Severity, SpecBlock};
+use crate::core::types::{Diagnostic, Range, RuleMetadata, Severity, SpecBlock};
 use std::collections::HashMap;
 
 /// DG006: Strict Relation Enforcement
 /// Validates incoming and outgoing edge constraints based on docgraph.toml
-pub fn check_strict_relations(blocks: &[SpecBlock], config: &Config) -> Vec<Diagnostic> {
+pub fn metadata() -> RuleMetadata {
+    RuleMetadata {
+        code: "DG006",
+        summary: "Enforce strict relationships (allowed_dependencies/derived_from)",
+    }
+}
+
+pub fn check_relationships(config: &Config, blocks: &[SpecBlock]) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
 
     // Map of target_id -> list of source node types that refer to it
@@ -334,7 +341,7 @@ mod tests {
 
         // REQ -> UNK (Not allowed)
         let blocks = vec![create_block("REQ-01", vec!["UNK-01"])];
-        let diags = check_strict_relations(&blocks, &config);
+        let diags = check_relationships(&config, &blocks);
 
         assert_eq!(diags.len(), 1);
         assert!(diags[0].message.contains("INVALID RELATION"));
@@ -359,7 +366,7 @@ mod tests {
 
         // REQ -> SYS (Allowed)
         let blocks = vec![create_block("REQ-01", vec!["SYS-01"])];
-        let diags = check_strict_relations(&blocks, &config);
+        let diags = check_relationships(&config, &blocks);
 
         assert!(diags.is_empty());
     }
@@ -383,7 +390,7 @@ mod tests {
 
         // Case 1: SYS has 0 incoming (Error)
         let blocks_fail = vec![create_block("SYS-01", vec![])]; // No REQ points to it
-        let diags_fail = check_strict_relations(&blocks_fail, &config);
+        let diags_fail = check_relationships(&config, &blocks_fail);
         assert_eq!(diags_fail.len(), 1);
         assert!(diags_fail[0].message.contains(
             "REQUIRED: Node 'SYS-01' (type SYS) must be referenced by at least 1 node. (Found 0)"
@@ -394,7 +401,7 @@ mod tests {
             create_block("SYS-01", vec![]),
             create_block("REQ-01", vec!["SYS-01"]),
         ];
-        let diags_ok = check_strict_relations(&blocks_ok, &config);
+        let diags_ok = check_relationships(&config, &blocks_ok);
         assert!(diags_ok.is_empty());
     }
 
@@ -421,7 +428,7 @@ mod tests {
             create_block("REQ-01", vec!["SYS-01"]),
             create_block("REQ-02", vec!["SYS-01"]),
         ];
-        let diags_fail = check_strict_relations(&blocks_fail, &config);
+        let diags_fail = check_relationships(&config, &blocks_fail);
         assert_eq!(diags_fail.len(), 1);
         assert!(
             diags_fail[0]
@@ -459,7 +466,7 @@ mod tests {
 
         // REQ -> [] (Fail 'to' rule)
         let blocks = vec![create_block("REQ-01", vec![])];
-        let diags = check_strict_relations(&blocks, &config);
+        let diags = check_relationships(&config, &blocks);
 
         // Check "invalid" direction is ignored (no panic, no extra error)
         // Check "to" rule failed and included description

@@ -1,4 +1,4 @@
-use crate::core::types::{Diagnostic, Range, Severity, SpecBlock};
+use crate::core::types::{Diagnostic, Range, RuleMetadata, Severity, SpecBlock};
 use pulldown_cmark::{Event, LinkType, Options, Parser, Tag};
 use std::collections::HashMap;
 use std::fs;
@@ -6,6 +6,13 @@ use std::path::PathBuf;
 use std::sync::OnceLock;
 
 static RE_WS_SINGLE: OnceLock<regex::Regex> = OnceLock::new();
+
+pub fn metadata() -> RuleMetadata {
+    RuleMetadata {
+        code: "DG004",
+        summary: "Link text must match target title (or expected format)",
+    }
+}
 
 pub fn check_link_text(files: &[PathBuf], blocks: &[SpecBlock]) -> Vec<Diagnostic> {
     RE_WS_SINGLE.get_or_init(|| regex::Regex::new(r" +").unwrap());

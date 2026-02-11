@@ -11,40 +11,27 @@ pub fn handle_rule(rule: Option<String>) -> ExitCode {
 }
 
 fn try_rule(rule: Option<String>) -> anyhow::Result<ExitCode> {
-    // List of active custom rules
-    let active_rules = vec![
-        ("DG001", "Anchor must be followed by a heading"),
-        ("DG002", "No duplicate anchor IDs allowed"),
-        ("DG003", "Links must point to valid anchor IDs"),
-        (
-            "DG004",
-            "Link text must match target title (or expected format)",
-        ),
-        (
-            "DG005",
-            "Enforce strict node types defined in docgraph.toml",
-        ),
-        (
-            "DG006",
-            "Enforce strict relationships (allowed_dependencies/derived_from)",
-        ),
-    ];
+    // Get list of active rules from core
+    let active_rules = crate::core::rules::get_all_rules();
 
     if let Some(rule_query) = rule {
         let rule_query = rule_query.to_ascii_uppercase();
         let found = active_rules
             .iter()
-            .find(|(name, _desc)| name.eq_ignore_ascii_case(&rule_query));
+            .find(|r| r.code.eq_ignore_ascii_case(&rule_query));
 
-        if let Some((name, desc)) = found {
-            println!("{} - {}\n\nDescription:\n  {}", name, desc, desc);
+        if let Some(meta) = found {
+            println!(
+                "{} - {}\n\nDescription:\n  {}",
+                meta.code, meta.summary, meta.summary
+            );
         } else {
             anyhow::bail!("Rule '{}' not found", rule_query);
         }
     } else {
         println!("Available rules:");
-        for (name, desc) in &active_rules {
-            println!("  {} - {}", name, desc);
+        for meta in &active_rules {
+            println!("  {} - {}", meta.code, meta.summary);
         }
     }
     Ok(ExitCode::SUCCESS)

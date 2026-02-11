@@ -1,9 +1,16 @@
 use crate::core::config::Config;
-use crate::core::types::{Diagnostic, Range, Severity, SpecBlock};
+use crate::core::types::{Diagnostic, Range, RuleMetadata, Severity, SpecBlock};
 
 /// DG005: Strict Node Type Enforcement
 /// Validates that all documented IDs start with a registered prefix from docgraph.toml
-pub fn check_strict_node_types(blocks: &[SpecBlock], config: &Config) -> Vec<Diagnostic> {
+pub fn metadata() -> RuleMetadata {
+    RuleMetadata {
+        code: "DG005",
+        summary: "Enforce strict node types defined in docgraph.toml",
+    }
+}
+
+pub fn check_node_types(config: &Config, blocks: &[SpecBlock]) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
 
     for block in blocks {
@@ -37,8 +44,6 @@ pub fn check_strict_node_types(blocks: &[SpecBlock], config: &Config) -> Vec<Dia
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::config::Config;
-    use crate::core::types::SpecBlock;
     use std::path::PathBuf;
 
     fn create_block(id: &str) -> SpecBlock {
@@ -60,7 +65,7 @@ mod tests {
         config.nodes.insert("REQ".to_string(), Default::default());
 
         let blocks = vec![create_block("UNK-01")];
-        let diags = check_strict_node_types(&blocks, &config);
+        let diags = check_node_types(&config, &blocks);
 
         assert_eq!(diags.len(), 1);
         assert!(diags[0].message.contains("Unknown node type prefix"));
@@ -72,7 +77,7 @@ mod tests {
         config.nodes.insert("REQ".to_string(), Default::default());
 
         let blocks = vec![create_block("REQ-01")];
-        let diags = check_strict_node_types(&blocks, &config);
+        let diags = check_node_types(&config, &blocks);
 
         assert!(diags.is_empty());
     }
