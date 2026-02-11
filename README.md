@@ -166,8 +166,30 @@ This will automatically run `cargo fmt`, `clippy`, `prettier`, `test`, and `docg
 - `fmt [path]`: Automatically fix fixable formatting and lint issues.
 - `list <query>`: Search for nodes matching a pattern.
 - `trace <from> <to>`: Trace and visualize relationship paths.
+- `query <cypher>`: Execute advanced pattern matching queries.
 - `describe <id>`: Show bidirectional relationships for a specific node.
 - `lsp`: Start the Language Server for IDE support.
+
+## Advanced Querying
+
+`docgraph` supports a subset of Cypher query language for powerful graph analysis.
+
+### Examples
+
+**Find all Use Cases with "Login" in the name:**
+```bash
+docgraph query "MATCH (n:UC) WHERE n.name CONTAINS 'Login' RETURN n.id, n.name"
+```
+
+**Find Functional Requirements deriving from a specific Use Case:**
+```bash
+docgraph query "MATCH (fr:FR)-[]->(uc:UC) WHERE uc.id = 'UC_001' RETURN fr.id"
+```
+
+**Output as JSON:**
+```bash
+docgraph query "MATCH (n:UC) RETURN n.id" --format json
+```
 
 ---
 

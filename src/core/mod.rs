@@ -1,9 +1,11 @@
 pub mod collect;
 pub mod config;
+pub mod engine;
 pub mod error;
 pub mod lint;
 pub mod locate;
 pub mod parse;
+pub mod parser;
 pub mod rules;
 pub mod types;
 pub mod walk;

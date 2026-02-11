@@ -1,0 +1,120 @@
+//
+// Cypher Grammar for Docgraph
+// 
+// Based on openCypher syntax (http://opencypher.org/)
+// Implements a subset of Cypher necessary for querying the documentation graph.
+//
+
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+
+//
+// Top-level Query Structure
+//
+// A query consists of a MATCH clause, an optional WHERE clause, and a RETURN clause.
+// Example: MATCH (n:UC) WHERE n.id = "UC_001" RETURN n
+//
+query = { MATCH ~ pattern ~ (WHERE ~ where_clause)? ~ RETURN ~ return_clause }
+
+// Keywords (case-insensitive)
+MATCH    = { ^"MATCH" }
+WHERE    = { ^"WHERE" }
+RETURN   = { ^"RETURN" }
+AND      = { ^"AND" }
+OR       = { ^"OR" }
+CONTAINS = { ^"CONTAINS" }
+AS       = { ^"AS" }
+
+//
+// Pattern Matching
+//
+// Defines the graph pattern to search for.
+// Supported patterns:
+// - Node only: (n:Label)
+// - Relationship: (n)-[r:Type]->(m)
+//
+pattern = { pattern_part ~ ("," ~ pattern_part)* }
+
+pattern_part = { node_pattern ~ (relationship_pattern ~ node_pattern)* }
+
+// Node Pattern: (variable:Label)
+node_pattern = { "(" ~ SP? ~ (variable ~ SP?)? ~ (node_labels ~ SP?)? ~ ")" }
+
+// Relationship Pattern: -[variable:Type]-> or <...- or -...-
+relationship_pattern = { 
+    (left_arrow ~ SP? ~ dash ~ SP? ~ relationship_detail? ~ SP? ~ dash ~ SP? ~ right_arrow)
+    | (left_arrow ~ SP? ~ dash ~ SP? ~ relationship_detail? ~ SP? ~ dash)
+    | (dash ~ SP? ~ relationship_detail? ~ SP? ~ dash ~ SP? ~ right_arrow)
+    | (dash ~ SP? ~ relationship_detail? ~ SP? ~ dash) 
+}
+
+relationship_detail = { "[" ~ SP? ~ (variable ~ SP?)? ~ (relationship_types ~ SP?)? ~ (range_literal ~ SP?)? ~ "]" }
+
+range_literal = { "*" ~ range_quantifier? }
+range_quantifier = { (range_start? ~ ".." ~ range_end?) | range_exact }
+range_start = @{ number_literal }
+range_end   = @{ number_literal }
+range_exact = @{ number_literal }
+
+// Labels and Types
+node_labels = { node_label ~ (SP? ~ node_label)* }
+node_label = { ":" ~ SP? ~ label_name }
+
+relationship_types = { ":" ~ SP? ~ rel_type_name ~ (SP? ~ "|" ~ ":"? ~ SP? ~ rel_type_name)* }
+
+//
+// Where Clause
+//
+// Filters the results based on boolean expressions.
+//
+where_clause = { expression }
+
+//
+// Return Clause
+//
+// Specifies what to include in the result set.
+// Supports aliasing with AS.
+//
+return_clause = { return_item ~ ("," ~ SP? ~ return_item)* }
+return_item = { expression ~ (SP ~ AS ~ SP ~ variable)? }
+
+//
+// Expressions
+//
+// Boolean logic (OR, AND) and comparisons.
+//
+expression = { or_expression }
+
+or_expression = { and_expression ~ (OR ~ and_expression)* }
+
+and_expression = { comparison_expression ~ (AND ~ comparison_expression)* }
+
+comparison_expression = { property_or_variable ~ (SP? ~ comp_op ~ SP? ~ term)? }
+
+// Property Access: n.id
+property_or_variable = { variable ~ (SP? ~ "." ~ SP? ~ property_name)? }
+
+// Term: Literal or another property/variable
+term = { literal | property_or_variable }
+
+// Comparison Operators
+comp_op = { "=" | "<>" | "<" | ">" | "<=" | ">=" | CONTAINS }
+
+//
+// Basic Tokens
+//
+variable      = @{ symbolic_name }
+label_name    = @{ symbolic_name }
+rel_type_name = @{ symbolic_name }
+property_name = @{ symbolic_name }
+
+symbolic_name = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+
+literal = { string_literal | number_literal }
+string_literal = @{ "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
+number_literal = @{ ASCII_DIGIT+ }
+
+// Symbols
+left_arrow  = { "<" }
+right_arrow = { ">" }
+dash        = { "-" }
+SP          = _{ " " | "\t" }
