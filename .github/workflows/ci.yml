@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
   workflow_dispatch:
 
 env:
@@ -47,7 +47,7 @@ jobs:
           env: |
             CI=true
             GITHUB_ACTIONS=true
-          runCmd: "true"
+          runCmd: 'true'
 
       - name: Cargo Build
         uses: devcontainers/ci@v0.3
@@ -87,18 +87,6 @@ jobs:
           cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
           push: never
           runCmd: cargo fmt -- --check
-
-      - name: Markdown Format Check
-        uses: devcontainers/ci@v0.3
-        env:
-          CI: true
-        with:
-          imageName: ghcr.io/${{ github.repository }}/docgraph-dev
-          cacheFrom: ghcr.io/${{ github.repository }}/docgraph-dev
-          push: never
-          runCmd: |
-            npm install
-            npm run format:md -- --check
 
       - name: Cargo Clippy
         uses: devcontainers/ci@v0.3
@@ -157,13 +145,8 @@ jobs:
           push: never
           runCmd: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
 
-
       - name: Upload coverage report
         uses: actions/upload-artifact@v6
         with:
           name: coverage-report
           path: lcov.info
-
-
-
-

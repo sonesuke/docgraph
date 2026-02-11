@@ -13,8 +13,9 @@ Defined in [.devcontainer/devcontainer.json](../../../.devcontainer/devcontainer
 
 **Coding Standards:**
 
-- **Formatting**: `cargo fmt` (Rust), `npm run format` (VSIX).
+- **Formatting**: `cargo fmt` (Rust), `npm run format` (VSIX), `prettier` (Markdown/JSON/TOML).
 - **Linting**: `cargo clippy` (Rust), `npm run lint` (VSIX).
+- **Pre-commit**: `prek` (Automates fmt, clippy, prettier, tests, and docgraph check).
 - **Security**: `cargo audit`.
 
 **Performance:**

@@ -1,14 +1,14 @@
 {
-    "name": "docgraph-claude-plugins",
-    "owner": {
-        "name": "sonesuke"
-    },
-    "plugins": [
-        {
-            "name": "docgraph-plugin",
-            "version": "0.1.0",
-            "source": "./docgraph-plugin",
-            "description": "Docgraph plugin for Claude"
-        }
-    ]
+  "name": "docgraph-claude-plugins",
+  "owner": {
+    "name": "sonesuke"
+  },
+  "plugins": [
+    {
+      "name": "docgraph-plugin",
+      "version": "0.1.0",
+      "source": "./docgraph-plugin",
+      "description": "Docgraph plugin for Claude"
+    }
+  ]
 }

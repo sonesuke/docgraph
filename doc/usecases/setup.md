@@ -135,3 +135,29 @@ The developer installs the `docgraph` Zed extension.
 
 1. Developer builds the extension targetting wasm32-wasip1.
 2. Developer installs the dev extension in Zed.
+
+---
+
+<a id="UC_PREK_SETUP"></a>
+
+## Set Up Development Hooks
+
+The developer sets up automated pre-commit hooks to ensure code quality and consistency.
+
+### Actors
+
+- [ACT_DEV (Developer)](../actors/users.md#ACT_DEV)
+
+### Interfaces
+
+- [IF_CLI (Command Line Interface)](../requirements/interfaces/interfaces.md#IF_CLI)
+
+### Requirements
+
+- [FR_INSTALL_PREK (Pre-commit Hook Support)](../requirements/functional/installation.md#FR_INSTALL_PREK) Ensures all
+  contributions meet the project's coding standards automatically.
+
+### Flow
+
+1. Developer installs the `prek` tool.
+2. Developer runs `prek install -f` to activate the hooks.

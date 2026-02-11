@@ -121,7 +121,6 @@ jobs:
           name: docgraph.vsix
           path: docgraph.vsix
 
-
   create-release:
     needs: [build-rust, build-vsix]
     runs-on: ubuntu-latest

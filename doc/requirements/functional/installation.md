@@ -53,3 +53,20 @@ The system must provide an extension for the Zed editor to enable LSP support vi
 ### Realized by
 
 - [MOD_EXT_ZED (Zed Editor Extension)](../../architecture/view/module.md#MOD_EXT_ZED)
+
+<a id="FR_INSTALL_PREK"></a>
+
+## Pre-commit Hook Support
+
+The system must support automated code quality checks before commits using `prek`.
+
+1. **Tool**: `prek` (Rust-based pre-commit runner).
+2. **Automated Checks**:
+   - Rust: `cargo fmt`, `cargo clippy`, `cargo test`.
+   - Docs/Config: `prettier` (with TOML plugin).
+   - Validation: `docgraph check`.
+3. **Setup**: Supports a one-command setup via `prek install -f`.
+
+### Realized by
+
+- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
