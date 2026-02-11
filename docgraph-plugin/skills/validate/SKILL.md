@@ -15,6 +15,14 @@ ensure that all semantic, structural, and consistency rules are met before final
 > [!NOTE] For detailed usage and available options of any `docgraph` subcommand, always refer to `docgraph --help` or
 > `docgraph <SUBCOMMAND> --help`.
 
+## Prerequisites
+
+- **`docgraph` CLI must be installed as a system binary**
+  - Install via: `curl -fsSL https://raw.githubusercontent.com/sonesuke/docgraph/main/install.sh | bash`
+  - Or build from source: `cargo install --path .`
+- **This is NOT an npm or Python package** - do NOT use `npx` or `pipx`
+- **Installation Verification**: Run `docgraph --version` to confirm the binary is available
+
 ## Workflow Steps
 
 ### 0. Automated Check Pre-requisites

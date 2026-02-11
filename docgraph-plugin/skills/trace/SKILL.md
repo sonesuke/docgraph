@@ -12,6 +12,14 @@ This skill verifies that a node’s responsibility is fully traceable downstream
 > to at least one **realizable terminal**. A FAIL in `trace` indicates an unrealizable or misleading specification, not
 > merely incomplete documentation.
 
+## Prerequisites
+
+- **`docgraph` CLI must be installed as a system binary**
+  - Install via: `curl -fsSL https://raw.githubusercontent.com/sonesuke/docgraph/main/install.sh | bash`
+  - Or build from source: `cargo install --path .`
+- **This is NOT an npm or Python package** - do NOT use `npx` or `pipx`
+- **Installation Verification**: Run `docgraph --version` to confirm the binary is available
+
 ## Workflow Steps
 
 ### 0. Pre-requisites
