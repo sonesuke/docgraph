@@ -142,8 +142,8 @@ Use the commands directly in your terminal for validation and analysis:
 # Validate the graph
 docgraph check .
 
-# Trace relationships
-docgraph trace UC_LOGIN FR_EMAIL_LOGIN
+# Trace relationships (using query)
+docgraph query "MATCH p=(src)-[*]->(dst) WHERE src.id = 'UC_LOGIN' AND dst.id = 'FR_EMAIL_LOGIN' RETURN p"
 ```
 
 #### Development Setup
@@ -165,8 +165,6 @@ This will automatically run `cargo fmt`, `clippy`, `prettier`, `test`, and `docg
 
 - `check [path]`: Validate the graph for broken links and rule violations.
 - `fmt [path]`: Automatically fix fixable formatting and lint issues.
-- `list <query>`: Search for nodes matching a pattern.
-- `trace <from> <to>`: Trace and visualize relationship paths.
 - `query <cypher>`: Execute advanced pattern matching queries.
 - `describe <id>`: Show bidirectional relationships for a specific node.
 - `lsp`: Start the Language Server for IDE support.
@@ -176,6 +174,12 @@ This will automatically run `cargo fmt`, `clippy`, `prettier`, `test`, and `docg
 `docgraph` supports a subset of Cypher query language for powerful graph analysis.
 
 ### Examples
+
+**List nodes matching a pattern (replacement for `list` command):**
+
+```bash
+docgraph query "MATCH (n) WHERE n.id =~ 'FR-*' RETURN n.id, n.name"
+```
 
 **Find all Use Cases with "Login" in the name:**
 

@@ -26,22 +26,23 @@ The `graph` command shall output the graph structure in JSON format.
 
 ## List Command
 
-The `list` command shall output nodes matching a specific query with their names.
-
-The query can contain wildcards (`*` and `?`). If no wildcards are present, the command performs a prefix match (forward
-match).
+The `list` capability shall output nodes matching a specific query with their names. This is achieved using the `query`
+command.
 
 **Usage:**
 
 ```bash
-docgraph list "FR-*"
-docgraph list FR
+docgraph query "MATCH (n) WHERE n.id =~ 'FR-*' RETURN n.id, n.name"
 ```
 
 **Output format:**
 
 ```text
-ID : Description
+┌────────┬─────────────┐
+│ n.id   ┆ n.name      │
+╞════════╪═════════════╡
+│ FR-001 ┆ ...         │
+└────────┴─────────────┘
 ```
 
 ### Realized by
@@ -52,27 +53,14 @@ ID : Description
 
 ## Trace Command
 
-The `trace` command shall find and display all paths between a start ID and target IDs matching a query.
+The `trace` capability shall find and display all paths between a start ID and target IDs matching a query. This is
+achieved using the `query` command with path finding.
 
 **Usage:**
 
 ```bash
-docgraph trace <from> <to> [--direction <down|up>]
+docgraph query "MATCH p=(src)-[*]->(dst) WHERE src.id = 'A' AND dst.id = 'B' RETURN p"
 ```
-
-- `<from>`: The starting Node ID.
-- `<to>`: Target ID or prefix (supports wildcards).
-- `--direction`:
-  - `down` (default): Follow outgoing links (references).
-  - `up`: Follow incoming links (reverse references).
-
-**Output format:**
-
-```text
-ID1 -> ID2 -> ID3
-```
-
-(Using `<-` for `up` direction)
 
 ### Realized by
 

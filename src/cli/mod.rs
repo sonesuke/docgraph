@@ -23,13 +23,6 @@ pub fn run() -> ExitCode {
         Commands::Fmt { path, rule } => handlers::check::handle_fmt(path, rule),
         Commands::Rule { rule } => handlers::rule::handle_rule(rule),
         Commands::Graph { path } => handlers::graph::handle_graph(path),
-        Commands::List { query, path } => handlers::list::handle_list(query, path),
-        Commands::Trace {
-            from,
-            to,
-            path,
-            direction,
-        } => handlers::trace::handle_trace(from, to, path, direction),
         Commands::Describe { id, path } => handlers::describe::handle_describe(id, path),
         Commands::Type { type_id } => handlers::type_cmd::handle_type(type_id),
         Commands::Query {

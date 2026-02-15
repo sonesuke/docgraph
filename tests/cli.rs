@@ -6,11 +6,7 @@ mod common;
 mod describe;
 #[path = "cli/graph.rs"]
 mod graph;
-#[path = "cli/list.rs"]
-mod list;
 #[path = "cli/query.rs"]
 mod query;
 #[path = "cli/rule.rs"]
 mod rule;
-#[path = "cli/trace.rs"]
-mod trace;
