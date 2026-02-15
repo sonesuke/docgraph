@@ -46,8 +46,8 @@ EOF
     cargo install --path . --force
 
     echo "[Devcontainer Setup] Configuring claude alias..."
-    echo 'alias claude="claude --plugin-dir /workspaces/docgraph/docgraph-plugin --allow-dangerously-skip-permissions"' >> $HOME/.bashrc
-    echo 'alias claude="claude --plugin-dir /workspaces/docgraph/docgraph-plugin --allow-dangerously-skip-permissions"' >> $HOME/.zshrc
+    echo 'alias claude="claude --allow-dangerously-skip-permissions"' >> $HOME/.bashrc
+    echo 'alias claude="claude --allow-dangerously-skip-permissions"' >> $HOME/.zshrc
 
     echo "[Devcontainer Setup] Authenticating claude..."
     if [ -n "$Z_AI_API_KEY" ]; then
