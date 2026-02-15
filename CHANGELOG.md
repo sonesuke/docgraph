@@ -2,16 +2,74 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.4.0] - 2026-02-15
 
-### Features
+### Bug Fixes
 
-- _(cli)_ Improve `list` command readability and make `QUERY` optional
-- _(core)_ Support repeating schemas for lists and tables in template validation (DG007)
+- _(rules)_ Improve DG007 table validation and refactor for maintainability
+- _(rules)_ Ensure headers with braces are parsed correctly by disabling heading attributes
+- Remove node_modules and update .gitignore
+- _(query)_ Correct relationship direction matching in engine
+- _(vsix)_ Resolve npm audit vulnerabilities (#122)
+- _(lsp)_ Watch configuration files and re-analyze on change (#129)
 
 ### Documentation
 
-- Update template validation rules and add comprehensive usage examples in `doc/requirements/functional/core.md`
+- Generalize formatting instruction and apply project-wide formatting
+- Add ask and impact skills and apply formatting
+- _(query)_ Update README and CLI requirements for query engine
+- Add prerequisites section to all skills
+- _(agent)_ Create AGENT.md and CLAUDE.md symlink (#131)
+
+### Features
+
+- Enable experimental agent teams in dev container
+- Improve list command by making query optional and adding examples
+- _(core)_ Support flexible table matching and enhance rule metadata
+- Introduce prek for pre-commit hooks and cleanup project root回,Cwd:
+- _(query)_ Enhance engine with multi-operators and automatic node expansion
+- _(cli)_ Improve list command UX with --path option
+- _(ci)_ Add linux arm64 release target (#121)
+- _(setup)_ Refine claude skills configuration and devcontainer alias (#130)
+- Refine Graph Reasoning Skills (#133)
+- _(cli)_ Remove list and trace commands (#134)
+- _(lsp)_ Include block content in hover display (#136)
+
+### Miscellaneous Tasks
+
+- Update vscode engine version to 1.109.0
+- Move tmux configuration to post-create.sh
+- _(deps-dev)_ Bump @types/node from 25.2.1 to 25.2.3 in /vsix
+- _(deps)_ Bump the dependencies group with 2 updates
+- _(deps-dev)_ Bump @biomejs/biome from 2.3.14 to 2.3.15 in /vsix (#119)
+- _(deps)_ Group dependabot security updates (#124)
+- _(deps)_ Bump toml from 0.9.12+spec-1.1.0 to 1.0.1+spec-1.1.0 (#125)
+- _(deps)_ Bump predicates from 3.1.3 to 3.1.4 (#126)
+- _(deps)_ Bump clap from 4.5.57 to 4.5.58 (#127)
+- _(doc)_ Align documentation structure and fix validation errors (#135)
+
+### Refactor
+
+- Centralize rule metadata and registry
+
+### Styling
+
+- Apply cargo fmt to dg007.rs
+- _(query)_ Fix formatting and clippy warnings
+
+### Testing
+
+- _(query)_ Add comprehensive unit and E2E tests for query engine
+
+### Ci
+
+- Remove prettier formatting check from root to fix PR
+- _(codeql)_ Add actions to analysis matrix (#123)
+- _(codeql)_ Add workflow_dispatch trigger (#128)
+
+### Merge
+
+- Resolve conflict in SKILL.md
 
 ## [0.3.0] - 2026-02-08
 
@@ -32,20 +90,8 @@ All notable changes to this project will be documented in this file.
 - Refactor Configuration Specs and Enforce Strict Dependencies (#90)
 - Semantic error messages and traceability refactoring (#94)
 - _(cli)_ Improve type, describe, and list command output (#95)
-- Enhance validate skill with template and structure checks
-- Enhance file placement validation with consistency checks
-- Add SRP check to validate skill
-- Redefine validate skill as Validation Quality Gate
-- Add Quality Gate Checklist to validate skill
-- Evolve validate skill into a structured Semantic Linter
-- Evolve refine skill into Deep Consistency Gate
-- Rename refine skill to align
-- Refine align skill as an Architecture and Meaning Gate
-- Add Quality Gate Checklist to align skill
-- Implement trace skill as Realization and Flow Gate
-- Add Quality Gate Checklist to trace skill
-- Final polish for trace skill (Architecture & Meaning)
 - Migrate slash commands to antigravity skills (#97)
+- V0.3.0 Release - Three-Gate Quality Pipeline (#99)
 
 ### Miscellaneous Tasks
 
@@ -62,15 +108,7 @@ All notable changes to this project will be documented in this file.
 - _(deps-dev)_ Bump @types/vscode from 1.108.1 to 1.109.0 in /vsix (#75)
 - _(deps)_ Bump lsp-types from 0.94.1 to 0.97.0 in the dependencies group (#89)
 - Integrate prettier for markdown formatting (#96)
-- Migrate slash commands to antigravity skills
-- Remove redundant docgraph skill and simplify align/refine skills
-- Update example IDs in skills to use underscores
-- Rename align skill to validate
-- Remove unnecessary (NEW) labels from SKILL.md
-- Emphasize strictness in validate skill
-- Correct skill name and report headers to align
-- Polish plugin description to reflect architectural governance
-- Bump version to 0.3.0 and update CHANGELOG
+- _(release)_ Finalized polished CHANGELOG.md for v0.3.0
 
 ### Performance
 
