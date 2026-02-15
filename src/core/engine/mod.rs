@@ -15,7 +15,7 @@ pub enum EntityId {
     Relationship {
         from_idx: usize,
         to_idx: usize,
-        context: String,
+        rel: String,
     },
 }
 
@@ -82,33 +82,42 @@ pub fn execute_query(query: &ast::Query, nodes: &[SpecBlock], config: &Config) -
     let mut item_projections = Vec::new(); // Store closure or flag to know how to expand each item
 
     for item in &query.return_clause.items {
-        if let Some(ref alias) = item.alias {
-            expanded_columns.push(alias.clone());
-            item_projections.push(Projection::Single(item.expression.clone()));
-        } else {
-            match &item.expression {
-                ast::Expression::Comparison(comp)
-                    if comp.operator.is_none() && comp.right.is_none() =>
-                {
-                    if let Some(ref prop) = comp.left.property {
-                        expanded_columns.push(format!("{}.{}", comp.left.variable, prop));
-                        item_projections.push(Projection::Single(item.expression.clone()));
-                    } else {
-                        // Expand node variable
-                        let var = &comp.left.variable;
-                        expanded_columns.push(format!("{}.id", var));
-                        expanded_columns.push(format!("{}.type", var));
-                        expanded_columns.push(format!("{}.name", var));
-                        expanded_columns.push(format!("{}.file", var));
-                        expanded_columns.push(format!("{}.line", var));
-                        expanded_columns.push(format!("{}.content", var));
-                        item_projections.push(Projection::Node(var.clone()));
+        match &item.expression {
+            ast::Expression::Comparison(comp)
+                if comp.operator.is_none()
+                    && comp.right.is_none()
+                    && comp.left.property.is_none()
+                    && item.alias.is_none() =>
+            {
+                // Expand node variable (only if NO alias and NO property)
+                let var = &comp.left.variable;
+                expanded_columns.push(format!("{}.id", var));
+                expanded_columns.push(format!("{}.type", var));
+                expanded_columns.push(format!("{}.name", var));
+                expanded_columns.push(format!("{}.file", var));
+                expanded_columns.push(format!("{}.line", var));
+                expanded_columns.push(format!("{}.content", var));
+                item_projections.push(Projection::Node(var.clone()));
+            }
+            _ => {
+                // Single column (with or without alias)
+                if let Some(ref alias) = item.alias {
+                    expanded_columns.push(alias.clone());
+                } else {
+                    match &item.expression {
+                        ast::Expression::Comparison(comp)
+                            if comp.operator.is_none() && comp.right.is_none() =>
+                        {
+                            if let Some(ref prop) = comp.left.property {
+                                expanded_columns.push(format!("{}.{}", comp.left.variable, prop));
+                            } else {
+                                expanded_columns.push(comp.left.variable.clone());
+                            }
+                        }
+                        _ => expanded_columns.push("expression".to_string()),
                     }
                 }
-                _ => {
-                    expanded_columns.push("expression".to_string());
-                    item_projections.push(Projection::Single(item.expression.clone()));
-                }
+                item_projections.push(Projection::Single(item.expression.clone()));
             }
         }
     }
@@ -122,20 +131,14 @@ pub fn execute_query(query: &ast::Query, nodes: &[SpecBlock], config: &Config) -
                     row.push(evaluate_expression_value(expr, &bindings, nodes, config));
                 }
                 Projection::Node(var) => {
-                    if let Some(entity) = bindings.get(var) {
-                        if let EntityId::Node(idx) = entity {
-                            let node = &nodes[*idx];
-                            row.push(node.id.clone());
-                            row.push(node.node_type.clone());
-                            row.push(node.name.clone().unwrap_or_else(|| "null".to_string()));
-                            row.push(node.file_path.to_string_lossy().to_string());
-                            row.push(node.line_start.to_string());
-                            row.push(node.content.clone());
-                        } else {
-                            for _ in 0..6 {
-                                row.push("null".to_string());
-                            }
-                        }
+                    if let Some(EntityId::Node(idx)) = bindings.get(var) {
+                        let node = &nodes[*idx];
+                        row.push(node.id.clone());
+                        row.push(node.node_type.clone());
+                        row.push(node.name.clone().unwrap_or_else(|| "null".to_string()));
+                        row.push(node.file_path.to_string_lossy().to_string());
+                        row.push(node.line_start.to_string());
+                        row.push(node.content.clone());
                     } else {
                         for _ in 0..6 {
                             row.push("null".to_string());
@@ -213,8 +216,8 @@ fn match_relationship_pattern(
 ) -> Vec<Bindings> {
     let mut next_bindings = Vec::new();
 
-    // Build adjacency maps with context
-    // key: source_idx, value: (target_idx, context)
+    // Build adjacency maps with rel type
+    // key: source_idx, value: (target_idx, rel)
     let mut forward_adj: HashMap<usize, Vec<(usize, String)>> = HashMap::new();
     let mut backward_adj: HashMap<usize, Vec<(usize, String)>> = HashMap::new();
 
@@ -222,11 +225,14 @@ fn match_relationship_pattern(
         for edge in &node.edges {
             if let Some(target_idx) = nodes.iter().position(|n| n.id == edge.id) {
                 let target_node = &nodes[target_idx];
-                // Find context from docgraph.toml
-                let context = find_relationship_context(config, &node.node_type, &target_node.node_type);
-                
-                forward_adj.entry(idx).or_default().push((target_idx, context.clone()));
-                backward_adj.entry(target_idx).or_default().push((idx, context));
+                // Find rel from docgraph.toml
+                let rel = find_relationship_rel(config, &node.node_type, &target_node.node_type);
+
+                forward_adj
+                    .entry(idx)
+                    .or_default()
+                    .push((target_idx, rel.clone()));
+                backward_adj.entry(target_idx).or_default().push((idx, rel));
             }
         }
     }
@@ -235,108 +241,106 @@ fn match_relationship_pattern(
     let max_hops = rel_pat.range.as_ref().and_then(|r| r.end).unwrap_or(1);
 
     for bindings in current_bindings {
-        if let Some(entity) = bindings.get(start_node_var) {
-            if let EntityId::Node(start_idx) = entity {
-                let start_idx = *start_idx;
-                // BFS for reachability
-                let mut queue = std::collections::VecDeque::new();
-                queue.push_back((start_idx, 0, None::<String>)); // (curr, dist, last_rel_context)
+        if let Some(EntityId::Node(start_idx)) = bindings.get(start_node_var) {
+            let start_idx = *start_idx;
+            // BFS for reachability
+            let mut queue = std::collections::VecDeque::new();
+            queue.push_back((start_idx, 0, None::<String>)); // (curr, dist, last_rel)
 
-                let mut visited = std::collections::HashSet::new();
-                visited.insert((start_idx, 0));
+            let mut visited = std::collections::HashSet::new();
+            visited.insert((start_idx, 0));
 
-                while let Some((curr, dist, last_rel)) = queue.pop_front() {
-                    if dist > max_hops {
-                        continue;
-                    }
+            while let Some((curr, dist, last_rel)) = queue.pop_front() {
+                if dist > max_hops {
+                    continue;
+                }
 
-                    if dist >= min_hops && dist > 0 {
-                        // Check rel_type if specified
-                        let rel_match = if let Some(ref target_rel_type) = rel_pat.rel_type {
-                            if let Some(ref actual_rel) = last_rel {
-                                actual_rel == target_rel_type
-                            } else {
-                                false
-                            }
+                if dist >= min_hops && dist > 0 {
+                    // Check rel_type if specified
+                    let rel_match = if let Some(ref target_rel_type) = rel_pat.rel_type {
+                        if let Some(ref actual_rel) = last_rel {
+                            actual_rel == target_rel_type
                         } else {
+                            false
+                        }
+                    } else {
+                        true
+                    };
+
+                    if rel_match {
+                        // Check if current node matches end_node_pat
+                        let node = &nodes[curr];
+                        let label_match = if end_node_pat.labels.is_empty() {
                             true
+                        } else {
+                            end_node_pat.labels.contains(&node.node_type)
                         };
 
-                        if rel_match {
-                            // Check if current node matches end_node_pat
-                            let node = &nodes[curr];
-                            let label_match = if end_node_pat.labels.is_empty() {
-                                true
-                            } else {
-                                end_node_pat.labels.contains(&node.node_type)
-                            };
+                        if label_match {
+                            let mut new_bindings = bindings.clone();
 
-                            if label_match {
-                                let mut new_bindings = bindings.clone();
-                                
-                                // Bind relationship variable if present (only for length 1 for now)
-                                // Cypher behavior: (n)-[r*1..2]->(m) makes r a list.
-                                // Our engine is MVP, let's only bind r if dist == 1.
-                                if dist == 1 {
-                                    if let Some(ref r_var) = rel_pat.variable {
-                                        if let Some(ref ctx) = last_rel {
-                                            new_bindings.insert(r_var.clone(), EntityId::Relationship {
-                                                from_idx: start_idx,
-                                                to_idx: curr,
-                                                context: ctx.clone(),
-                                            });
-                                        }
-                                    }
-                                }
+                            // Bind relationship variable if present (only for length 1 for now)
+                            // Cypher behavior: (n)-[r*1..2]->(m) makes r a list.
+                            // Our engine is MVP, let's only bind r if dist == 1.
+                            if dist == 1
+                                && let Some(ref r_var) = rel_pat.variable
+                                && let Some(ref rel_val) = last_rel
+                            {
+                                new_bindings.insert(
+                                    r_var.clone(),
+                                    EntityId::Relationship {
+                                        from_idx: start_idx,
+                                        to_idx: curr,
+                                        rel: rel_val.clone(),
+                                    },
+                                );
+                            }
 
-                                // Bind end variable
-                                if let Some(ref var) = end_node_pat.variable {
-                                    if let Some(entity) = bindings.get(var) {
-                                        if let EntityId::Node(prev_idx) = entity {
-                                            if *prev_idx == curr {
-                                                next_bindings.push(new_bindings);
-                                            }
-                                        }
-                                    } else {
-                                        new_bindings.insert(var.clone(), EntityId::Node(curr));
+                            // Bind end variable
+                            if let Some(ref var) = end_node_pat.variable {
+                                if let Some(EntityId::Node(prev_idx)) = bindings.get(var) {
+                                    if *prev_idx == curr {
                                         next_bindings.push(new_bindings);
                                     }
                                 } else {
+                                    new_bindings.insert(var.clone(), EntityId::Node(curr));
                                     next_bindings.push(new_bindings);
                                 }
+                            } else {
+                                next_bindings.push(new_bindings);
+                            }
+                        }
+                    }
+                }
+
+                // Continue traversal
+                if dist < max_hops {
+                    let mut neighbors = Vec::new();
+                    match rel_pat.direction {
+                        ast::Direction::Right => {
+                            if let Some(n) = forward_adj.get(&curr) {
+                                neighbors.extend(n);
+                            }
+                        }
+                        ast::Direction::Left => {
+                            if let Some(n) = backward_adj.get(&curr) {
+                                neighbors.extend(n);
+                            }
+                        }
+                        ast::Direction::Both => {
+                            if let Some(n) = forward_adj.get(&curr) {
+                                neighbors.extend(n);
+                            }
+                            if let Some(n) = backward_adj.get(&curr) {
+                                neighbors.extend(n);
                             }
                         }
                     }
 
-                    // Continue traversal
-                    if dist < max_hops {
-                        let mut neighbors = Vec::new();
-                        match rel_pat.direction {
-                            ast::Direction::Right => {
-                                if let Some(n) = forward_adj.get(&curr) {
-                                    neighbors.extend(n);
-                                }
-                            }
-                            ast::Direction::Left => {
-                                if let Some(n) = backward_adj.get(&curr) {
-                                    neighbors.extend(n);
-                                }
-                            }
-                            ast::Direction::Both => {
-                                if let Some(n) = forward_adj.get(&curr) {
-                                    neighbors.extend(n);
-                                }
-                                if let Some(n) = backward_adj.get(&curr) {
-                                    neighbors.extend(n);
-                                }
-                            }
-                        }
-
-                        for (next, ctx) in neighbors {
-                            if !visited.contains(&(*next, dist + 1)) {
-                                visited.insert((*next, dist + 1));
-                                queue.push_back((*next, dist + 1, Some(ctx.clone())));
-                            }
+                    for (next, ctx) in neighbors {
+                        if !visited.contains(&(*next, dist + 1)) {
+                            visited.insert((*next, dist + 1));
+                            queue.push_back((*next, dist + 1, Some(ctx.clone())));
                         }
                     }
                 }
@@ -347,22 +351,24 @@ fn match_relationship_pattern(
     next_bindings
 }
 
-fn find_relationship_context(config: &Config, from_type: &str, to_type: &str) -> String {
+fn find_relationship_rel(config: &Config, from_type: &str, to_type: &str) -> String {
     if let Some(node_conf) = config.nodes.get(from_type) {
         for rule in &node_conf.rules {
-            if rule.dir == "to" && rule.targets.contains(&to_type.to_string()) {
-                if let Some(ref ctx) = rule.context {
-                    return ctx.clone();
-                }
+            if rule.dir == "to"
+                && rule.targets.contains(&to_type.to_string())
+                && let Some(ref rel_val) = rule.rel
+            {
+                return rel_val.clone();
             }
         }
     }
     if let Some(node_conf) = config.nodes.get(to_type) {
         for rule in &node_conf.rules {
-            if rule.dir == "from" && rule.targets.contains(&from_type.to_string()) {
-                if let Some(ref ctx) = rule.context {
-                    return ctx.clone();
-                }
+            if rule.dir == "from"
+                && rule.targets.contains(&from_type.to_string())
+                && let Some(ref rel_val) = rule.rel
+            {
+                return rel_val.clone();
             }
         }
     }
@@ -458,14 +464,14 @@ fn evaluate_property_or_variable(
                     node.id.clone()
                 }
             }
-            EntityId::Relationship { context, .. } => {
+            EntityId::Relationship { rel, .. } => {
                 if let Some(ref prop) = pv.property {
                     match prop.as_str() {
-                        "type" => context.clone(),
+                        "type" => rel.clone(),
                         _ => "null".to_string(),
                     }
                 } else {
-                    context.clone()
+                    rel.clone()
                 }
             }
         }
@@ -674,18 +680,18 @@ mod tests {
     }
 
     #[test]
-    fn test_execute_relationship_type_and_context() {
+    fn test_execute_relationship_type_and_rel() {
         use crate::core::config::{NodeConfig, RuleConfig};
         let nodes = mock_nodes();
         let mut config = Config::default();
-        
+
         // Setup rules in config
         // UC uses FR
         let mut uc_rules = NodeConfig::default();
         uc_rules.rules.push(RuleConfig {
             dir: "to".to_string(),
             targets: vec!["FR".to_string()],
-            context: Some("uses".to_string()),
+            rel: Some("uses".to_string()),
             ..Default::default()
         });
         config.nodes.insert("UC".to_string(), uc_rules);
@@ -695,14 +701,15 @@ mod tests {
         fr_rules.rules.push(RuleConfig {
             dir: "to".to_string(),
             targets: vec!["MOD".to_string()],
-            context: Some("implemented_by".to_string()),
+            rel: Some("implemented_by".to_string()),
             ..Default::default()
         });
         config.nodes.insert("FR".to_string(), fr_rules);
 
         // Test 1: Query with relationship variable and type
-        let q = crate::core::parser::parse_query("MATCH (u:UC)-[r]->(f:FR) RETURN u.id, r.type, f.id")
-            .unwrap();
+        let q =
+            crate::core::parser::parse_query("MATCH (u:UC)-[r]->(f:FR) RETURN u.id, r.type, f.id")
+                .unwrap();
         let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 1);
         assert_eq!(result.rows[0][0], "UC_001");
@@ -710,14 +717,87 @@ mod tests {
         assert_eq!(result.rows[0][2], "FR_001");
 
         // Test 2: Filtering by relationship type
-        let q = crate::core::parser::parse_query("MATCH (u:UC)-[r:uses]->(f:FR) RETURN f.id")
-            .unwrap();
+        let q =
+            crate::core::parser::parse_query("MATCH (u:UC)-[r:uses]->(f:FR) RETURN f.id").unwrap();
         let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 1);
         assert_eq!(result.rows[0][0], "FR_001");
 
-        let q = crate::core::parser::parse_query("MATCH (u:UC)-[r:other]->(f:FR) RETURN f.id")
+        let q =
+            crate::core::parser::parse_query("MATCH (u:UC)-[r:other]->(f:FR) RETURN f.id").unwrap();
+        let result = execute_query(&q, &nodes, &config);
+        assert_eq!(result.rows.len(), 0);
+    }
+
+    #[test]
+    fn test_execute_alias_and_ops() {
+        let nodes = mock_nodes();
+        let config = Config::default();
+
+        // Testing Alias and Comparison Ops
+        let q = crate::core::parser::parse_query(
+            "MATCH (n:UC) RETURN n.id AS identifier, n.name AS name",
+        )
+        .unwrap();
+        let result = execute_query(&q, &nodes, &config);
+        assert_eq!(result.columns[0], "identifier");
+        assert_eq!(result.columns[1], "name");
+
+        // Comparison ops (Number literal - though our values are strings usually)
+        let q =
+            crate::core::parser::parse_query("MATCH (n) WHERE n.id < \"ZZ\" RETURN n.id").unwrap();
+        let result = execute_query(&q, &nodes, &config);
+        assert!(!result.rows.is_empty());
+    }
+
+    #[test]
+    fn test_execute_reverse_and_both_directions() {
+        let nodes = mock_nodes();
+        let mut config = Config::default();
+        use crate::core::config::{NodeConfig, RuleConfig};
+
+        // UC -> FR
+        let mut uc_rules = NodeConfig::default();
+        uc_rules.rules.push(RuleConfig {
+            dir: "to".to_string(),
+            targets: vec!["FR".to_string()],
+            rel: Some("uses".to_string()),
+            ..Default::default()
+        });
+        config.nodes.insert("UC".to_string(), uc_rules);
+
+        // Reverse matching: (f:FR)<-[]-(u:UC)
+        let q = crate::core::parser::parse_query("MATCH (f:FR)<-[r]-(u:UC) RETURN r.type").unwrap();
+        let result = execute_query(&q, &nodes, &config);
+        assert_eq!(result.rows.len(), 1);
+        assert_eq!(result.rows[0][0], "uses");
+
+        // Undirected matching: (u:UC)-[]-(f:FR)
+        let q = crate::core::parser::parse_query("MATCH (u:UC)-[r]-(f:FR) RETURN r.type").unwrap();
+        let result = execute_query(&q, &nodes, &config);
+        assert_eq!(result.rows.len(), 1);
+        assert_eq!(result.rows[0][0], "uses");
+
+        // Undirected from other side
+        let q = crate::core::parser::parse_query("MATCH (f:FR)-[r]-(u:UC) RETURN r.type").unwrap();
+        let result = execute_query(&q, &nodes, &config);
+        assert_eq!(result.rows.len(), 1);
+        assert_eq!(result.rows[0][0], "uses");
+    }
+
+    #[test]
+    fn test_execute_match_mismatch() {
+        let nodes = mock_nodes();
+        let config = Config::default();
+
+        // Variable already bound to different node
+        let q = crate::core::parser::parse_query("MATCH (n:UC), (m:FR) WHERE n = m RETURN n.id")
             .unwrap();
+        let result = execute_query(&q, &nodes, &config);
+        assert_eq!(result.rows.len(), 0);
+
+        // End node label mismatch in relationship
+        let q = crate::core::parser::parse_query("MATCH (u:UC)-[]->(f:MOD) RETURN u.id").unwrap();
         let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 0);
     }

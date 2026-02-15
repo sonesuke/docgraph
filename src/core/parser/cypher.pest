@@ -75,7 +75,7 @@ where_clause = { expression }
 // Supports aliasing with AS.
 //
 return_clause = { return_item ~ ("," ~ SP? ~ return_item)* }
-return_item = { expression ~ (SP ~ AS ~ SP ~ variable)? }
+return_item = { expression ~ (AS ~ variable)? }
 
 //
 // Expressions

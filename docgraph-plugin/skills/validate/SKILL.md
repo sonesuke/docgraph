@@ -1,161 +1,165 @@
 ---
 name: validate
-description: Validation Quality Gate - Ensure project integrity and consistency.
+description: Graph Integrity Gate - Ensure nodes and relations can exist in the causal graph.
 ---
 
-# Validation Quality Gate
+# Graph Integrity Gate
 
-This skill serves as the **definitive quality threshold** for the documentation graph. It must be executed strictly to
-ensure that all semantic, structural, and consistency rules are met before finalizing changes.
+This skill determines whether a node and its local causal subgraph can exist.
 
-> [!IMPORTANT] This skill must perform checks **strictly and rigorously**. Accuracy in ID naming, responsibility scope,
-> and template adherence is critical for the integrity of the documentation graph. **Even cosmetic inconsistencies must
-> be flagged.**
+Validation does not evaluate quality or design semantics. It verifies structural conditions required for causal
+traversal.
 
-> [!NOTE] For detailed usage and available options of any `docgraph` subcommand, always refer to `docgraph --help` or
-> `docgraph <SUBCOMMAND> --help`.
+> [!IMPORTANT] A node is valid only if its presence does not create a logical contradiction in the graph. Cosmetic or
+> stylistic issues must NOT cause failure.
 
-## Prerequisites
+---
 
-- **`docgraph` CLI must be installed as a system binary**
-  - Install via: `curl -fsSL https://raw.githubusercontent.com/sonesuke/docgraph/main/install.sh | bash`
-  - Or build from source: `cargo install --path .`
-- **This is NOT an npm or Python package** - do NOT use `npx` or `pipx`
-- **Installation Verification**: Run `docgraph --version` to confirm the binary is available
+## Core Principle
 
-## Workflow Steps
+Validation checks **existence**, not interpretation.
 
-### 0. Automated Check Pre-requisites
+- If validation fails → the graph contains a structural contradiction
+- If validation passes → reasoning may safely operate
 
-- **Level**: STRICT
-- **Failure Policy**: FAIL immediately if any check fails.
+Validation rejects impossible structures, not incomplete ones.
 
-Before performing manual semantic checks, ensure all automated validations pass.
+Validation guarantees the graph is a possible world, not a complete world.
 
-1. **Formatting**: Identify the appropriate Markdown formatter for the project (e.g., Prettier, Biome) and verify
-   Markdown style (e.g., `npm run format:md -- --check`).
-2. **Consistency**: Run `docgraph check` to ensure the internal graph logic is sound.
-3. **Rust Integrity**: Run `cargo test` and `cargo clippy` if logic changes are involved.
+---
 
-### 1. Scope Analysis (Structural Context)
+## 0. Schema Topology Understanding
 
-- **Goal**:
-  - Understand the schema constraints defined for the target type in `docgraph.toml`.
-  - Identify peer nodes for comparison (naming, placement, structure).
-  - Establish the dominant convention (baseline) for the specific node type.
+Before running validation, the agent MUST read `docgraph.toml` to establish the allowed structural topology.
 
-List elements within the target scope to understand the current state. Use `docgraph query`.
-- Example: `docgraph query "MATCH (n:FR) RETURN n.id"`
+`docgraph.toml` is the sole normative source. If unread, the agent MUST stop.
 
-### 2. ID and Title Correspondence
+The agent MUST extract:
 
-- **Level**: STRICT
-- **Failure Policy**: FAIL immediately.
+- Allowed node types and their identifiers
+- Allowed relation types (`r.type`) and their directionality
+- Allowed target types for each relation
+- Required and forbidden relation rules
 
-Verify if the ID mnemonic matches the Title content.
+All validation decisions MUST be justified against this topology.
 
-- `FR_LOGIN` -> "User Login" (Correct)
-- `FR_AUTH` -> "User Login" (Incorrect - too broad or mismatched)
+---
 
-### 3. Prefix Consistency
+## 1. Automated Structural Checks
 
-- **Level**: STRICT
-- **Failure Policy**: FAIL immediately.
+Run automatic checks before manual inspection.
 
-Verify if elements in the same category share the same prefix:
+```bash
+docgraph check
+```
 
-- `FR_` (Functional Requirements)
-- `NFR_` (Non-Functional Requirements)
-- `UC_` (Use Cases)
-- `MOD_` (Modules)
-- `IF_` (Interfaces)
-- `CC_` (Cross-cutting Concepts)
-- `ADR_` (Architecture Decision Records)
-- `BB_` (Building Blocks)
+If this fails → **FAIL immediately**
 
-### 4. File Placement and Categorization
+---
 
-- **Level**: STRICT
-- **Failure Policy**: FAIL immediately.
-- **Rule of Thumb**: Generally, nodes with the same prefix should be grouped in the same file or a specific directory
-  structure. **This is not an exception mechanism.**
+## 2. Schema Integrity
 
-Verify if the file location is appropriate for the ID prefix and consistent with baseline nodes identified in Step 1.
+All nodes and relations must conform to `docgraph.toml`.
 
-- `FR_LOGIN` should be in `doc/requirements/functional/...`
+Failure cases:
 
-### 5. Template and Structure Validation
+- Undefined node type
+- Undefined relation type
+- Disallowed relation direction
 
-- **Level**: STRICT
-- **Failure Policy**: FAIL immediately.
+Result: FAIL
 
-Verify if the node's content follows the defined template and structure rules.
+---
 
-1. **Retrieve Template**: Use `docgraph type <TYPE>`.
-2. **Retrieve Content**: Use `docgraph describe <ID>`.
-3. **Compare**:
-   - Are all required sections (headers) present?
-   - Do list items (dependencies) match the expected patterns?
+## 3. Referential Integrity
 
-### 6. Single Responsibility Principle (SRP) Check
+All references must resolve.
 
-- **Level**: HEURISTIC (Judgment required)
-- **Failure Policy**: FAIL with remediation proposal if violated.
+- inbound references resolve
+- outbound references resolve
 
-Verify if the node represents a single responsibility at the appropriate granularity for its type.
+Dangling references → FAIL
 
-- **Goal**: One ID should correspond to one clear concept or requirement.
-- **Check**: Does this node try to address multiple unrelated issues?
+---
 
-### 7. Remediation Safety Rules
+## 4. Identity Uniqueness
 
-- **Level**: MANDATORY
+Node identifiers must be globally unique.
 
-Any change to ID or file location **MUST** follow these safety rules:
+Duplicate ID → FAIL
 
-1. **Reference Check**: Run `docgraph describe <ID>` and enumerate all inbound/outbound relations.
-2. **Impact Assessment**: Verify that proposed changes do not break existing references unless explicitly handled.
+---
 
-### 8. Remediation Proposals
+## 5. Causal Contradictions
 
-If issues are found, propose:
+The local graph must not contain logical contradictions that prevent traversal.
 
-- **Rename ID**: Suggest a better ID (after Safety Rules).
-- **Move File**: Suggest moving the definition (after Safety Rules).
-- **Fix Structure**: Propose adding missing sections or correcting links.
-- **Split Node**: Propose splitting the node into multiple IDs with narrower scopes.
+A structure is invalid only if realization is impossible, not merely incomplete.
+
+Examples:
+
+- constraints block all realizations
+- cyclic dependencies preventing resolution
+- mutually exclusive requirements
+- relation semantics conflict
+- schema makes realization unreachable
+
+Any detected → FAIL
+
+---
+
+## Minimal Tooling
+
+### `docgraph check`
+
+```bash
+docgraph check
+```
+
+### `docgraph describe` (optional)
+
+Use only when confirming unresolved references around a specific node.
+
+```bash
+docgraph describe <ID>
+```
+
+---
+
+## What Validation Does NOT Check
+
+The following MUST NOT cause failure:
+
+- naming elegance
+- directory placement
+- template formatting
+- SRP granularity
+- documentation completeness
+
+These belong to alignment or hygiene review.
+
+---
 
 ## Validation Report
 
-You **must** provide the evaluation results in the following format:
-
 ### Target
 
-- **Scope**: [e.g., FR_LOGIN]
-- **Baseline Category**: [e.g., FR_ nodes in doc/requirements/functional/]
+- **Node**: [ID]
 
-### Findings
+### Structural Results
 
-| Category  | Evaluated Item        | Result    | Notes/Details |
-| :-------- | :-------------------- | :-------- | :------------ |
-| Automated | format / check        | PASS/FAIL |               |
-| ID Naming | Mnemonic consistency  | PASS/FAIL |               |
-| Structure | Template adherence    | PASS/FAIL |               |
-| SRP       | Single responsibility | PASS/FAIL |               |
+| Check                 | Result    | Notes |
+| :-------------------- | :-------- | :---- |
+| Schema topology       | READ      |       |
+| Schema integrity      | PASS/FAIL |       |
+| Referential integrity | PASS/FAIL |       |
+| Identity uniqueness   | PASS/FAIL |       |
+| Causal contradictions | PASS/FAIL |       |
 
-### Quality Gate Checklist
-
-- [ ] **Automated Checks**: Markdown format, `docgraph check`, etc.
-- [ ] **ID Naming**: ID is underscore-separated and mnemonic.
-- [ ] **File Placement**: Consistent with peer baseline.
-- [ ] **Template Adherence**: All sections from `docgraph type` present.
-- [ ] **SRP Compliance**: Single responsibility at node level.
+---
 
 ## Final Decision
 
-### Decision Semantics
-
-- **PASS**: Node meets all strict criteria and may be merged/applied.
-- **FAIL**: Node MUST NOT be merged. Remediation MUST be completed and re-validated.
+**PASS** → Node may exist in the graph **FAIL** → Graph integrity would be broken
 
 **FINAL DECISION: [PASS/FAIL]**

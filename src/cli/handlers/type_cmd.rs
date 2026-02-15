@@ -70,8 +70,8 @@ fn show_type_details(config: &Config, id: &str) -> ExitCode {
                 .map(|m: usize| format!(" max={}", m))
                 .unwrap_or_default();
 
-            let desc = match &rule.context {
-                Some(ctx) => format!("(Context: {}) {}", ctx, rule.desc.as_deref().unwrap_or("")),
+            let desc = match &rule.rel {
+                Some(r) => format!("(Rel: {}) {}", r, rule.desc.as_deref().unwrap_or("")),
                 None => rule.desc.as_deref().unwrap_or("").to_string(),
             };
 

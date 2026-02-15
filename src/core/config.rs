@@ -38,7 +38,7 @@ pub struct RuleConfig {
     pub min: Option<usize>,
     pub max: Option<usize>,
     pub desc: Option<String>,
-    pub context: Option<String>,
+    pub rel: Option<String>,
 }
 
 impl Config {

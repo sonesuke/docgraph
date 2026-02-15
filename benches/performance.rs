@@ -6,7 +6,9 @@ use tempfile::tempdir;
 
 use docgraph::core::collect::collect_workspace_all;
 use docgraph::core::config::Config;
+use docgraph::core::engine::execute_query;
 use docgraph::core::lint::check_workspace;
+use docgraph::core::parser::parse_query;
 
 /// Generate test workspace with specified number of files and nodes
 fn generate_test_workspace(dir: &Path, num_files: usize, nodes_per_file: usize) {
@@ -89,5 +91,73 @@ fn bench_lint_1000_nodes(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_collect_1000_nodes, bench_lint_1000_nodes);
+fn bench_query_match_label(c: &mut Criterion) {
+    let dir = tempdir().expect("Failed to create temp dir");
+    generate_test_workspace(dir.path(), 100, 10);
+
+    let (nodes, _refs) = collect_workspace_all(dir.path(), &[], None);
+    let config = Config::load(dir.path()).expect("Failed to load config");
+    let query = parse_query("MATCH (n:FR) RETURN n.id").expect("Failed to parse query");
+
+    c.bench_function("query_match_label_1000_nodes", |b| {
+        b.iter(|| {
+            let result = execute_query(&query, &nodes, &config);
+            assert!(
+                result.rows.len() >= 1000,
+                "Expected 1000+ rows, got {}",
+                result.rows.len()
+            );
+        })
+    });
+}
+
+fn bench_query_where_filter(c: &mut Criterion) {
+    let dir = tempdir().expect("Failed to create temp dir");
+    generate_test_workspace(dir.path(), 100, 10);
+
+    let (nodes, _refs) = collect_workspace_all(dir.path(), &[], None);
+    let config = Config::load(dir.path()).expect("Failed to load config");
+    let query =
+        parse_query("MATCH (n) WHERE n.type = \"FR\" RETURN n.id").expect("Failed to parse query");
+
+    c.bench_function("query_where_filter_1000_nodes", |b| {
+        b.iter(|| {
+            let result = execute_query(&query, &nodes, &config);
+            assert!(
+                result.rows.len() >= 1000,
+                "Expected 1000+ rows, got {}",
+                result.rows.len()
+            );
+        })
+    });
+}
+
+fn bench_query_relationship(c: &mut Criterion) {
+    let dir = tempdir().expect("Failed to create temp dir");
+    generate_test_workspace(dir.path(), 100, 10);
+
+    let (nodes, _refs) = collect_workspace_all(dir.path(), &[], None);
+    let config = Config::load(dir.path()).expect("Failed to load config");
+    let query =
+        parse_query("MATCH (a:FR)-[]->(b:FR) RETURN a.id, b.id").expect("Failed to parse query");
+
+    c.bench_function("query_relationship_1000_nodes", |b| {
+        b.iter(|| {
+            let result = execute_query(&query, &nodes, &config);
+            assert!(
+                !result.rows.is_empty(),
+                "Expected some relationship results"
+            );
+        })
+    });
+}
+
+criterion_group!(
+    benches,
+    bench_collect_1000_nodes,
+    bench_lint_1000_nodes,
+    bench_query_match_label,
+    bench_query_where_filter,
+    bench_query_relationship
+);
 criterion_main!(benches);

@@ -157,7 +157,14 @@ fn parse_return_item(pair: Pair<Rule>) -> Result<ast::ReturnItem> {
     let expr_pair = inner.next().unwrap();
     let expression = parse_expression(expr_pair)?;
 
-    let alias = inner.next().map(|p| p.as_str().to_string());
+    let mut alias = None;
+    for p in inner {
+        match p.as_rule() {
+            Rule::variable => alias = Some(p.as_str().to_string()),
+            Rule::AS => {} // Skip AS keyword
+            _ => {}
+        }
+    }
 
     Ok(ast::ReturnItem { expression, alias })
 }
@@ -327,5 +334,13 @@ mod tests {
         let q = "MATCH (n) WHERE n.id = \"UC_001\" RETURN n";
         let parsed = parse_query(q).unwrap();
         assert!(parsed.where_clause.is_some());
+    }
+
+    #[test]
+    fn test_parse_alias() {
+        let q = "MATCH (n) RETURN n.id AS identifier";
+        let parsed = parse_query(q).unwrap();
+        let item = &parsed.return_clause.items[0];
+        assert_eq!(item.alias, Some("identifier".to_string()));
     }
 }
