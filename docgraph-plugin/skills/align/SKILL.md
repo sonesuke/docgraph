@@ -22,11 +22,12 @@ context (Vertical) and their peers (Horizontal).
 
 ## Workflow Steps
 
-### 0. Validation Pre-requisite
+### 0. Structural & Validation Pre-requisite
 
 - **Level**: STRICT
 - **Policy**:
-  - If `validate` status is unknown or FAIL -> **STOP** and return FAIL.
+  1. **Schema Context**: Read `docgraph.toml` to understand the valid node types and relationship rules for the target scope.
+  2. **Validation Status**: If `validate` status is unknown or FAIL -> **STOP** and return FAIL.
   - Do not re-evaluate surface items (naming, templates) already covered by `validate`.
 
 ### 1. Vertical Consistency (Traceability & Context)

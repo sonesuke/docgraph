@@ -21,6 +21,12 @@ structure of the graph.
 
 ## Tools & Techniques
 
+### 0. Structural Understanding (Phase 0)
+
+Before executing any query, you **MUST** understand the project's graph schema.
+- **Action**: Read `docgraph.toml` in the project root.
+- **Objective**: Identify supported node types (`UC`, `FR`, `MOD`, etc.), their relationship rules (`dir`, `targets`), and their associated templates.
+
 ### 1. `docgraph query` (Powerful Search)
 
 Uses Cypher-like syntax for precise, attribute-aware, and relational searching. **This is the preferred tool for complex
