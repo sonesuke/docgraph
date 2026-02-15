@@ -10,9 +10,15 @@ desc = "Use Case"
 template = "doc/templates/usecases.md"
 rules = [
 
-  { dir = "to", targets = ["ACT"], min = 0, desc = "Use cases involves actors", rel = "involves" },
-  { dir = "to", targets = ["IF"], min = 0, desc = "Use cases requires interfaces", rel = "requires" },
-  { dir = "to", targets = ["FR"], min = 0, desc = "Use cases are elaborated by requirements", rel = "elaborated_by" },
+  { dir = "to", targets = [
+    "ACT",
+  ], min = 0, desc = "Use cases involves actors", rel = "involves" },
+  { dir = "to", targets = [
+    "IF",
+  ], min = 0, desc = "Use cases requires interfaces", rel = "requires" },
+  { dir = "to", targets = [
+    "FR",
+  ], min = 0, desc = "Use cases are elaborated by requirements", rel = "elaborated_by" },
 ]
 
 [nodes.FR]

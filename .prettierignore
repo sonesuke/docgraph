@@ -1,1 +1,6 @@
 doc/templates/**
+Cargo.lock
+Cargo.toml
+**/target/**
+vsix/node_modules/**
+
