@@ -11,6 +11,10 @@ practice, this means each file/module is responsible for exactly one thing.
 
 ## Rationale
 
+As the `docgraph` codebase grows, we need a clear principle for organizing code into modules and files. Without a
+guiding principle, modules can become bloated with multiple responsibilities, making the code harder to understand,
+test, and maintain.
+
 - **Easier to Understand**: When reading `check.rs`, developers only need to understand the `check` command logic. No
   other command logic is mixed in, reducing cognitive load.
 - **Limited Change Impact**: When modifying the `check` command, developers only need to edit `check.rs`. Other commands
@@ -25,13 +29,9 @@ practice, this means each file/module is responsible for exactly one thing.
 - More files to manage (one per responsibility)
 - May require more navigation between files when working on related features
 
-## Context
+### Notes
 
-As the `docgraph` codebase grows, we need a clear principle for organizing code into modules and files. Without a
-guiding principle, modules can become bloated with multiple responsibilities, making the code harder to understand,
-test, and maintain.
-
-### Anti-Pattern Example
+**Anti-Pattern Example**
 
 **Bad** - Multiple responsibilities in one file:
 
@@ -58,6 +58,6 @@ pub fn handle_rule(...) { /* ... */ }
 
 Each file has exactly one reason to change (changes to that specific command).
 
-## Related
+**Related Decisions:**
 
 - [ADR_LAYERED_ARCH (Layered Architecture)](./layered-architecture.md#ADR_LAYERED_ARCH)

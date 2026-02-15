@@ -4,34 +4,28 @@
 
 ## High Performance
 
-The system must be highly performant to ensure a smooth user experience, even with large documentation sets.
+The system must satisfy strict performance requirements to support large codebases.
 
-**Criteria:**
+### Qualifies (Optional)
 
-- Linting 1000 nodes should take less than 1 second.
-- Graph analysis operations should be O(N) where possible.
+- [FR_CLI_LINT (Lint Command)](../functional/cli.md#FR_CLI_LINT)
 
-### Codified in (Optional)
+### Constrained by (Optional)
 
-- [CC_PERF_TESTING (4. Performance Testing)](../../architecture/design/testing.md#CC_PERF_TESTING) Defines performance
-  testing standards
-
----
+- [CC_PERF_TESTING (4. Performance Testing)](../../architecture/design/testing.md#CC_PERF_TESTING)
 
 <a id="NFR_AVAILABILITY"></a>
 
 ## System Availability
 
-The docgraph tool should be available and operational at least 99.9% of the time in CI environments.
-
-- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
-
----
+The system must be available for use when required by the user.
 
 <a id="NFR_LATENCY"></a>
 
 ## System Latency
 
-Interactive operations in the VS Code extension (hover, completion) should respond in less than 100ms.
+LSP response time must be within acceptable limits.
 
-- [MOD_LSP (LSP Library)](../../architecture/view/module.md#MOD_LSP)
+### Qualifies (Optional)
+
+- [FR_LSP_COMP (Auto-completion)](../functional/lsp.md#FR_LSP_COMP)

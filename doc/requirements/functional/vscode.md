@@ -11,14 +11,9 @@ SHALL implement a Language Server Protocol (LSP) client that establishes communi
 running in LSP mode (`docgraph lsp`) and exposes features via
 [VS Code UI](../../requirements/interfaces/interfaces.md#IF_VSCODE_UI).
 
-### Realized by
+### Derived from
 
-- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
-
-### Qualified by
-
-- [NFR_VSCODE_PORTABILITY (Cross-platform Portability)](../../requirements/non-functional/vscode.md#NFR_VSCODE_PORTABILITY)
-- [NFR_LATENCY (System Latency)](../../requirements/non-functional/performance.md#NFR_LATENCY)
+- [UC_VSCODE_INSTALL (Install VS Code Extension)](../../usecases/setup.md#UC_VSCODE_INSTALL)
 
 <a id="FR_VSC_BINARY_PATH"></a>
 
@@ -27,13 +22,9 @@ running in LSP mode (`docgraph lsp`) and exposes features via
 The extension SHALL provide a setting (`docgraph.binaryPath`) allowing the user to specify the absolute path to the
 `docgraph` executable. If not specified, it SHALL attempt to find the binary in the system `PATH`.
 
-### Realized by
+### Derived from
 
-- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
-
-### Qualified by
-
-- [NFR_VSCODE_PACKAGING (Lightweight Packaging)](../../requirements/non-functional/vscode.md#NFR_VSCODE_PACKAGING)
+- [UC_VSCODE_INSTALL (Install VS Code Extension)](../../usecases/setup.md#UC_VSCODE_INSTALL)
 
 <a id="FR_VSC_MARKDOWN_ACTIVATION"></a>
 
@@ -42,9 +33,9 @@ The extension SHALL provide a setting (`docgraph.binaryPath`) allowing the user 
 The extension SHALL activate automatically when a workspace contains Markdown files (`*.md`) or when a Markdown file is
 opened. It SHALL associate its LSP capabilities exclusively with the `markdown` document selector.
 
-### Realized by
+### Derived from
 
-- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
+- [UC_VSCODE_INSTALL (Install VS Code Extension)](../../usecases/setup.md#UC_VSCODE_INSTALL)
 
 <a id="FR_VSC_SERVER_LIFECYCLE"></a>
 
@@ -53,6 +44,6 @@ opened. It SHALL associate its LSP capabilities exclusively with the `markdown` 
 The extension SHALL provide a command to restart the `docgraph` language server manually, which is useful when the
 binary is updated or the configuration changes.
 
-### Realized by
+### Derived from
 
-- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
+- [UC_VSCODE_INSTALL (Install VS Code Extension)](../../usecases/setup.md#UC_VSCODE_INSTALL)

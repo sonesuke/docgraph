@@ -78,7 +78,3 @@ Errors automatically convert across boundaries:
 
 - [ADR_ERROR_HANDLING (Error Handling Strategy: thiserror for Core, anyhow for Binaries)](../../decisions/error-handling.md#ADR_ERROR_HANDLING)
   To unify error reporting.
-
-### Realized by
-
-- [MOD_CORE_ERRORS (Error Definitions)](../view/module.md#MOD_CORE_ERRORS)

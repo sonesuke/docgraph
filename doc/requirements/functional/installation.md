@@ -16,9 +16,9 @@ The system must support manual installation by providing valid configurations fo
 2. **Node.js**:
    - Version: v18 or higher (Required for VS Code Extension)
 
-### Realized by
+### Derived from
 
-- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
+- [UC_INSTALL_MANUAL (Install Manual Setup)](../../usecases/setup.md#UC_INSTALL_MANUAL)
 
 <a id="FR_INSTALL_BINARY"></a>
 
@@ -31,9 +31,9 @@ The system must provide pre-compiled binaries and official installation scripts 
 2. **Automated Scripts**: Provide a shell script for Unix-like systems and a PowerShell script for Windows to handle
    downloading, extraction, and PATH configuration.
 
-### Realized by
+### Derived from
 
-- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
+- [UC_INSTALL_BINARY (Install via Binary Script)](../../usecases/setup.md#UC_INSTALL_BINARY)
 
 <a id="FR_INSTALL_EXT_ZED"></a>
 
@@ -50,9 +50,9 @@ The system must provide an extension for the Zed editor to enable LSP support vi
 5. **Configuration**: Requires a `.zed/settings.json` in the project root to explicitly enable the `docgraph` language
    server.
 
-### Realized by
+### Derived from
 
-- [MOD_EXT_ZED (Zed Editor Extension)](../../architecture/view/module.md#MOD_EXT_ZED)
+- [UC_ZED_INSTALL (Install Zed Extension)](../../usecases/setup.md#UC_ZED_INSTALL)
 
 <a id="FR_INSTALL_PREK"></a>
 
@@ -67,6 +67,6 @@ The system must support automated code quality checks before commits using `prek
    - Validation: `docgraph check`.
 3. **Setup**: Supports a one-command setup via `prek install -f`.
 
-### Realized by
+### Derived from
 
-- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
+- [UC_PREK_SETUP (Set Up Development Hooks)](../../usecases/setup.md#UC_PREK_SETUP)

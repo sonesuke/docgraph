@@ -7,3 +7,7 @@
 ### Responsibilities
 
 - {Responsibility}
+
+### Participates in
+
+- [UC* (*)](*#UC_*)

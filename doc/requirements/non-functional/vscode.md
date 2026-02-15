@@ -9,9 +9,9 @@ These requirements define the quality attributes and constraints of the `docgrap
 The extension (LSP client) SHALL be written in TypeScript/JavaScript to ensure it runs natively on all platforms
 supported by VS Code (macOS, Linux, Windows).
 
-### Realized by (Optional)
+### Qualifies (Optional)
 
-- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
+- [FR_VSC_LSP_CLIENT (LSP Client Integration)](../../requirements/functional/vscode.md#FR_VSC_LSP_CLIENT)
 
 <a id="NFR_VSCODE_PACKAGING"></a>
 
@@ -20,6 +20,6 @@ supported by VS Code (macOS, Linux, Windows).
 The bundled `.vsix` file SHALL be minimized and excluded of unnecessary development dependencies to keep the download
 size small and the extension footprint low.
 
-### Realized by (Optional)
+### Qualifies (Optional)
 
-- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
+- [FR_VSC_BINARY_PATH (Binary Path Configuration)](../../requirements/functional/vscode.md#FR_VSC_BINARY_PATH)

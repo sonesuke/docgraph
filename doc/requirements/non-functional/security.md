@@ -2,18 +2,11 @@
 
 <a id="NFR_SECURITY"></a>
 
-## Security Testing
+## Secure Execution
 
-The system must maintain high security standards through automated security testing and vulnerability scanning.
+The system must not execute arbitrary code from the documentation or workspace without explicit user consent.
 
-**Testing Strategy:**
+### Constrained by (Optional)
 
-- **Static Analysis**: Automated CodeQL analysis for security vulnerabilities
-- **Dependency Scanning**: Dependabot and cargo-audit for vulnerable dependencies
-- **Execution**: Runs on push to main, pull requests, and weekly schedule
-
-### Codified in (Optional)
-
-- [CC_SAST (SAST (CodeQL))](../../architecture/design/sast.md#CC_SAST) Defines SAST and dependency scanning approach
-- [CC_SUPPLY_CHAIN_SECURITY (Supply Chain Security)](../../architecture/design/supply-chain-security.md#CC_SUPPLY_CHAIN_SECURITY)
-  Ensures supply chain security
+- [CC_DEV_ENV (Development Environment)](../../architecture/design/development-norm.md#CC_DEV_ENV)
+- [CC_CICD (CI/CD Pipeline)](../../architecture/design/cicd.md#CC_CICD)

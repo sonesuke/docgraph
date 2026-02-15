@@ -90,7 +90,19 @@ fn to_jsonrpc_error(err: anyhow::Error) -> jsonrpc::Error {
 We selected this hybrid approach to balance type safety in the core library with development velocity and error context
 in the application layers.
 
-### 1. Core Library: thiserror (Typed Errors)
+The `docgraph` project has a layered architecture with:
+
+- **Core library** (`src/core/`, `src/lib.rs`) - Reusable logic exposed to other crates
+- **CLI binary** (`src/main.rs`, `src/cli/`) - Command-line interface
+- **LSP server** (`src/lsp/`) - Language Server Protocol implementation
+
+We need a consistent error handling strategy that:
+
+1. Provides typed errors for library APIs
+2. Offers rich context for end-user error messages
+3. Converts errors appropriately at layer boundaries
+
+**1. Core Library: thiserror (Typed Errors)**
 
 **Why**: The core library is called by other crates (CLI, LSP), so errors should be **typed** for programmatic handling.
 
@@ -125,7 +137,7 @@ pub enum Error {
 pub type Result<T> = std::result::Result<T, Error>;
 ```
 
-#### 2. CLI Binary: anyhow (Contextual Reporting)
+**2. CLI Binary: anyhow (Contextual Reporting)**
 
 **Why**: CLI is the final consumer - errors are displayed to users and then the program exits. We need **rich context**
 more than type safety.
@@ -155,7 +167,7 @@ fn main() -> anyhow::Result<()> {
 
 Core's `Error` automatically converts to `anyhow::Error` via `?` operator.
 
-#### 3. LSP Server: anyhow + JSON-RPC Conversion
+**3. LSP Server: anyhow + JSON-RPC Conversion**
 
 **Why**: LSP handles requests asynchronously and needs to convert errors to JSON-RPC error responses.
 
@@ -190,20 +202,8 @@ async fn handle_hover(...) -> Result<Option<Hover>, jsonrpc::Error> {
 - **Conversion overhead**: LSP needs explicit conversion to JSON-RPC errors
 - **Learning curve**: Developers need to understand when to use which crate
 
-## Context
+### Notes
 
-The `docgraph` project has a layered architecture with:
-
-- **Core library** (`src/core/`, `src/lib.rs`) - Reusable logic exposed to other crates
-- **CLI binary** (`src/main.rs`, `src/cli/`) - Command-line interface
-- **LSP server** (`src/lsp/`) - Language Server Protocol implementation
-
-We need a consistent error handling strategy that:
-
-1. Provides typed errors for library APIs
-2. Offers rich context for end-user error messages
-3. Converts errors appropriately at layer boundaries
-
-## Related
+**Related Decisions:**
 
 - [ADR_LAYERED_ARCH (Layered Architecture)](./layered-architecture.md#ADR_LAYERED_ARCH)

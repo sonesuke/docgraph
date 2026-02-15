@@ -30,10 +30,6 @@ Defined in [.devcontainer/devcontainer.json](../../../.devcontainer/devcontainer
 - [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY) To ensure consistent
   development experience.
 
-### Realized by
-
-- [MOD_DEV_CONTAINER (Dev Container)](../view/module.md#MOD_DEV_CONTAINER)
-
 ---
 
 <a id="CC_CONVENTIONAL_COMMITS"></a>
@@ -56,10 +52,6 @@ generation and versioning.
 - **test**: Adding missing tests or correcting existing tests
 - **chore**: Changes to the build process or auxiliary tools and libraries
 
-### Realized by
-
-- [MOD_CICD (CI/CD Pipelines)](../view/module.md#MOD_CICD)
-
 ---
 
 <a id="CC_SEMANTIC_VERSIONING"></a>
@@ -75,7 +67,3 @@ Given a version number **MAJOR.MINOR.PATCH**, increment the:
 1. **MAJOR** version when you make incompatible API changes.
 2. **MINOR** version when you add functionality in a backwards compatible manner.
 3. **PATCH** version when you make backwards compatible bug fixes.
-
-### Realized by
-
-- [MOD_CICD (CI/CD Pipelines)](../view/module.md#MOD_CICD)

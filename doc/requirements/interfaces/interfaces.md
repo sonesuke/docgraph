@@ -11,9 +11,13 @@ The `docgraph.toml` file at the project root defines the validation rules and wo
 - **File Path**: `docgraph.toml` (Project Root)
 - **Format**: TOML
 
-### Realized by
+### Defined by
 
-- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
+- [FR_CORE_CONFIGURATION (Configuration)](../../requirements/functional/core.md#FR_CORE_CONFIGURATION)
+
+### Justified by
+
+- [UC_WRITE (Write Specifications)](../../usecases/writing-specification.md#UC_WRITE)
 
 ---
 
@@ -23,9 +27,15 @@ The `docgraph.toml` file at the project root defines the validation rules and wo
 
 The `docgraph` CLI provides commands for linting, graph generation, and analysis of Markdown documentation.
 
-### Realized by
+### Defined by
 
-- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
+- [FR_CLI_LINT (Lint Command)](../../requirements/functional/cli.md#FR_CLI_LINT)
+- [FR_CLI_GRAPH (Graph Command)](../../requirements/functional/cli.md#FR_CLI_GRAPH)
+- [FR_CLI_LIST (List Capability)](../../requirements/functional/cli.md#FR_CLI_LIST)
+
+### Justified by
+
+- [UC_CLI_ANALYSIS (CLI Traceability Analysis)](../../usecases/cli-analysis.md#UC_CLI_ANALYSIS)
 
 ---
 
@@ -55,9 +65,13 @@ The implementation is defined in:
 - [plugin.json (Plugin Definition)](../../../docgraph-plugin/.claude-plugin/plugin.json)
 - [SKILL.md (Plugin Skill Definition)](../../../docgraph-plugin/skills/docgraph/SKILL.md)
 
-### Realized by
+### Defined by
 
-- [MOD_PLUGIN (Claude Code Plugin)](../../architecture/view/module.md#MOD_PLUGIN)
+- [FR_CLAUDE_RAG (Retrieval-Augmented Generation)](../../requirements/functional/claude.md#FR_CLAUDE_RAG)
+
+### Justified by
+
+- [UC_AI_ASSISTANCE (AI-Assisted Documentation)](../../usecases/ai-assistance.md#UC_AI_ASSISTANCE)
 
 ---
 
@@ -67,9 +81,13 @@ The implementation is defined in:
 
 The distribution platform for Claude Desktop plugins.
 
-### Realized by
+### Defined by
 
-- [MOD_PLUGIN (Claude Code Plugin)](../../architecture/view/module.md#MOD_PLUGIN)
+- [FR_CLAUDE_MARKETPLACE (Claude Marketplace Support)](../../requirements/functional/claude.md#FR_CLAUDE_MARKETPLACE)
+
+### Justified by
+
+- [UC_CLAUDE_INSTALL (Install Claude Plugin)](../../usecases/setup.md#UC_CLAUDE_INSTALL)
 
 ---
 
@@ -79,9 +97,13 @@ The distribution platform for Claude Desktop plugins.
 
 The distribution platform for Visual Studio Code extensions.
 
-### Realized by
+### Defined by
 
-- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
+- [FR_VSC_LSP_CLIENT (LSP Client Integration)](../../requirements/functional/vscode.md#FR_VSC_LSP_CLIENT)
+
+### Justified by
+
+- [UC_VSCODE_INSTALL (Install VS Code Extension)](../../usecases/setup.md#UC_VSCODE_INSTALL)
 
 ---
 
@@ -91,9 +113,13 @@ The distribution platform for Visual Studio Code extensions.
 
 The user interface of Visual Studio Code, including commands, views, and settings.
 
-### Realized by
+### Defined by
 
-- [MOD_VSEX (VS Code Extension)](../../architecture/view/module.md#MOD_VSEX)
+- [FR_VSC_LSP_CLIENT (LSP Client Integration)](../../requirements/functional/vscode.md#FR_VSC_LSP_CLIENT)
+
+### Justified by
+
+- [UC_EDITOR_LSP (Editor Support via LSP)](../../usecases/lsp-editing.md#UC_EDITOR_LSP)
 
 ---
 
@@ -109,9 +135,13 @@ The system interacts with GitHub Releases to distribute pre-compiled binaries an
 2. **Access**: Public anonymous access for downloads.
 3. **Format**: Compressed archives (`.tar.gz`, `.zip`) and VSIX packages.
 
-### Realized by
+### Defined by
 
-- [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
+- [FR_INSTALL_BINARY (Binary Installation Support)](../../requirements/functional/installation.md#FR_INSTALL_BINARY)
+
+### Justified by
+
+- [UC_INSTALL_BINARY (Install via Binary Script)](../../usecases/setup.md#UC_INSTALL_BINARY)
 
 ---
 
@@ -121,6 +151,10 @@ The system interacts with GitHub Releases to distribute pre-compiled binaries an
 
 The user interface of the Zed editor, including the command palette and settings.
 
-### Realized by
+### Defined by
 
-- [MOD_EXT_ZED (Zed Editor Extension)](../../architecture/view/module.md#MOD_EXT_ZED)
+- [FR_INSTALL_EXT_ZED (Zed Editor Extension)](../../requirements/functional/installation.md#FR_INSTALL_EXT_ZED)
+
+### Justified by
+
+- [UC_ZED_INSTALL (Install Zed Extension)](../../usecases/setup.md#UC_ZED_INSTALL)
