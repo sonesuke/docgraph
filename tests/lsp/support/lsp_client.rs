@@ -58,18 +58,10 @@ impl LspClient {
                         reader.read_exact(&mut body_buf),
                         serde_json::from_slice::<Value>(&body_buf),
                     ) {
-                        // In a real async test harness, we might block here if channel full,
-                        // but for tests it is usually fine.
                         let _ = reader_tx.blocking_send(val);
                     }
                 } else {
                     // EOF or broken pipe
-                    // break; // For robustness, we might want to break, but let's keep retrying or just exit?
-                    // If read_line returns 0, it is EOF.
-                    // The above loop condition handles `> 0`. If it's 0, we exit outer loop?
-                    // Wait, verify logic.
-                    // If buffer is empty at start of loop body (after read_line), we check return value.
-                    // Actually let's refine this loop slightly effectively.
                     break;
                 }
             }
@@ -96,43 +88,9 @@ impl LspClient {
         });
         self.write(req)?;
 
-        // Wait for response with matching ID
-        // Note: This simple implementation effectively blocks other notifications while waiting for response.
-        // For simple sequential tests, this is fine. For complex interleaved tests, need a better loop.
-        // BUT, given the "helper method" request, we probably want to queue notifications separately?
-        // The implementation below consumes messages. If it's a notification, we might lose it if we don't store it.
-        // Wait... user suggestion said: "LspClient は前の骨格（Content-Lengthフレーミング＋pending response＋notif queue）でOK"
-        // I should probably start a background tokio task to route messages, but `send_request` needs to be easy.
-
-        // Let's implement a loop here that buffers notifications if they are not the response.
-        // Wait, self.receiver only has one consumer (this test code).
-        // Since we are inside `send_request`, we can loop `self.receiver`, if it is a notification, we buffer it (where?), if response matches, return.
-        // BUT `buffer` ownership is tricky if we are mutable.
-
-        // SIMPLIFICATION:
-        // We will assume that `send_request` waits for response.
-        // If we receive a notification while waiting, we can put it into an internal queue?
-        // Ah, `self` is `&mut`.
-
-        // Actually, for the tests, we often "wait for notification" OR "send request".
-        // But if `publishDiagnostics` arrives exactly while we await `hover` response, we must not drop it.
-        // So we need a shared `notification_queue`.
-
-        // Refactoring:
-        // We really want `next_response(id)` and `next_notification()`.
-        // To make this robust without rigorous background tasks in the Test struct itself (which is async):
-        // We can just Peek? No mpsc is not peekable.
-
-        // Let's rely on the simple pattern:
-        // Reads from `receiver` loop.
-        // If msg.id == id -> Return.
-        // If msg has no id (notification) -> Push to internal `pending_notifications`.
-        // If msg has other id -> Panic (or buffer? usually means error in test logic).
-
+        // Read messages until we get a response with the matching ID.
+        // Notifications arriving in the meantime are buffered in `pending_notifications`.
         loop {
-            // Check pending notifications first? No, we are looking for response.
-
-            // Read from channel
             let msg = match timeout(Duration::from_secs(5), self.receiver.recv()).await {
                 Ok(Some(m)) => m,
                 Ok(None) => anyhow::bail!("Channel closed"),
@@ -150,11 +108,7 @@ impl LspClient {
                     );
                 }
             } else {
-                // It is a notification (no id)
-                // We must store it so `wait_notification` can find it.
-                // But `self` is borrowed mutably here.
-                // We can't easily push to a field if we don't have one or if strict borrowck.
-                // Let's add `pending_notifications` field to struct.
+                // Buffer notifications so `wait_notification` can retrieve them later.
                 self.pending_notifications.push(msg);
             }
         }
@@ -189,9 +143,8 @@ impl LspClient {
                 if msg.get("id").is_none() {
                     Some(msg)
                 } else {
-                    // Unexpected response?
                     eprintln!("Unexpected response in next_notification: {:?}", msg);
-                    None // or Loop?
+                    None
                 }
             }
             _ => None,
@@ -223,9 +176,9 @@ impl LspClient {
             match timeout(tick, self.receiver.recv()).await {
                 Ok(Some(msg)) => {
                     if msg.get("id").is_some() {
-                        // Uh oh, response arriving uninvited. Buffer it?
-                        // Implementation simplified: we won't handle uninvited responses here well.
-                        eprintln!("Warning: Received uninvited response");
+                        eprintln!(
+                            "Warning: received unexpected response while waiting for notification"
+                        );
                         continue;
                     }
 
@@ -246,5 +199,32 @@ impl LspClient {
     }
 }
 
-// Add the field
-// We need to re-declare struct with all fields
+impl Drop for LspClient {
+    fn drop(&mut self) {
+        // stdin is closed automatically when dropped, signaling EOF to the server.
+
+        // Try to wait gracefully for a short time
+        let start = std::time::Instant::now();
+        while start.elapsed() < std::time::Duration::from_millis(100) {
+            if let Ok(Some(_)) = self.child.try_wait() {
+                // Process has exited
+                if let Some(handle) = self.reader_thread.take() {
+                    let _ = handle.join();
+                }
+                return;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(10));
+        }
+
+        // If still running, kill it forcefully
+        if let Ok(None) = self.child.try_wait() {
+            let _ = self.child.kill();
+            let _ = self.child.wait();
+        }
+
+        // Join the reader thread (don't block indefinitely during test cleanup)
+        if let Some(handle) = self.reader_thread.take() {
+            let _ = handle.join();
+        }
+    }
+}

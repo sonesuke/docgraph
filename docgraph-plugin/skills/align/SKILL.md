@@ -1,129 +1,175 @@
 ---
 name: align
-description: Deep Consistency Gate - Verify Vertical and Horizontal relationship integrity.
+description: Semantic Rigidity Gate - Ensure each node has a single unambiguous causal role.
 ---
 
-# Deep Consistency Gate (Architecture & Meaning)
+# Semantic Rigidity Gate
 
-This skill serves as the **gate for depth and relationship integrity** within the documentation graph. It focuses on
-ensuring that nodes are not only correct in isolation (as verified by `validate`) but also perfectly aligned with their
-context (Vertical) and their peers (Horizontal).
+This skill determines whether a node has a uniquely interpretable meaning in the graph.
 
-> [!IMPORTANT] This is an **Architecture & Meaning Gate**. Flag any semantic "fog" (unclear boundaries, implicit
-> assumptions, or overloaded terms). Every node must be fully justified by its context.
+Alignment does not evaluate completeness or quality. It eliminates semantic ambiguity that would cause reasoning
+divergence.
 
-## Prerequisites
+> [!IMPORTANT] A node is aligned only if its meaning has exactly one causal role. If multiple interpretations are
+> possible, alignment fails.
 
-- **`docgraph` CLI must be installed as a system binary**
-  - Install via: `curl -fsSL https://raw.githubusercontent.com/sonesuke/docgraph/main/install.sh | bash`
-  - Or build from source: `cargo install --path .`
-- **This is NOT an npm or Python package** - do NOT use `npx` or `pipx`
-- **Installation Verification**: Run `docgraph --version` to confirm the binary is available
+---
 
-## Workflow Steps
+## Core Principle
 
-### 0. Validation Pre-requisite
+Validation ensures the graph can exist. Alignment ensures the graph means only one thing.
 
-- **Level**: STRICT
-- **Policy**:
-  - If `validate` status is unknown or FAIL -> **STOP** and return FAIL.
-  - Do not re-evaluate surface items (naming, templates) already covered by `validate`.
+If alignment fails → different agents may derive different conclusions.
 
-### 1. Vertical Consistency (Traceability & Context)
+Alignment verifies determinism of interpretation, not properties of the node alone.
 
-- **Level**: STRICT for missing links, HEURISTIC for semantic clarity.
-- **Vertical Expectations**:
-  - **Parents (Inbound)**: Define the "Why" (intent, requirement, or goal).
-  - **This Node**: Defines the "What" at its specific abstraction level.
-  - **Children (Outbound)**: Define the "How" (realization, implementation, or breakdown).
+Alignment guarantees that traversal meaning is path-independent.
 
-1. **Context Check**: Use `docgraph describe <ID>` and verify:
-   - Does the parent node explicitly justify the existence of this node?
-   - Is there any gap in how the parent's intent is carried over?
-2. **Realization Check**: Verify child nodes:
-   - Is this node's responsibility fully and exclusively covered by its children?
+---
 
-### 2. Horizontal Consistency (Peer Alignment & MECE)
+## 0. Precondition
 
-- **Level**: HEURISTIC
-- **Baseline Rule**: Use the dominant pattern among existing peer nodes. Do not invent new abstraction levels unless
-  proposing an explicit refactor.
+The node MUST pass `validate`.
 
-1. **Peer Identification**: Use `docgraph list "<PREFIX>_*"`.
-2. **Overlap Check**: Verify Mutually Exclusive and Collectively Exhaustive (MECE) status.
-   - Does this node's responsibility overlap with peer nodes?
-   - Is the granularity consistent with the peer baseline?
+If validation fails → STOP
 
-### 3. Structural SRP Check
+---
 
-- **Level**: HEURISTIC
-- **Note**: `validate` checks surface SRP; `align` checks structural SRP (depth, cohesion, and abstraction fit).
+## 1. Semantic Topology from Schema
 
-1. **Cohesion**: Are all elements within this node tightly related to the "What" definition?
-2. **Abstraction**: Is the node at the correct level relative to its parents and peers?
+After confirming `validate` PASS, the agent MUST read `docgraph.toml` to derive the semantic topology used for
+alignment.
 
-### 4. Proposals & Impact Analysis
+`docgraph.toml` is the sole normative source. If unread, the agent MUST stop.
 
-- **Level**: MANDATORY
+The agent MUST map schema elements into interpretation constraints:
 
-When proposing changes (Clarify Context, Split, Merge, or Move):
+- Node type → causal role candidates (e.g., UC=Intent, FR=Responsibility, MOD=Realization, ADR=Rationale)
+- Relation type (`r.type`) → allowed causal questions (Why/What/How/Boundary/Justification)
+- Which relations define "peerhood" for horizontal comparison
 
-1. **Affected Nodes**: List all nodes (parents, peers, children) that will be affected.
-2. **Re-validation**: Indicate whether `validate` must be re-run for any affected nodes.
-3. **Safety**: Ensure no existing references are broken without a remediation plan.
+Alignment MUST only judge determinism using this schema-derived topology. If the mapping cannot be established,
+alignment MUST fail (unknown semantics).
 
-## Workflow Cases
+---
 
-### Case 1: TYPE_ID (e.g., FR, MOD)
+## 2. Role Determinism
 
-- Perform a full graph consistency review for the given type.
+The node must belong to exactly one abstraction level:
 
-### Case 2: NODE_ID (e.g., FR_LOGIN)
+- Intent (why)
+- Responsibility (what)
+- Realization (how)
+- Constraint (boundary)
+- Rationale (justification)
 
-- **Status**: Focused Refinement.
-- Perform a deep analysis specifically for the node and its immediate relations. Do not scan the entire graph unless
-  necessary for baseline identification.
+If the node can be interpreted as more than one → FAIL
 
-## Alignment Analysis Report
+The role must be inferable from relations, not from description wording. If role changes when ignoring prose, alignment
+fails.
 
-You **must** provide the analysis in the following format:
+---
+
+## 3. Vertical Determinism
+
+Parent and child relations must not redefine the node's role.
+
+Invalid cases:
+
+- Parent treats node as requirement, child treats it as implementation
+- Node alternates abstraction level depending on traversal direction
+
+Result: FAIL
+
+---
+
+## 4. Semantic Collision
+
+The graph must not provide multiple answers to the same causal question.
+
+Invalid cases:
+
+- synonymous responsibilities split across nodes
+- overlapping definitions describing identical behavior
+- two nodes satisfy the same parent relation
+- peer boundaries depend on interpretation
+
+Result: FAIL
+
+---
+
+## Minimal Tooling (Observation Only)
+
+Alignment MUST use `docgraph` for observation. Tools materialize evidence; they do not drive exploration.
+
+### `docgraph describe`
+
+Inspect the target node and its immediate inbound/outbound relations.
+
+```bash
+docgraph describe <ID>
+```
+
+### `docgraph query` (bounded)
+
+Use bounded queries only to detect ambiguity patterns, never to discover new intent.
+
+Typical checks:
+
+- Competing parents (multiple "Why" justifications)
+
+```bash
+docgraph query "MATCH (p)-[r]->(n) WHERE n.id='<ID>' RETURN p.id, p.type, r.type"
+```
+
+- Competing children (multiple "How" realizations that imply different roles)
+
+```bash
+docgraph query "MATCH (n)-[r]->(c) WHERE n.id='<ID>' RETURN c.id, c.type, r.type"
+```
+
+- Peer collision (potential synonyms within the same type)
+
+```bash
+docgraph query "MATCH (m:<TYPE>) RETURN m.id, m.title"
+```
+
+> [!CAUTION] Queries MUST be bounded (1-hop or limited results). If multi-hop traversal is required, switch to
+> `reasoning`.
+
+---
+
+## What Alignment Does NOT Check
+
+Alignment does not enforce:
+
+- completeness
+- coverage
+- implementation presence
+- formatting quality
+- directory structure
+
+---
+
+## Alignment Report
 
 ### Target
 
-- **Node/Scope**: [ID or Type]
-- **Baseline Peer Pattern**: [Description of dominant convention]
+- **Node**: [ID]
 
-### Consistency Analysis
+### Determinism Results
 
-| Dimension        | Check Item      | Result    | Analysis / Evidence |
-| :--------------- | :-------------- | :-------- | :------------------ |
-| **Prerequisite** | Validate PASS   | PASS/FAIL |                     |
-| **Vertical**     | Parents (Why)   | PASS/FAIL |                     |
-| **Vertical**     | Children (How)  | PASS/FAIL |                     |
-| **Horizontal**   | Peer MECE       | PASS/FAIL |                     |
-| **SRP**          | Abstraction Fit | PASS/FAIL |                     |
+| Check                | Result    | Notes |
+| :------------------- | :-------- | :---- |
+| Schema topology      | READ      |       |
+| Role determinism     | PASS/FAIL |       |
+| Vertical determinism | PASS/FAIL |       |
+| Semantic collision   | PASS/FAIL |       |
 
-### Refinement Proposals
-
-- **Proposal**: [Description]
-- **Affected IDs**: [List]
-- **Re-validate Required**: [Yes/No]
-
-### Quality Gate Checklist
-
-In your final report, you **must** include this checklist to demonstrate deep architectural verification:
-
-- [ ] **Prerequisite PASS**: The node has successfully cleared the `validate` skill (Quality Gate).
-- [ ] **Vertical Alignment**: Why (Parent), What (This Node), and How (Child) are semantically consistent.
-- [ ] **Horizontal MECE**: Responsibility is mutually exclusive and follows the dominant peer baseline.
-- [ ] **Semantic Clarity**: No "semantic fog" or ambiguous boundaries identified.
-- [ ] **Impact Analysis**: All affected nodes are listed, and re-validation needs are clearly stated.
+---
 
 ## Final Decision
 
-### Decision Semantics
-
-- **PASS**: Node shows deep integrity and may be merged/applied.
-- **FAIL**: Structural or semantic issues identified. MUST NOT be merged.
+**PASS** → Node meaning is uniquely defined **FAIL** → Node meaning is ambiguous
 
 **FINAL DECISION: [PASS/FAIL]**

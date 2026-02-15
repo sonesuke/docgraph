@@ -2,7 +2,7 @@
 # Based on the Dependency Model specification
 
 [graph]
-ignore = ["README.md", "SECURITY.md", ".claude", ".claude-plugin", "docgraph-plugin", "doc/templates"]
+ignore = ["README.md", "SECURITY.md", ".agent", ".claude", ".claude-plugin", "docgraph-plugin", "doc/templates"]
 
 # Core specification types
 [nodes.UC]
@@ -11,13 +11,13 @@ template = "doc/templates/usecases.md"
 rules = [
   { dir = "to", targets = [
     "ACT",
-  ], min = 1, desc = "Every use case must identify the initiating participant (Actor) to define scope and responsibility", context = "triggered by" },
+  ], min = 1, desc = "Every use case must identify the initiating participant (Actor) to define scope and responsibility", rel = "triggered_by" },
   { dir = "to", targets = [
     "IF",
-  ], min = 1, desc = "Business scenarios must specify their interaction points (Interfaces) to ensure architectural decoupling", context = "interacts through" },
+  ], min = 1, desc = "Business scenarios must specify their interaction points (Interfaces) to ensure architectural decoupling", rel = "interacts_through" },
   { dir = "to", targets = [
     "FR",
-  ], min = 1, desc = "Use cases must be connected to functional outcomes (FR) to maintain business value traceability", context = "uses" },
+  ], min = 1, desc = "Use cases must be connected to functional outcomes (FR) to maintain business value traceability", rel = "uses" },
 ]
 
 [nodes.FR]
@@ -26,22 +26,22 @@ template = "doc/templates/functional.md"
 rules = [
   { dir = "from", targets = [
     "UC",
-  ], min = 1, desc = "Every functional requirement must be driven by at least one business scenario (UC) to ensure user value", context = "used by" },
+  ], min = 1, desc = "Every functional requirement must be driven by at least one business scenario (UC) to ensure user value", rel = "used_by" },
   { dir = "from", targets = [
     "CON",
-  ], min = 0, desc = "Functional requirements define how the system must behave within foundational constraints", context = "constrained by" },
+  ], min = 0, desc = "Functional requirements define how the system must behave within foundational constraints", rel = "constrained_by" },
   { dir = "to", targets = [
     "MOD",
-  ], min = 1, desc = "Every requirement must be allocated to a structural component (Module) to ensure no functionality is left unimplemented", context = "implemented by" },
+  ], min = 1, desc = "Every requirement must be allocated to a structural component (Module) to ensure no functionality is left unimplemented", rel = "realized_by" },
   { dir = "to", targets = [
     "NFR",
-  ], min = 0, desc = "Functional requirements may drive specific quality attribute requirements (NFR)", context = "qualified by" },
+  ], min = 0, desc = "Functional requirements may drive specific quality attribute requirements (NFR)", rel = "qualified_by" },
   { dir = "to", targets = [
     "IF",
-  ], min = 0, desc = "Functional requirements may define public API contracts or user interfaces (IF)", context = "defines" },
+  ], min = 0, desc = "Functional requirements may define public API contracts or user interfaces (IF)", rel = "defines" },
   { dir = "to", targets = [
     "CC",
-  ], min = 0, desc = "Functional requirements may be reflected in cross-cutting concerns (CC) that apply across multiple modules", context = "reflected in" },
+  ], min = 0, desc = "Functional requirements may be reflected in cross-cutting concerns (CC) that apply across multiple modules", rel = "reflected_in" },
 ]
 
 [nodes.NFR]
@@ -50,16 +50,16 @@ template = "doc/templates/non-functional.md"
 rules = [
   { dir = "from", targets = [
     "FR",
-  ], min = 0, desc = "Quality requirements define the performance or security expectations for functional behavior", context = "qualifies" },
+  ], min = 0, desc = "Quality requirements define the performance or security expectations for functional behavior", rel = "qualifies" },
   { dir = "from", targets = [
     "CON",
-  ], min = 0, desc = "Quality requirements define the quality attributes dictated by foundational constraints", context = "constrained by" },
+  ], min = 0, desc = "Quality requirements define the quality attributes dictated by foundational constraints", rel = "constrained_by" },
   { dir = "to", targets = [
     "CC",
-  ], min = 0, desc = "Quality requirements are reflected in cross-cutting designs (CC) that apply across modules", context = "reflected in" },
+  ], min = 0, desc = "Quality requirements are reflected in cross-cutting designs (CC) that apply across modules", rel = "reflected_in" },
   { dir = "to", targets = [
     "MOD",
-  ], min = 0, desc = "Quality requirements may be realized through specific implementation details in modules (MOD)", context = "implemented by" },
+  ], min = 0, desc = "Quality requirements may be realized through specific implementation details in modules (MOD)", rel = "realized_by" },
 ]
 
 [nodes.CON]
@@ -69,7 +69,7 @@ rules = [
   { dir = "to", targets = [
     "FR",
     "NFR",
-  ], min = 1, desc = "Foundational constraints must be embodied in actionable functional or quality requirements to guide system behavior", context = "constrains" },
+  ], min = 1, desc = "Foundational constraints must be embodied in actionable functional or quality requirements to guide system behavior", rel = "constrains" },
 ]
 
 [nodes.MOD]
@@ -81,7 +81,7 @@ rules = [
     "NFR",
     "IF",
     "CC",
-  ], min = 1, desc = "Every structural module must be justified by at least one requirement or architectural concept to ensure purposeful design", context = "implemented by" },
+  ], min = 1, desc = "Every structural module must be justified by at least one requirement or architectural concept to ensure purposeful design", rel = "realized_by" },
 ]
 
 # Architecture types
@@ -92,13 +92,13 @@ rules = [
   { dir = "from", targets = [
     "NFR",
     "FR",
-  ], min = 0, desc = "Cross-cutting concerns address requirements that span multiple system modules", context = "reflected by" },
+  ], min = 0, desc = "Cross-cutting concerns address requirements that span multiple system modules", rel = "reflected_by" },
   { dir = "to", targets = [
     "ADR",
-  ], min = 0, desc = "Cross-cutting concern designs lead to specific architectural decisions (ADR)", context = "leads to" },
+  ], min = 0, desc = "Cross-cutting concern designs lead to specific architectural decisions (ADR)", rel = "justified_by" },
   { dir = "to", targets = [
     "MOD",
-  ], min = 0, desc = "Cross-cutting concerns are realized through implementation patterns in specific modules (MOD)", context = "implemented by" },
+  ], min = 0, desc = "Cross-cutting concerns are realized through implementation patterns in specific modules (MOD)", rel = "realized_by" },
 ]
 
 # Documentation types
@@ -108,10 +108,10 @@ template = "doc/templates/actors.md"
 rules = [
   { dir = "from", targets = [
     "*",
-  ], min = 0, desc = "Actors represent external entities interacting with the system across various boundary points", context = "involved" },
+  ], min = 0, desc = "Actors represent external entities interacting with the system across various boundary points", rel = "involves" },
   { dir = "from", targets = [
     "UC",
-  ], min = 1, desc = "System actors must specify the business scenarios (UC) they participate in", context = "involved in" },
+  ], min = 1, desc = "System actors must specify the business scenarios (UC) they participate in", rel = "involved_in" },
 ]
 
 [nodes.DAT]
@@ -120,7 +120,7 @@ template = "doc/templates/data.md"
 rules = [
   { dir = "from", targets = [
     "*",
-  ], min = 0, desc = "Data entities provide shared domain models utilized across multiple system components", context = "uses data" },
+  ], min = 0, desc = "Data entities provide shared domain models utilized across multiple system components", rel = "uses_data" },
 ]
 
 [nodes.IF]
@@ -129,16 +129,16 @@ template = "doc/templates/interface.md"
 rules = [
   { dir = "from", targets = [
     "*",
-  ], min = 0, desc = "System interfaces define the public contracts for communication and integration points", context = "integrated with" },
+  ], min = 0, desc = "System interfaces define the public contracts for communication and integration points", rel = "integrated_with" },
   { dir = "from", targets = [
     "UC",
-  ], min = 1, desc = "Exposed interfaces must be justified by at least one business scenario (UC)", context = "justified by" },
+  ], min = 1, desc = "Exposed interfaces must be justified by at least one business scenario (UC)", rel = "justified_by" },
   { dir = "from", targets = [
     "FR",
-  ], min = 1, desc = "Interfaces must be connected to functional requirements to define their behavior", context = "defined by" },
+  ], min = 1, desc = "Interfaces must be connected to functional requirements to define their behavior", rel = "defined_by" },
   { dir = "to", targets = [
     "MOD",
-  ], min = 1, desc = "Every interface specification must be implemented by a module (MOD) to ensure its realization", context = "implemented by" },
+  ], min = 1, desc = "Every interface specification must be implemented by a module (MOD) to ensure its realization", rel = "realized_by" },
 ]
 
 [nodes.ADR]
@@ -147,5 +147,5 @@ template = "doc/templates/decision.md"
 rules = [
   { dir = "from", targets = [
     "*",
-  ], min = 0, desc = "Architectural decisions provide the design rationale and historical context for system elements", context = "informed by" },
+  ], min = 0, desc = "Architectural decisions provide the design rationale and historical context for system elements", rel = "informed_by" },
 ]

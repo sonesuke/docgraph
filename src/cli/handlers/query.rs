@@ -20,7 +20,7 @@ fn try_query(query_str: String, format: OutputFormat, path: PathBuf) -> anyhow::
     let (blocks, _) = collect::collect_workspace_all(&path, &config.graph.ignore, None);
 
     let query = crate::core::parser::parse_query(&query_str).context("failed to parse query")?;
-    let result = engine::execute_query(&query, &blocks);
+    let result = engine::execute_query(&query, &blocks, &config);
 
     match format {
         OutputFormat::Table => {

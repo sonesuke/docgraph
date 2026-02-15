@@ -53,7 +53,7 @@ pub fn check_relationships(config: &Config, blocks: &[SpecBlock]) -> Vec<Diagnos
                                 })
                                 .count();
                             if count < min {
-                                let label = rule.context.as_deref().unwrap_or("be referenced by");
+                                let label = rule.rel.as_deref().unwrap_or("be referenced by");
                                 let mut message = format!(
                                     "REQUIRED: Node '{}' (type {}) must {} at least {} {}. (Found {})",
                                     block.id,
@@ -91,7 +91,7 @@ pub fn check_relationships(config: &Config, blocks: &[SpecBlock]) -> Vec<Diagnos
                                 })
                                 .count();
                             if count > max {
-                                let label = rule.context.as_deref().unwrap_or("be referenced by");
+                                let label = rule.rel.as_deref().unwrap_or("be referenced by");
                                 let mut message = format!(
                                     "LIMIT EXCEEDED: Node '{}' (type {}) can {} at most {} {}. (Found {})",
                                     block.id,
@@ -137,7 +137,7 @@ pub fn check_relationships(config: &Config, blocks: &[SpecBlock]) -> Vec<Diagnos
                         if let Some(min) = rule.min
                             && count < min
                         {
-                            let label = rule.context.as_deref().unwrap_or("have relation to");
+                            let label = rule.rel.as_deref().unwrap_or("have relation to");
                             let mut message = format!(
                                 "REQUIRED: Node '{}' (type {}) must {} at least {} {}. (Found {})",
                                 block.id,
@@ -168,7 +168,7 @@ pub fn check_relationships(config: &Config, blocks: &[SpecBlock]) -> Vec<Diagnos
                         if let Some(max) = rule.max
                             && count > max
                         {
-                            let label = rule.context.as_deref().unwrap_or("have relation to");
+                            let label = rule.rel.as_deref().unwrap_or("have relation to");
                             let mut message = format!(
                                 "LIMIT EXCEEDED: Node '{}' (type {}) can {} at most {} {}. (Found {})",
                                 block.id,
@@ -223,7 +223,7 @@ pub fn check_relationships(config: &Config, blocks: &[SpecBlock]) -> Vec<Diagnos
                     let mut guidance = Vec::new();
                     for rule in &node_config.rules {
                         if rule.dir == "to" {
-                            let label = rule.context.as_deref().unwrap_or("reference");
+                            let label = rule.rel.as_deref().unwrap_or("reference");
                             guidance.push(format!("\"{}\" {}", label, rule.targets.join("/")));
                         }
                     }
@@ -247,8 +247,8 @@ pub fn check_relationships(config: &Config, blocks: &[SpecBlock]) -> Vec<Diagnos
                                     || target_rule.targets.contains(&"*".to_string()))
                             {
                                 reverse_allowed = true;
-                                if let Some(ctx) = &target_rule.context {
-                                    reverse_label = ctx;
+                                if let Some(r) = &target_rule.rel {
+                                    reverse_label = r;
                                 }
                             }
                         }
@@ -261,8 +261,8 @@ pub fn check_relationships(config: &Config, blocks: &[SpecBlock]) -> Vec<Diagnos
                                     || source_rule.targets.contains(&"*".to_string()))
                             {
                                 reverse_allowed = true;
-                                if let Some(ctx) = &source_rule.context {
-                                    reverse_label = ctx;
+                                if let Some(r) = &source_rule.rel {
+                                    reverse_label = r;
                                 }
                             }
                         }
@@ -335,7 +335,7 @@ mod tests {
             min: None,
             max: None,
             desc: None,
-            context: None,
+            rel: None,
         });
 
         config.nodes.insert("REQ".to_string(), node_config);
@@ -360,7 +360,7 @@ mod tests {
             min: None,
             max: None,
             desc: None,
-            context: None,
+            rel: None,
         });
 
         config.nodes.insert("REQ".to_string(), node_config);
@@ -383,7 +383,7 @@ mod tests {
             min: Some(1),
             max: None,
             desc: None,
-            context: None,
+            rel: None,
         });
 
         // SYS nodes must have at least 1 incoming from REQ
@@ -417,7 +417,7 @@ mod tests {
             min: None,
             max: Some(1),
             desc: None,
-            context: None,
+            rel: None,
         });
 
         config.nodes.insert("SYS".to_string(), node_config);
@@ -450,7 +450,7 @@ mod tests {
             min: Some(1),
             max: None,
             desc: Some("Must link to system".to_string()),
-            context: None,
+            rel: None,
         });
 
         // Rule with valid direction and description, testing description in output
@@ -460,7 +460,7 @@ mod tests {
             min: Some(1),
             max: None,
             desc: Some("Important Business Rule".to_string()),
-            context: None,
+            rel: None,
         });
 
         config.nodes.insert("REQ".to_string(), node_config);
