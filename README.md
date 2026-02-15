@@ -37,7 +37,7 @@ Follow these steps to set up `docgraph` for your project.
 
 `docgraph` requires the CLI binary to be installed on your system for all use cases (CLI, AI, and IDE).
 
-**macOS / Linux:**
+**macOS / Linux (x86_64, aarch64):**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/sonesuke/docgraph/main/install.sh | bash
