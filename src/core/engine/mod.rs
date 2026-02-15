@@ -1,3 +1,4 @@
+use crate::core::config::Config;
 use crate::core::parser::ast;
 use crate::core::types::SpecBlock;
 use std::collections::HashMap;
@@ -8,9 +9,19 @@ pub struct QueryResult {
     pub rows: Vec<Vec<String>>,
 }
 
-type Bindings = HashMap<String, usize>;
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum EntityId {
+    Node(usize),
+    Relationship {
+        from_idx: usize,
+        to_idx: usize,
+        context: String,
+    },
+}
 
-pub fn execute_query(query: &ast::Query, nodes: &[SpecBlock]) -> QueryResult {
+type Bindings = HashMap<String, EntityId>;
+
+pub fn execute_query(query: &ast::Query, nodes: &[SpecBlock], config: &Config) -> QueryResult {
     // 1. Match patterns
     let mut bindings_list: Vec<Bindings> = vec![HashMap::new()];
 
@@ -40,6 +51,7 @@ pub fn execute_query(query: &ast::Query, nodes: &[SpecBlock]) -> QueryResult {
                             rel_pat,
                             node_pat,
                             nodes,
+                            config,
                             bindings_list,
                         );
 
@@ -60,8 +72,9 @@ pub fn execute_query(query: &ast::Query, nodes: &[SpecBlock]) -> QueryResult {
 
     // 2. Filter with WHERE
     if let Some(where_clause) = &query.where_clause {
-        bindings_list
-            .retain(|bindings| evaluate_expression(&where_clause.expression, bindings, nodes));
+        bindings_list.retain(|bindings| {
+            evaluate_expression(&where_clause.expression, bindings, nodes, config)
+        });
     }
 
     // 3. Project with RETURN
@@ -106,17 +119,23 @@ pub fn execute_query(query: &ast::Query, nodes: &[SpecBlock]) -> QueryResult {
         for proj in &item_projections {
             match proj {
                 Projection::Single(expr) => {
-                    row.push(evaluate_expression_value(expr, &bindings, nodes));
+                    row.push(evaluate_expression_value(expr, &bindings, nodes, config));
                 }
                 Projection::Node(var) => {
-                    if let Some(&idx) = bindings.get(var) {
-                        let node = &nodes[idx];
-                        row.push(node.id.clone());
-                        row.push(node.node_type.clone());
-                        row.push(node.name.clone().unwrap_or_else(|| "null".to_string()));
-                        row.push(node.file_path.to_string_lossy().to_string());
-                        row.push(node.line_start.to_string());
-                        row.push(node.content.clone());
+                    if let Some(entity) = bindings.get(var) {
+                        if let EntityId::Node(idx) = entity {
+                            let node = &nodes[*idx];
+                            row.push(node.id.clone());
+                            row.push(node.node_type.clone());
+                            row.push(node.name.clone().unwrap_or_else(|| "null".to_string()));
+                            row.push(node.file_path.to_string_lossy().to_string());
+                            row.push(node.line_start.to_string());
+                            row.push(node.content.clone());
+                        } else {
+                            for _ in 0..6 {
+                                row.push("null".to_string());
+                            }
+                        }
                     } else {
                         for _ in 0..6 {
                             row.push("null".to_string());
@@ -161,14 +180,19 @@ fn match_node_pattern(
 
             // Bind variable
             if let Some(ref var) = node_pat.variable {
-                if let Some(&prev_idx) = bindings.get(var) {
-                    if prev_idx != i {
+                if let Some(entity) = bindings.get(var) {
+                    if let EntityId::Node(prev_idx) = entity {
+                        if *prev_idx != i {
+                            continue;
+                        }
+                        next_bindings.push(bindings.clone());
+                    } else {
+                        // Var already bound to non-node?
                         continue;
                     }
-                    next_bindings.push(bindings.clone());
                 } else {
                     let mut new_bindings = bindings.clone();
-                    new_bindings.insert(var.clone(), i);
+                    new_bindings.insert(var.clone(), EntityId::Node(i));
                     next_bindings.push(new_bindings);
                 }
             } else {
@@ -184,19 +208,25 @@ fn match_relationship_pattern(
     rel_pat: &ast::RelationshipPattern,
     end_node_pat: &ast::NodePattern,
     nodes: &[SpecBlock],
+    config: &Config,
     current_bindings: Vec<Bindings>,
 ) -> Vec<Bindings> {
     let mut next_bindings = Vec::new();
 
-    // Build adjacency maps
-    let mut forward_adj: HashMap<usize, Vec<usize>> = HashMap::new();
-    let mut backward_adj: HashMap<usize, Vec<usize>> = HashMap::new();
+    // Build adjacency maps with context
+    // key: source_idx, value: (target_idx, context)
+    let mut forward_adj: HashMap<usize, Vec<(usize, String)>> = HashMap::new();
+    let mut backward_adj: HashMap<usize, Vec<(usize, String)>> = HashMap::new();
 
     for (idx, node) in nodes.iter().enumerate() {
         for edge in &node.edges {
             if let Some(target_idx) = nodes.iter().position(|n| n.id == edge.id) {
-                forward_adj.entry(idx).or_default().push(target_idx);
-                backward_adj.entry(target_idx).or_default().push(idx);
+                let target_node = &nodes[target_idx];
+                // Find context from docgraph.toml
+                let context = find_relationship_context(config, &node.node_type, &target_node.node_type);
+                
+                forward_adj.entry(idx).or_default().push((target_idx, context.clone()));
+                backward_adj.entry(target_idx).or_default().push((idx, context));
             }
         }
     }
@@ -205,75 +235,108 @@ fn match_relationship_pattern(
     let max_hops = rel_pat.range.as_ref().and_then(|r| r.end).unwrap_or(1);
 
     for bindings in current_bindings {
-        if let Some(&start_idx) = bindings.get(start_node_var) {
-            // BFS for reachability
-            let mut queue = std::collections::VecDeque::new();
-            queue.push_back((start_idx, 0));
+        if let Some(entity) = bindings.get(start_node_var) {
+            if let EntityId::Node(start_idx) = entity {
+                let start_idx = *start_idx;
+                // BFS for reachability
+                let mut queue = std::collections::VecDeque::new();
+                queue.push_back((start_idx, 0, None::<String>)); // (curr, dist, last_rel_context)
 
-            let mut visited = std::collections::HashSet::new();
-            visited.insert((start_idx, 0));
+                let mut visited = std::collections::HashSet::new();
+                visited.insert((start_idx, 0));
 
-            while let Some((curr, dist)) = queue.pop_front() {
-                if dist > max_hops {
-                    continue;
-                }
+                while let Some((curr, dist, last_rel)) = queue.pop_front() {
+                    if dist > max_hops {
+                        continue;
+                    }
 
-                if dist >= min_hops && dist > 0 {
-                    // Check if current node matches end_node_pat
-                    let node = &nodes[curr];
-                    let label_match = if end_node_pat.labels.is_empty() {
-                        true
-                    } else {
-                        end_node_pat.labels.contains(&node.node_type)
-                    };
-
-                    if label_match {
-                        // Bind end variable
-                        if let Some(ref var) = end_node_pat.variable {
-                            if let Some(&prev_idx) = bindings.get(var) {
-                                if prev_idx == curr {
-                                    next_bindings.push(bindings.clone());
-                                }
+                    if dist >= min_hops && dist > 0 {
+                        // Check rel_type if specified
+                        let rel_match = if let Some(ref target_rel_type) = rel_pat.rel_type {
+                            if let Some(ref actual_rel) = last_rel {
+                                actual_rel == target_rel_type
                             } else {
-                                let mut new_bindings = bindings.clone();
-                                new_bindings.insert(var.clone(), curr);
-                                next_bindings.push(new_bindings);
+                                false
                             }
                         } else {
-                            next_bindings.push(bindings.clone());
+                            true
+                        };
+
+                        if rel_match {
+                            // Check if current node matches end_node_pat
+                            let node = &nodes[curr];
+                            let label_match = if end_node_pat.labels.is_empty() {
+                                true
+                            } else {
+                                end_node_pat.labels.contains(&node.node_type)
+                            };
+
+                            if label_match {
+                                let mut new_bindings = bindings.clone();
+                                
+                                // Bind relationship variable if present (only for length 1 for now)
+                                // Cypher behavior: (n)-[r*1..2]->(m) makes r a list.
+                                // Our engine is MVP, let's only bind r if dist == 1.
+                                if dist == 1 {
+                                    if let Some(ref r_var) = rel_pat.variable {
+                                        if let Some(ref ctx) = last_rel {
+                                            new_bindings.insert(r_var.clone(), EntityId::Relationship {
+                                                from_idx: start_idx,
+                                                to_idx: curr,
+                                                context: ctx.clone(),
+                                            });
+                                        }
+                                    }
+                                }
+
+                                // Bind end variable
+                                if let Some(ref var) = end_node_pat.variable {
+                                    if let Some(entity) = bindings.get(var) {
+                                        if let EntityId::Node(prev_idx) = entity {
+                                            if *prev_idx == curr {
+                                                next_bindings.push(new_bindings);
+                                            }
+                                        }
+                                    } else {
+                                        new_bindings.insert(var.clone(), EntityId::Node(curr));
+                                        next_bindings.push(new_bindings);
+                                    }
+                                } else {
+                                    next_bindings.push(new_bindings);
+                                }
+                            }
                         }
                     }
-                }
 
-                // Continue traversal based on direction
-                if dist < max_hops {
-                    let mut neighbors = Vec::new();
-
-                    match rel_pat.direction {
-                        ast::Direction::Right => {
-                            if let Some(n) = forward_adj.get(&curr) {
-                                neighbors.extend(n);
+                    // Continue traversal
+                    if dist < max_hops {
+                        let mut neighbors = Vec::new();
+                        match rel_pat.direction {
+                            ast::Direction::Right => {
+                                if let Some(n) = forward_adj.get(&curr) {
+                                    neighbors.extend(n);
+                                }
+                            }
+                            ast::Direction::Left => {
+                                if let Some(n) = backward_adj.get(&curr) {
+                                    neighbors.extend(n);
+                                }
+                            }
+                            ast::Direction::Both => {
+                                if let Some(n) = forward_adj.get(&curr) {
+                                    neighbors.extend(n);
+                                }
+                                if let Some(n) = backward_adj.get(&curr) {
+                                    neighbors.extend(n);
+                                }
                             }
                         }
-                        ast::Direction::Left => {
-                            if let Some(n) = backward_adj.get(&curr) {
-                                neighbors.extend(n);
-                            }
-                        }
-                        ast::Direction::Both => {
-                            if let Some(n) = forward_adj.get(&curr) {
-                                neighbors.extend(n);
-                            }
-                            if let Some(n) = backward_adj.get(&curr) {
-                                neighbors.extend(n);
-                            }
-                        }
-                    }
 
-                    for &next in neighbors {
-                        if !visited.contains(&(next, dist + 1)) {
-                            visited.insert((next, dist + 1));
-                            queue.push_back((next, dist + 1));
+                        for (next, ctx) in neighbors {
+                            if !visited.contains(&(*next, dist + 1)) {
+                                visited.insert((*next, dist + 1));
+                                queue.push_back((*next, dist + 1, Some(ctx.clone())));
+                            }
                         }
                     }
                 }
@@ -284,16 +347,43 @@ fn match_relationship_pattern(
     next_bindings
 }
 
-fn evaluate_expression(expr: &ast::Expression, bindings: &Bindings, nodes: &[SpecBlock]) -> bool {
+fn find_relationship_context(config: &Config, from_type: &str, to_type: &str) -> String {
+    if let Some(node_conf) = config.nodes.get(from_type) {
+        for rule in &node_conf.rules {
+            if rule.dir == "to" && rule.targets.contains(&to_type.to_string()) {
+                if let Some(ref ctx) = rule.context {
+                    return ctx.clone();
+                }
+            }
+        }
+    }
+    if let Some(node_conf) = config.nodes.get(to_type) {
+        for rule in &node_conf.rules {
+            if rule.dir == "from" && rule.targets.contains(&from_type.to_string()) {
+                if let Some(ref ctx) = rule.context {
+                    return ctx.clone();
+                }
+            }
+        }
+    }
+    "references".to_string()
+}
+
+fn evaluate_expression(
+    expr: &ast::Expression,
+    bindings: &Bindings,
+    nodes: &[SpecBlock],
+    config: &Config,
+) -> bool {
     match expr {
         ast::Expression::And(exprs) => exprs
             .iter()
-            .all(|e| evaluate_expression(e, bindings, nodes)),
+            .all(|e| evaluate_expression(e, bindings, nodes, config)),
         ast::Expression::Or(exprs) => exprs
             .iter()
-            .any(|e| evaluate_expression(e, bindings, nodes)),
+            .any(|e| evaluate_expression(e, bindings, nodes, config)),
         ast::Expression::Comparison(comp) => {
-            let left_val = evaluate_property_or_variable(&comp.left, bindings, nodes);
+            let left_val = evaluate_property_or_variable(&comp.left, bindings, nodes, config);
             if let Some(right_term) = &comp.right {
                 let right_val = match right_term {
                     ast::Term::Literal(lit) => match lit {
@@ -301,7 +391,7 @@ fn evaluate_expression(expr: &ast::Expression, bindings: &Bindings, nodes: &[Spe
                         ast::Literal::Number(n) => n.to_string(),
                     },
                     ast::Term::PropertyOrVariable(pv) => {
-                        evaluate_property_or_variable(pv, bindings, nodes)
+                        evaluate_property_or_variable(pv, bindings, nodes, config)
                     }
                 };
 
@@ -329,13 +419,14 @@ fn evaluate_expression_value(
     expr: &ast::Expression,
     bindings: &Bindings,
     nodes: &[SpecBlock],
+    config: &Config,
 ) -> String {
     match expr {
         ast::Expression::Comparison(comp) => {
             if comp.operator.is_none() && comp.right.is_none() {
-                evaluate_property_or_variable(&comp.left, bindings, nodes)
+                evaluate_property_or_variable(&comp.left, bindings, nodes, config)
             } else {
-                evaluate_expression(expr, bindings, nodes).to_string()
+                evaluate_expression(expr, bindings, nodes, config).to_string()
             }
         }
         _ => "complex_expr".to_string(),
@@ -346,23 +437,37 @@ fn evaluate_property_or_variable(
     pv: &ast::PropertyOrVariable,
     bindings: &Bindings,
     nodes: &[SpecBlock],
+    _config: &Config,
 ) -> String {
-    if let Some(&idx) = bindings.get(&pv.variable) {
-        let node = &nodes[idx];
-        if let Some(ref prop) = pv.property {
-            match prop.as_str() {
-                "id" => node.id.clone(),
-                "node_type" => node.node_type.clone(),
-                // Alias 'type' to 'node_type' for user convenience if needed
-                "type" => node.node_type.clone(),
-                "name" => node.name.clone().unwrap_or_else(|| "null".to_string()),
-                "file" => node.file_path.to_string_lossy().to_string(),
-                "line" => node.line_start.to_string(),
-                "content" => node.content.clone(),
-                _ => "null".to_string(),
+    if let Some(entity) = bindings.get(&pv.variable) {
+        match entity {
+            EntityId::Node(idx) => {
+                let node = &nodes[*idx];
+                if let Some(ref prop) = pv.property {
+                    match prop.as_str() {
+                        "id" => node.id.clone(),
+                        "node_type" => node.node_type.clone(),
+                        "type" => node.node_type.clone(),
+                        "name" => node.name.clone().unwrap_or_else(|| "null".to_string()),
+                        "file" => node.file_path.to_string_lossy().to_string(),
+                        "line" => node.line_start.to_string(),
+                        "content" => node.content.clone(),
+                        _ => "null".to_string(),
+                    }
+                } else {
+                    node.id.clone()
+                }
             }
-        } else {
-            node.id.clone()
+            EntityId::Relationship { context, .. } => {
+                if let Some(ref prop) = pv.property {
+                    match prop.as_str() {
+                        "type" => context.clone(),
+                        _ => "null".to_string(),
+                    }
+                } else {
+                    context.clone()
+                }
+            }
         }
     } else {
         "null".to_string()
@@ -416,7 +521,8 @@ mod tests {
         let q = crate::core::parser::parse_query("MATCH (u:UC)-[*1..2]->(m:MOD) RETURN u.id, m.id")
             .unwrap();
         let nodes = mock_nodes();
-        let result = execute_query(&q, &nodes);
+        let config = Config::default();
+        let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 1);
         assert_eq!(result.rows[0][0], "UC_001");
         assert_eq!(result.rows[0][1], "MOD_001");
@@ -426,7 +532,8 @@ mod tests {
     fn test_execute_match_all() {
         let q = crate::core::parser::parse_query("MATCH (n) RETURN n.id").unwrap();
         let nodes = mock_nodes();
-        let result = execute_query(&q, &nodes);
+        let config = Config::default();
+        let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 3);
     }
 
@@ -434,7 +541,8 @@ mod tests {
     fn test_execute_match_label() {
         let q = crate::core::parser::parse_query("MATCH (n:UC) RETURN n.id").unwrap();
         let nodes = mock_nodes();
-        let result = execute_query(&q, &nodes);
+        let config = Config::default();
+        let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 1);
         assert_eq!(result.rows[0][0], "UC_001");
     }
@@ -444,7 +552,8 @@ mod tests {
         let q = crate::core::parser::parse_query("MATCH (n) WHERE n.id = \"FR_001\" RETURN n.id")
             .unwrap();
         let nodes = mock_nodes();
-        let result = execute_query(&q, &nodes);
+        let config = Config::default();
+        let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 1);
         assert_eq!(result.rows[0][0], "FR_001");
     }
@@ -453,7 +562,8 @@ mod tests {
     fn test_execute_property_access() {
         let q = crate::core::parser::parse_query("MATCH (n:UC) RETURN n.name, n.file").unwrap();
         let nodes = mock_nodes();
-        let result = execute_query(&q, &nodes);
+        let config = Config::default();
+        let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 1);
         assert_eq!(result.rows[0][0], "User Login");
         assert_eq!(result.rows[0][1], "test.md");
@@ -464,7 +574,8 @@ mod tests {
         let q =
             crate::core::parser::parse_query("MATCH (u:UC)-[]->(f:FR) RETURN u.id, f.id").unwrap();
         let nodes = mock_nodes();
-        let result = execute_query(&q, &nodes);
+        let config = Config::default();
+        let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 1);
         assert_eq!(result.rows[0][0], "UC_001");
         assert_eq!(result.rows[0][1], "FR_001");
@@ -474,10 +585,11 @@ mod tests {
     fn test_execute_where_operators() {
         let nodes = mock_nodes();
 
+        let config = Config::default();
         // Not Equal <>
         let q = crate::core::parser::parse_query("MATCH (n) WHERE n.id <> \"UC_001\" RETURN n.id")
             .unwrap();
-        let result = execute_query(&q, &nodes);
+        let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 2);
         assert!(!result.rows.iter().any(|r| r[0] == "UC_001"));
 
@@ -486,7 +598,7 @@ mod tests {
             "MATCH (n) WHERE n.name CONTAINS \"Login\" RETURN n.id",
         )
         .unwrap();
-        let result = execute_query(&q, &nodes);
+        let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 1);
         assert_eq!(result.rows[0][0], "UC_001");
 
@@ -494,7 +606,7 @@ mod tests {
         // (Alphabetical comparison for strings)
         let q = crate::core::parser::parse_query("MATCH (n) WHERE n.id > \"MOD_001\" RETURN n.id")
             .unwrap();
-        let result = execute_query(&q, &nodes);
+        let result = execute_query(&q, &nodes, &config);
         // UC_001 > MOD_001 is true? 'U' > 'M'. Yes.
         // FR_001 > MOD_001? 'F' > 'M'? No.
         assert!(result.rows.iter().any(|r| r[0] == "UC_001"));
@@ -505,12 +617,13 @@ mod tests {
     fn test_execute_where_logical() {
         let nodes = mock_nodes();
 
+        let config = Config::default();
         // AND
         let q = crate::core::parser::parse_query(
             "MATCH (n) WHERE n.node_type = \"UC\" AND n.name CONTAINS \"Login\" RETURN n.id",
         )
         .unwrap();
-        let result = execute_query(&q, &nodes);
+        let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 1);
         assert_eq!(result.rows[0][0], "UC_001");
 
@@ -519,7 +632,7 @@ mod tests {
             "MATCH (n) WHERE n.id = \"UC_001\" OR n.id = \"FR_001\" RETURN n.id",
         )
         .unwrap();
-        let result = execute_query(&q, &nodes);
+        let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 2);
     }
 
@@ -527,10 +640,11 @@ mod tests {
     fn test_execute_match_multiple_labels() {
         let nodes = mock_nodes();
 
+        let config = Config::default();
         // (n:UC:FR) -> Should be OR (UC or FR) based on current implementation
         // Parser supports multi-labels. Engine `match_node_pattern` uses `labels.contains(&node.node_type)`.
         let q = crate::core::parser::parse_query("MATCH (n:UC:FR) RETURN n.id").unwrap();
-        let result = execute_query(&q, &nodes);
+        let result = execute_query(&q, &nodes, &config);
         assert_eq!(result.rows.len(), 2);
         assert!(result.rows.iter().any(|r| r[0] == "UC_001"));
         assert!(result.rows.iter().any(|r| r[0] == "FR_001"));
@@ -540,8 +654,9 @@ mod tests {
     #[test]
     fn test_execute_node_expansion() {
         let nodes = mock_nodes();
+        let config = Config::default();
         let q = crate::core::parser::parse_query("MATCH (n:UC) RETURN n").unwrap();
-        let result = execute_query(&q, &nodes);
+        let result = execute_query(&q, &nodes, &config);
 
         // Should have 6 columns
         assert_eq!(result.columns.len(), 6);
@@ -556,5 +671,54 @@ mod tests {
         assert_eq!(result.rows[0][0], "UC_001");
         assert_eq!(result.rows[0][1], "UC");
         assert_eq!(result.rows[0][2], "User Login");
+    }
+
+    #[test]
+    fn test_execute_relationship_type_and_context() {
+        use crate::core::config::{NodeConfig, RuleConfig};
+        let nodes = mock_nodes();
+        let mut config = Config::default();
+        
+        // Setup rules in config
+        // UC uses FR
+        let mut uc_rules = NodeConfig::default();
+        uc_rules.rules.push(RuleConfig {
+            dir: "to".to_string(),
+            targets: vec!["FR".to_string()],
+            context: Some("uses".to_string()),
+            ..Default::default()
+        });
+        config.nodes.insert("UC".to_string(), uc_rules);
+
+        // FR implemented by MOD
+        let mut fr_rules = NodeConfig::default();
+        fr_rules.rules.push(RuleConfig {
+            dir: "to".to_string(),
+            targets: vec!["MOD".to_string()],
+            context: Some("implemented_by".to_string()),
+            ..Default::default()
+        });
+        config.nodes.insert("FR".to_string(), fr_rules);
+
+        // Test 1: Query with relationship variable and type
+        let q = crate::core::parser::parse_query("MATCH (u:UC)-[r]->(f:FR) RETURN u.id, r.type, f.id")
+            .unwrap();
+        let result = execute_query(&q, &nodes, &config);
+        assert_eq!(result.rows.len(), 1);
+        assert_eq!(result.rows[0][0], "UC_001");
+        assert_eq!(result.rows[0][1], "uses");
+        assert_eq!(result.rows[0][2], "FR_001");
+
+        // Test 2: Filtering by relationship type
+        let q = crate::core::parser::parse_query("MATCH (u:UC)-[r:uses]->(f:FR) RETURN f.id")
+            .unwrap();
+        let result = execute_query(&q, &nodes, &config);
+        assert_eq!(result.rows.len(), 1);
+        assert_eq!(result.rows[0][0], "FR_001");
+
+        let q = crate::core::parser::parse_query("MATCH (u:UC)-[r:other]->(f:FR) RETURN f.id")
+            .unwrap();
+        let result = execute_query(&q, &nodes, &config);
+        assert_eq!(result.rows.len(), 0);
     }
 }
