@@ -26,7 +26,8 @@ For a comprehensive guide on concepts, architecture, and specifications, please 
 
 - **AI-Agent Ready**: Built-in support for GraphRAG knowledge construction. AI Agents can consume `docgraph` outputs to
   assist in documentation and development workflows.
-- **Modern IDE Integration**: A dedicated VS Code plugin with full LSP support.
+- **Modern IDE Integration**: A dedicated VS Code plugin with full LSP support. Configuration changes (`docgraph.toml`,
+  `.gitignore`) are automatically reflected in real-time.
 
 ## Getting Started
 
@@ -177,16 +178,19 @@ This will automatically run `cargo fmt`, `clippy`, `prettier`, `test`, and `docg
 ### Examples
 
 **Find all Use Cases with "Login" in the name:**
+
 ```bash
 docgraph query "MATCH (n:UC) WHERE n.name CONTAINS 'Login' RETURN n.id, n.name"
 ```
 
 **Find Functional Requirements deriving from a specific Use Case:**
+
 ```bash
 docgraph query "MATCH (fr:FR)-[]->(uc:UC) WHERE uc.id = 'UC_001' RETURN fr.id"
 ```
 
 **Output as JSON:**
+
 ```bash
 docgraph query "MATCH (n:UC) RETURN n.id" --format json
 ```

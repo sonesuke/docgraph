@@ -168,14 +168,15 @@ The `version` command shall display the current version of the `docgraph` tool.
 The `help` command shall display usage information for `docgraph` and its subcommands.
 
 ### Realized by
- 
+
 - [MOD_CLI (CLI Application)](../../architecture/view/module.md#MOD_CLI)
 
 <a id="FR_CLI_QUERY"></a>
 
 ## Query Command
 
-The `query` command shall execute Cypher-like queries against the documentation graph to retrieve nodes and relationships matching specific patterns.
+The `query` command shall execute Cypher-like queries against the documentation graph to retrieve nodes and
+relationships matching specific patterns.
 
 **Usage:**
 
