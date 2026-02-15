@@ -51,38 +51,6 @@ pub enum Commands {
         #[arg(default_value = ".")]
         path: PathBuf,
     },
-    /// List spec blocks matching a query
-    List {
-        /// Query pattern (e.g., "FR-01", "FR-*"). If omitted, all blocks are listed.
-        ///
-        /// Examples:
-        ///
-        /// - docgraph list "FR-*"
-        ///
-        /// - docgraph list
-        #[arg(index = 1)]
-        query: Option<String>,
-
-        /// Path to search for markdown files (defaults to current directory)
-        #[arg(long, short, default_value = ".")]
-        path: PathBuf,
-    },
-    /// Trace relationships between spec blocks
-    Trace {
-        /// Start ID
-        from: String,
-
-        /// Target ID or prefix
-        to: String,
-
-        /// Path to search for markdown files (defaults to current directory)
-        #[arg(default_value = ".")]
-        path: PathBuf,
-
-        /// Direction of trace (down: outgoing, up: incoming)
-        #[arg(long, default_value = "down")]
-        direction: String,
-    },
     /// Describe a spec block and its relationships
     Describe {
         /// The ID of the spec block to describe
@@ -168,54 +136,6 @@ mod tests {
                 assert_eq!(rule, Some(vec!["MD001".to_string()]));
             }
             _ => panic!("Expected Check command"),
-        }
-    }
-
-    #[test]
-    fn test_list_query() {
-        let cli = Cli::parse_from(["docgraph", "list", "FR-*"]);
-        match cli.command {
-            Commands::List { query, path } => {
-                assert_eq!(query, Some("FR-*".to_string()));
-                assert_eq!(path, PathBuf::from("."));
-            }
-            _ => panic!("Expected List command"),
-        }
-    }
-
-    #[test]
-    fn test_list_no_query() {
-        let cli = Cli::parse_from(["docgraph", "list"]);
-        match cli.command {
-            Commands::List { query, path } => {
-                assert!(query.is_none());
-                assert_eq!(path, PathBuf::from("."));
-            }
-            _ => panic!("Expected List command"),
-        }
-    }
-
-    #[test]
-    fn test_list_with_path() {
-        let cli = Cli::parse_from(["docgraph", "list", "--path", "./doc"]);
-        match cli.command {
-            Commands::List { query, path } => {
-                assert!(query.is_none());
-                assert_eq!(path, PathBuf::from("./doc"));
-            }
-            _ => panic!("Expected List command"),
-        }
-    }
-
-    #[test]
-    fn test_list_query_with_path() {
-        let cli = Cli::parse_from(["docgraph", "list", "FR-*", "-p", "./doc"]);
-        match cli.command {
-            Commands::List { query, path } => {
-                assert_eq!(query, Some("FR-*".to_string()));
-                assert_eq!(path, PathBuf::from("./doc"));
-            }
-            _ => panic!("Expected List command"),
         }
     }
 }
