@@ -2,15 +2,16 @@ use crossbeam_channel::Sender;
 use dashmap::DashMap;
 use lsp_server::{Connection, Message, Notification, RequestId, Response};
 use lsp_types::{
-    Diagnostic, InitializeParams, Position, PublishDiagnosticsParams, Range, Uri, WorkspaceFolder,
+    Diagnostic, FileSystemWatcher, InitializeParams, Position, PublishDiagnosticsParams, Range,
+    Registration, RegistrationParams, Uri, WatchKind, WorkspaceFolder,
     notification::{
-        DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument,
-        Initialized, Notification as _, PublishDiagnostics,
+        DidChangeTextDocument, DidChangeWatchedFiles, DidCloseTextDocument, DidOpenTextDocument,
+        DidSaveTextDocument, Initialized, Notification as _, PublishDiagnostics,
     },
     request::{
         CallHierarchyIncomingCalls, CallHierarchyOutgoingCalls, CallHierarchyPrepare, Completion,
-        DocumentSymbolRequest, GotoDefinition, HoverRequest, References, Rename,
-        WorkspaceSymbolRequest,
+        DocumentSymbolRequest, GotoDefinition, HoverRequest, References, RegisterCapability,
+        Rename, Request, WorkspaceSymbolRequest,
     },
 };
 use std::path::PathBuf;
@@ -155,6 +156,9 @@ impl Backend {
             "initialized" => {
                 let _ = cast_not::<Initialized>(not)?;
                 self.log_message("docgraph language server initialized");
+                if let Err(e) = self.register_file_watchers() {
+                    self.log_message(format!("Failed to register file watchers: {}", e));
+                }
                 self.run_lint();
             }
             "textDocument/didOpen" => {
@@ -164,6 +168,11 @@ impl Backend {
                     params.text_document.uri.to_string(),
                     params.text_document.text,
                 );
+                self.run_lint();
+            }
+            "workspace/didChangeWatchedFiles" => {
+                let _params = cast_not::<DidChangeWatchedFiles>(not)?;
+                self.log_message("Configuration file changed, re-linting...");
                 self.run_lint();
             }
             "textDocument/didChange" => {
@@ -207,6 +216,36 @@ impl Backend {
         };
         let not = Notification::new("window/logMessage".to_string(), params);
         let _ = self.sender.send(Message::Notification(not));
+    }
+
+    fn register_file_watchers(&self) -> anyhow::Result<()> {
+        let watchers = vec![
+            FileSystemWatcher {
+                glob_pattern: lsp_types::GlobPattern::String("**/docgraph.toml".to_string()),
+                kind: Some(WatchKind::all()),
+            },
+            FileSystemWatcher {
+                glob_pattern: lsp_types::GlobPattern::String("**/.gitignore".to_string()),
+                kind: Some(WatchKind::all()),
+            },
+        ];
+        let registration = Registration {
+            id: "watch-config-files".to_string(),
+            method: "workspace/didChangeWatchedFiles".to_string(),
+            register_options: Some(serde_json::to_value(
+                lsp_types::DidChangeWatchedFilesRegistrationOptions { watchers },
+            )?),
+        };
+        let params = RegistrationParams {
+            registrations: vec![registration],
+        };
+        let req = lsp_server::Request::new(
+            RequestId::from("register-watchers".to_string()),
+            RegisterCapability::METHOD.to_string(),
+            params,
+        );
+        self.sender.send(Message::Request(req))?;
+        Ok(())
     }
 
     fn publish_diagnostics(&self, uri: Uri, diagnostics: Vec<Diagnostic>) -> anyhow::Result<()> {

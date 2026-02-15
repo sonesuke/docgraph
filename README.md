@@ -26,7 +26,8 @@ For a comprehensive guide on concepts, architecture, and specifications, please 
 
 - **AI-Agent Ready**: Built-in support for GraphRAG knowledge construction. AI Agents can consume `docgraph` outputs to
   assist in documentation and development workflows.
-- **Modern IDE Integration**: A dedicated VS Code plugin with full LSP support.
+- **Modern IDE Integration**: A dedicated VS Code plugin with full LSP support. Configuration changes (`docgraph.toml`,
+  `.gitignore`) are automatically reflected in real-time.
 
 ## Getting Started
 
