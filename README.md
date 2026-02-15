@@ -36,7 +36,7 @@ Follow these steps to set up `docgraph` for your project.
 
 `docgraph` requires the CLI binary to be installed on your system for all use cases (CLI, AI, and IDE).
 
-**macOS / Linux:**
+**macOS / Linux (x86_64, aarch64):**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/sonesuke/docgraph/main/install.sh | bash
@@ -177,16 +177,19 @@ This will automatically run `cargo fmt`, `clippy`, `prettier`, `test`, and `docg
 ### Examples
 
 **Find all Use Cases with "Login" in the name:**
+
 ```bash
 docgraph query "MATCH (n:UC) WHERE n.name CONTAINS 'Login' RETURN n.id, n.name"
 ```
 
 **Find Functional Requirements deriving from a specific Use Case:**
+
 ```bash
 docgraph query "MATCH (fr:FR)-[]->(uc:UC) WHERE uc.id = 'UC_001' RETURN fr.id"
 ```
 
 **Output as JSON:**
+
 ```bash
 docgraph query "MATCH (n:UC) RETURN n.id" --format json
 ```
