@@ -9,7 +9,7 @@ This file contains instructions and project-specific rules for AI agents.
 
 ## Skills
 
-Project-specific skills are located in `docgraph-plugin/skills/`. Use them strictly in this order:
+Use project-specific skills strictly in this order:
 
 1.  **Environment (Bootstrap)**: If `docgraph` is missing, see checks in `compose/SKILL.md`.
 2.  **Ontology (Compose)**: Create/Edit `docgraph.toml` (Semantic Axiom).
