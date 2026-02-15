@@ -44,7 +44,7 @@ Before performing manual semantic checks, ensure all automated validations pass.
   - Identify peer nodes for comparison (naming, placement, structure).
   - Establish the dominant convention (baseline) for the specific node type.
 
-List elements within the target scope to understand the current state. Use `docgraph list`.
+List elements within the target scope to understand the current state. Use `docgraph list` or `docgraph query`.
 
 ### 2. ID and Title Correspondence
 
