@@ -5,22 +5,34 @@ updates:
     schedule:
       interval: 'weekly'
     groups:
-      dependencies:
+      security-updates:
+        applies-to: security-updates
         patterns:
           - '*'
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: 'weekly'
+    groups:
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - '*'
   - package-ecosystem: 'npm'
     directory: '/vsix'
     schedule:
       interval: 'weekly'
+    groups:
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - '*'
   - package-ecosystem: 'cargo'
     directory: '/zed-extension'
     schedule:
       interval: 'weekly'
     groups:
-      dependencies:
+      security-updates:
+        applies-to: security-updates
         patterns:
           - '*'
