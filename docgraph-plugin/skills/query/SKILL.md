@@ -38,9 +38,9 @@ searches.**
   - `docgraph query "MATCH (n) WHERE n.name CONTAINS 'Auth' RETURN n.id, n.name"` - Search by name.
   - `docgraph query "MATCH (fr:FR)-[]->(uc:UC) WHERE uc.id = 'UC_001' RETURN fr.id"` - Find requirements deriving from a
     use case.
-- **関係性タイプ (Context)**: `docgraph.toml` で定義されたラベルでフィルタリングや取得が可能です。
-  - `docgraph query "MATCH (u:UC)-[r:uses]->(f:FR) RETURN f.id, r.type"` - `uses` という関係性のみを抽出し、その名称を取得します。
-  - `docgraph query "MATCH (n)-[r]->(m) WHERE r.type CONTAINS 'implements' RETURN n.id, m.id"` - 関係性の種類でフィルタリングします。
+- **Relationship Type (Context)**: Filter or retrieve relationship types defined as `context` in `docgraph.toml`.
+  - `docgraph query "MATCH (u:UC)-[r:uses]->(f:FR) RETURN f.id, r.type"` - Extracts only `uses` relationships and retrieves the type name.
+  - `docgraph query "MATCH (n)-[r]->(m) WHERE r.type CONTAINS 'implements' RETURN n.id, m.id"` - Filters results by the relationship type.
 
 ### 2. `docgraph describe` (Exploration)
 
