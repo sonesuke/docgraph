@@ -1,4 +1,4 @@
-# AGENT.md
+# AGENTS.md
 
 This file contains instructions and project-specific rules for AI agents.
 
