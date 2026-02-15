@@ -18,10 +18,6 @@ validated, tested, and released.
 - [ADR_CI_ENV_PARITY (CI Environment Parity)](../../decisions/ci-env-parity.md#ADR_CI_ENV_PARITY) To minimize
   environmental discrepancies.
 
-### Realized by
-
-- [MOD_CICD (CI/CD Pipelines)](../view/module.md#MOD_CICD)
-
 Triggered when PR is merged to `main`.
 
 - **Publish**: (Planned) Publish binary or crate to registry.

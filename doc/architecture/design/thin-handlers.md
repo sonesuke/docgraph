@@ -22,7 +22,3 @@ Request handlers should be "thin," delegating business logic to core modules.
 
 - [ADR_THIN_HANDLERS (Thin Handlers)](../../decisions/thin-handlers.md#ADR_THIN_HANDLERS) To maintain separation of
   concerns.
-
-### Realized by
-
-- [MOD_LSP_HANDLERS (LSP Handlers)](../view/module.md#MOD_LSP_HANDLERS)

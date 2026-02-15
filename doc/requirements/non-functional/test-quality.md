@@ -12,7 +12,7 @@ Testing strategy:
 - **E2E tests**: Verify CLI behavior, error messages, and file I/O
 - **Integration tests**: Test component interactions
 
-### Codified in (Optional)
+### Constrained by (Optional)
 
 - [CC_TESTING_STRATEGY (Testing Strategy)](../../architecture/design/testing.md#CC_TESTING_STRATEGY) Defines overall
   testing approach

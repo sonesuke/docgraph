@@ -12,10 +12,19 @@
 
 {Rationale}
 
-## Context
+### Trade-offs (Optional)
+
+- {Trade-off}
+
+### Notes (Optional)
+
+{Notes}
+
+## Context (Optional)
 
 {Context}
 
-## Related (Optional)
+## Informed by (Optional)
 
-{Related}
+- [* (*)](*#*)
+- [* (*)](*#*) {description}

@@ -122,6 +122,10 @@ pub fn handle_check(...) {
 
 ## Rationale
 
+We selected this pattern because in a layered architecture with Core and Handler layers, we need to decide how much
+logic should reside in handlers versus the Core. Putting too much logic in handlers leads to duplication across
+interfaces (CLI, LSP) and makes testing harder.
+
 - **Easy Testing**: Handlers are thin enough that integration tests are sufficient. Complex logic is tested in Core unit
   tests, which are faster and more reliable.
 - **Centralized Logic**: All business logic lives in Core, making it easy to find and modify. Developers don't need to
@@ -134,12 +138,8 @@ pub fn handle_check(...) {
 - Requires discipline to avoid adding logic to handlers
 - May feel verbose for simple operations
 
-## Context
+### Notes
 
-In a layered architecture with Core and Handler layers, we need to decide how much logic should reside in handlers
-versus the Core. Putting too much logic in handlers leads to duplication across interfaces (CLI, LSP) and makes testing
-harder.
-
-## Related
+**Related Decisions:**
 
 - [ADR_LAYERED_ARCH (Layered Architecture)](./layered-architecture.md#ADR_LAYERED_ARCH)

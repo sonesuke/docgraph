@@ -1,23 +1,20 @@
+# The Dependency Rule
+
 <a id="CC_DEPENDENCY_RULE"></a>
 
 ## The Dependency Rule
 
-Dependencies must point inwards, towards high-level policies.
+Source code dependencies must point only inward, toward higher-level policies.
 
-**Direction:**
+**Rules:**
 
-- **Outer Layers** (Infrastructure, adapters) depend on **Inner Layers** (Use Cases, Entities).
-- **Inner Layers** MUST NOT depend on **Outer Layers**.
-
-**Core Layer Independence:**
-
-The `src/core/` module contains only domain types and business logic. It has NO references to CLI or LSP types.
-
-**Handler Layer Dependency:**
-
-CLI and LSP handlers import from Core, but Core never imports from handlers.
+1.  Nothing in an inner circle (Core) can know anything at all about something in an outer circle (Handlers, UI).
+2.  The name of something declared in an outer circle must not be mentioned by the code in the an inner circle.
 
 ### Decided by
 
-- [ADR_LAYERED_ARCH (Layered Architecture)](../../decisions/layered-architecture.md#ADR_LAYERED_ARCH) To enforce
-  directional dependency.
+- [ADR_LAYERED_ARCH (Layered Architecture)](../../decisions/layered-architecture.md#ADR_LAYERED_ARCH)
+
+### Reflected in (Optional)
+
+- [NFR_EXT (Modular Design)](../../requirements/non-functional/extensibility.md#NFR_EXT)

@@ -12,10 +12,6 @@ We employ a pyramid testing strategy to ensure reliability and velocity.
 2.  **Integration Tests (Middle)**: Verify component interactions.
 3.  **E2E Tests (Top)**: Verify full system behavior via LSP.
 
-### Realized by
-
-- [MOD_TEST_INFRA (Test Infrastructure)](../view/module.md#MOD_TEST_INFRA)
-
 ---
 
 <a id="CC_UNIT_TESTING"></a>
@@ -29,11 +25,6 @@ Unit tests should cover all public functions and complex private logic.
 - **Isolation**: Tests must not depend on external systems (filesystem, network).
 - **Speed**: Tests must run per commit.
 - **Coverage**: Aim for high branch coverage in core logic.
-
-### Realized by
-
-- [MOD_CORE_RULES (Validation Rules)](../view/module.md#MOD_CORE_RULES)
-- [MOD_CORE_GRAPH (Graph Logic)](../view/module.md#MOD_CORE_GRAPH)
 
 ---
 
@@ -53,11 +44,6 @@ E2E tests verify the system from the user's perspective (LSP client).
 
 - Rust standard test framework with a mock LSP client.
 
-### Realized by
-
-- [MOD_LSP_SERVER (LSP Server)](../view/module.md#MOD_LSP_SERVER)
-- [MOD_TEST_INFRA (Test Infrastructure)](../view/module.md#MOD_TEST_INFRA)
-
 ---
 
 <a id="CC_COVERAGE"></a>
@@ -65,8 +51,6 @@ E2E tests verify the system from the user's perspective (LSP client).
 ## 3. Code Coverage Standards
 
 We use `cargo-llvm-cov` to measure test effectiveness.
-
-**Realized by**: [MOD_LSP (LSP Library)](../../architecture/view/module.md#MOD_LSP)
 
 **Running Coverage Locally:**
 

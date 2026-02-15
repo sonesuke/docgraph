@@ -4,14 +4,12 @@
 
 {Description}
 
-### Codified in (Optional)
+### Qualifies (Optional)
 
-- [CC* (*)](*#CC_*) {Reason}
+- [FR* (*)](*#FR_*)
+- [FR* (*)](*#FR_*) {description}
 
-### Realized by (Optional)
+### Constrained by (Optional)
 
-- [MOD* (*)](*#MOD_*)
-
-### Decided by (Optional)
-
-- [ADR* (*)](*#ADR_*) {Reason}
+- [CC* (*)](*#CC_*)
+- [CC* (*)](*#CC_*) {description}

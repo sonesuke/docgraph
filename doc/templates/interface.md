@@ -4,6 +4,10 @@
 
 {Description}
 
-### Realized by
+### Defined by
 
-- [MOD* (*)](../../architecture/view/module.md#MOD_*)
+- [FR* (*)](*#FR_*)
+
+### Justified by
+
+- [UC* (*)](*#UC_*)

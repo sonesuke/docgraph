@@ -6,20 +6,19 @@
 
 ### Actors
 
-- [ACT* (*)](*#ACT_*)
+- [* (*)](*#*)
+- [* (*)](*#*) {description}
 
 ### Interfaces
 
-- [IF* (*)](*#IF_*)
+- [* (*)](*#*)
+- [* (*)](*#*) {description}
 
-### Requirements
+### Requirements (Optional)
 
-- [FR* (*)](*#FR_*) {Reason}
+- [* (*)](*#*)
+- [* (*)](*#*) {description}
 
 ### Flow
 
 1. {Step}
-
-### Non-Functional Requirements (Optional)
-
-- [NFR* (*)](*#NFR_*) {Reason}

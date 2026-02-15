@@ -1,13 +1,5 @@
 <a id="CON_*"></a>
 
-## {Title}
+## {Name}
 
 {Description}
-
-### Realized by (Optional)
-
-- [FR* (*)](*#FR_*)
-
-### Satisfied by (Optional)
-
-- [NFR* (*)](*#NFR_*) {Reason}

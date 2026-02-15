@@ -6,13 +6,9 @@
 
 The core engine MUST validate that all internal links reference existing node IDs.
 
-### Realized by
+### Derived from
 
-- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
-
-### Qualified by
-
-- [NFR_AVAILABILITY (System Availability)](../../requirements/non-functional/performance.md#NFR_AVAILABILITY)
+- [UC_WRITE (Write Specifications)](../../usecases/writing-specification.md#UC_WRITE)
 
 ---
 
@@ -22,9 +18,9 @@ The core engine MUST validate that all internal links reference existing node ID
 
 The system MUST ensure that every node ID in the documentation remains unique across the entire workspace.
 
-### Realized by
+### Derived from
 
-- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
+- [UC_WRITE (Write Specifications)](../../usecases/writing-specification.md#UC_WRITE)
 
 ---
 
@@ -35,9 +31,9 @@ The system MUST ensure that every node ID in the documentation remains unique ac
 The system MUST record all validation results and structural changes in a persistent audit log for traceability and
 compliance.
 
-### Realized by
+### Derived from
 
-- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
+- [UC_WRITE (Write Specifications)](../../usecases/writing-specification.md#UC_WRITE)
 
 ---
 
@@ -48,9 +44,9 @@ compliance.
 The system SHOULD provide mechanisms to authenticate users before allowing certain operations, especially when
 interacting with remote marketplaces.
 
-### Realized by
+### Derived from
 
-- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
+- [UC_CLAUDE_INSTALL (Install Claude Plugin)](../../usecases/setup.md#UC_CLAUDE_INSTALL)
 
 ---
 
@@ -71,9 +67,9 @@ templates.
 - **Wildcards**: Supports `*` for ID matching and substring matching in links.
 - **Optional Sections**: Use `(Optional)` in headers to mark sections that can be omitted.
 
-### Realized by
+### Derived from
 
-- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
+- [UC_WRITE (Write Specifications)](../../usecases/writing-specification.md#UC_WRITE)
 
 **Template Example:**
 
@@ -87,9 +83,9 @@ repeating schemas.
 
 This requirement defines the behavior for {Feature}.
 
-## Realized by
+## Derived from
 
-- [MOD\__(_)](*#MOD*)
+- [UC\__(*)] (_#UC_)
 
 ## Parameters (Optional)
 
@@ -139,6 +135,6 @@ UC = { desc = "Use Case" }
 rules = [{ dir = "to", targets = ["FR"], min = 1 }]
 ```
 
-### Realized by
+### Derived from
 
-- [MOD_CORE (Core Library)](../../architecture/view/module.md#MOD_CORE)
+- [UC_WRITE (Write Specifications)](../../usecases/writing-specification.md#UC_WRITE)

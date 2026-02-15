@@ -24,17 +24,21 @@ We adopt a 3-layer architecture:
 
 We selected this 3-layer architecture to maximize separation of concerns and reusability.
 
-### 1. Separation of Concerns
+`docgraph` is a tool for building and validating knowledge graphs from Markdown files. It needs to support multiple
+interfaces (CLI, LSP) while sharing the same core logic, avoiding code duplication, and maintaining high
+maintainability.
+
+**1. Separation of Concerns**
 
 - **Core**: Focuses on domain logic (parsing, validation, graph building)
 - **Handlers**: Focuses on bridging user interfaces
 
-#### 2. Reusability
+**2. Reusability**
 
 - CLI and LSP share the same Core logic
 - Adding new interfaces (e.g., Web API) requires no Core changes
 
-#### 3. Testability
+**3. Testability**
 
 - Core logic is independent of I/O and can be unit tested as pure functions
 - Handlers are thin layers verified through integration tests
@@ -51,12 +55,12 @@ fn test_parse_spec_block() {
 }
 ```
 
-#### 4. Maintainability
+**4. Maintainability**
 
 - Each handler is separated into its own file, making change impact clear
-- Examples: `check.rs`, `rule.rs`, `graph.rs`, `list.rs`, `trace.rs`, `describe.rs`
+- Examples: `check.rs`, `rule.rs`, `graph.rs`, `describe.rs`
 
-#### 5. Dependency Rule
+**5. Dependency Rule**
 
 The architecture enforces a strict dependency rule: **dependencies always point inward toward Core**.
 
@@ -77,13 +81,9 @@ This provides:
 - Small changes may require modifications to multiple files
 - New developers may need time to understand the file structure
 
-## Context
+### Notes
 
-`docgraph` is a tool for building and validating knowledge graphs from Markdown files. It needs to support multiple
-interfaces (CLI, LSP) while sharing the same core logic, avoiding code duplication, and maintaining high
-maintainability.
-
-### Example: `check` Command Flow
+**Example: `check` Command Flow**
 
 The following diagram illustrates how the layered architecture works in practice:
 
@@ -116,6 +116,6 @@ This flow demonstrates:
 2. **Core Independence**: Core has no knowledge of CLI
 3. **Reusability**: The same `lint::check_workspace` could be called from LSP or any other interface
 
-## Related
+**Related Decisions:**
 
 - [ADR_MARKDOWN_FORMAT (Choice of Plain Markdown and HTML Anchors)](./markdown-format.md#ADR_MARKDOWN_FORMAT)

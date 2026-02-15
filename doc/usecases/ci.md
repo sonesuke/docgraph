@@ -1,10 +1,8 @@
-# CI/CD Use Cases
-
 <a id="UC_CI_VALIDATION"></a>
 
-## Continuous Integration Validation
+## CI Validation
 
-The CI System automatically validates all documentation changes upon pull request submission.
+Automated validation of documentation and code on every push.
 
 ### Actors
 
@@ -13,19 +11,11 @@ The CI System automatically validates all documentation changes upon pull reques
 
 ### Interfaces
 
-- [IF_CLI (Command Line Interface)](../requirements/interfaces/interfaces.md#IF_CLI)
-
-### Requirements
-
-- [FR_CORE_VALID_REF (Valid References)](../requirements/functional/core.md#FR_CORE_VALID_REF) Protecting the
-  documentation quality in CI
-- [FR_CORE_AUDIT (Audit Logging)](../requirements/functional/core.md#FR_CORE_AUDIT) Capturing security and linting
-  trails
-- [FR_DEV_CI (Automated Validation)](../requirements/functional/development.md#FR_DEV_CI) Pipeline integration for all
-  documentation changes
+- [IF_GITHUB_RELEASES (GitHub Releases Interface)](../requirements/interfaces/interfaces.md#IF_GITHUB_RELEASES)
 
 ### Flow
 
-1. CI system triggers on push.
-2. CI system runs `docgraph check .` command.
-3. CI System reports validation results back to the developer.
+1. Developer pushes code to GitHub.
+2. GitHub Actions triggers the CI workflow.
+3. Docgraph validation runs.
+4. If validation fails, the build fails.

@@ -9,18 +9,10 @@ The developer sets up the development environment manually on their local machin
 ### Actors
 
 - [ACT_DEV (Developer)](../actors/users.md#ACT_DEV)
-- [ACT_USER (User)](../actors/users.md#ACT_USER)
 
 ### Interfaces
 
-- [IF_GITHUB_RELEASES (GitHub Releases Interface)](../requirements/interfaces/interfaces.md#IF_GITHUB_RELEASES)
-
-### Requirements
-
-- [FR_INSTALL_MANUAL (Manual Installation)](../requirements/functional/installation.md#FR_INSTALL_MANUAL) Required for
-  users choosing not to use automated scripts
-- [FR_CORE_AUDIT (Audit Logging)](../requirements/functional/core.md#FR_CORE_AUDIT) Ensures installation events are
-  tracked for security
+- [IF_CLI (Command Line Interface)](../requirements/interfaces/interfaces.md#IF_CLI)
 
 ### Flow
 
@@ -43,11 +35,6 @@ The developer installs the `docgraph` CLI binary using automated scripts.
 
 - [IF_GITHUB_RELEASES (GitHub Releases Interface)](../requirements/interfaces/interfaces.md#IF_GITHUB_RELEASES)
 
-### Requirements
-
-- [FR_INSTALL_BINARY (Binary Installation Support)](../requirements/functional/installation.md#FR_INSTALL_BINARY)
-  Provides a fast and automated way to set up the CLI
-
 ### Flow
 
 1. Developer runs the platform-specific install script.
@@ -69,11 +56,6 @@ The developer installs the Docgraph plugin in Claude Desktop.
 
 - [IF_CLAUDE_MARKETPLACE (Claude Marketplace)](../requirements/interfaces/interfaces.md#IF_CLAUDE_MARKETPLACE)
 
-### Requirements
-
-- [FR_CLAUDE_INSTALL (Claude Plugin Installation)](../requirements/functional/claude.md#FR_CLAUDE_INSTALL) Mandatory for
-  enabling Docgraph within Claude Desktop
-
 ### Flow
 
 1. Developer adds the marketplace to Claude.
@@ -94,16 +76,6 @@ The developer installs the `docgraph` VS Code extension.
 ### Interfaces
 
 - [IF_VSCODE_MARKETPLACE (VS Code Marketplace)](../requirements/interfaces/interfaces.md#IF_VSCODE_MARKETPLACE)
-
-### Requirements
-
-- [FR_VSC_BINARY_PATH (Binary Path Configuration)](../requirements/functional/vscode.md#FR_VSC_BINARY_PATH) Enables the
-  extension to find the docgraph engine
-- [FR_VSC_MARKDOWN_ACTIVATION (Markdown Activation)](../requirements/functional/vscode.md#FR_VSC_MARKDOWN_ACTIVATION)
-  Restricts extension logic to Markdown files
-- [FR_VSC_SERVER_LIFECYCLE (Server Lifecycle Commands)](../requirements/functional/vscode.md#FR_VSC_SERVER_LIFECYCLE)
-  Allows manual control over the LSP server
-- [FR_CORE_AUTH (Authentication)](../requirements/functional/core.md#FR_CORE_AUTH) Securely identifies the developer
 
 ### Flow
 

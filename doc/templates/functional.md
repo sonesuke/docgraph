@@ -4,19 +4,7 @@
 
 {Description}
 
-### Realized by
+### Derived from
 
-- [MOD* (*)](*#MOD_*)
-
-### Qualified by (Optional)
-
-- [NFR* (*)](*#NFR_*)
-- [FR* (*)](*#FR_*) {Reason}
-
-### Codified in (Optional)
-
-- [CC* (*)](*#CC_*) {Reason}
-
-### Decided by (Optional)
-
-- [ADR* (*)](*#ADR_*) {Reason}
+- [UC* (*)](*#UC_*)
+- [CON* (*)](*#CON_*)
