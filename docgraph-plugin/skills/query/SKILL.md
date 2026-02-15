@@ -33,14 +33,13 @@ Uses Cypher-like syntax for precise, attribute-aware, and relational searching. 
 searches.**
 
 - **Usage**: `docgraph query "<CYPHER_QUERY>"`
-- **Examples**:
-  - `docgraph query "MATCH (n:FR) RETURN n.id"` - List all functional requirements.
-  - `docgraph query "MATCH (n) WHERE n.name CONTAINS 'Auth' RETURN n.id, n.name"` - Search by name.
-  - `docgraph query "MATCH (fr:FR)-[]->(uc:UC) WHERE uc.id = 'UC_001' RETURN fr.id"` - Find requirements deriving from a
-    use case.
-- **Relationship Type (Context)**: Filter or retrieve relationship types defined as `context` in `docgraph.toml`.
-  - `docgraph query "MATCH (u:UC)-[r:uses]->(f:FR) RETURN f.id, r.type"` - Extracts only `uses` relationships and retrieves the type name.
-  - `docgraph query "MATCH (n)-[r]->(m) WHERE r.type CONTAINS 'implements' RETURN n.id, m.id"` - Filters results by the relationship type.
+- **Capabilities & Examples**:
+  - **Basic Discovery**: `docgraph query "MATCH (n:FR) RETURN n.id"` - List all nodes of a specific type.
+  - **Attribute Filtering**: `docgraph query "MATCH (n) WHERE n.name CONTAINS 'Auth' RETURN n.id, n.name"` - Search by properties.
+  - **Path Traversal**: `docgraph query "MATCH (fr:FR)-[*1..2]->(uc:UC) WHERE uc.id = 'UC_001' RETURN fr.id"` - Trace multi-hop relationships.
+  - **Relationship Semantics**: Use `docgraph.toml` context labels for filtering or reasoning.
+    - `docgraph query "MATCH (u:UC)-[r:uses]->(f:FR) RETURN f.id, r.type"` - Filter by relationship type and retrieve its label.
+    - `docgraph query "MATCH (n)-[r]->(m) WHERE r.type CONTAINS 'implements' RETURN n.id, m.id"` - Semantic filtering.
 
 ### 2. `docgraph describe` (Exploration)
 
