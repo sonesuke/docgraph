@@ -15,6 +15,7 @@ jobs:
       on_main: ${{ steps.check.outputs.on_main }}
     steps:
       - name: Set git default branch
+        shell: bash
         run: |
           git config --global init.defaultBranch main
           git config --global advice.detachedHead false
@@ -63,6 +64,7 @@ jobs:
 
     steps:
       - name: Set git default branch
+        shell: bash
         run: |
           git config --global init.defaultBranch main
           git config --global advice.detachedHead false
@@ -79,6 +81,7 @@ jobs:
         run: cargo install cross --git https://github.com/cross-rs/cross
 
       - name: Build
+        shell: bash
         run: |
           if [ "${{ matrix.use_cross }}" == "true" ]; then
             cross build --release --target ${{ matrix.target }}
@@ -110,6 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set git default branch
+        shell: bash
         run: |
           git config --global init.defaultBranch main
           git config --global advice.detachedHead false
@@ -140,6 +144,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set git default branch
+        shell: bash
         run: |
           git config --global init.defaultBranch main
           git config --global advice.detachedHead false
