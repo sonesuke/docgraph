@@ -37,10 +37,10 @@ Before performing manual semantic checks, ensure all automated validations pass.
 2. **Consistency**: Run `docgraph check` to ensure the internal graph logic is sound.
 3. **Rust Integrity**: Run `cargo test` and `cargo clippy` if logic changes are involved.
 
-### 1. Scope Analysis
+### 1. Scope Analysis (Structural Context)
 
-- **Level**: PREPARATION
-- **Purpose**:
+- **Goal**:
+  - Understand the schema constraints defined for the target type in `docgraph.toml`.
   - Identify peer nodes for comparison (naming, placement, structure).
   - Establish the dominant convention (baseline) for the specific node type.
 
