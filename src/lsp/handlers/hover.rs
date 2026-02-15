@@ -35,6 +35,11 @@ pub fn hover(
                 incoming, outgoing
             ));
 
+            if !target_block.content.is_empty() {
+                markdown.push_str("\n\n---\n\n");
+                markdown.push_str(target_block.content.trim());
+            }
+
             return Ok(Some(Hover {
                 contents: HoverContents::Scalar(MarkedString::String(markdown)),
                 range: None,

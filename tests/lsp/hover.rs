@@ -76,6 +76,7 @@ desc = "Requirement"
     if let Some(val) = hover_contents.get("value") {
         let s: &str = val.as_str().unwrap();
         assert!(s.contains("REQ-001"));
+        assert!(s.contains("Known Block"));
     }
 
     c.send_request("shutdown", json!({})).await?;

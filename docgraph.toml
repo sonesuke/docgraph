@@ -9,11 +9,7 @@ ignore = ["README.md", "SECURITY.md", ".agent", ".claude", ".claude-plugin", "do
 desc = "Use Case"
 template = "doc/templates/usecases.md"
 rules = [
-  # Intent is the root. No outgoing semantic dependencies required for definition context?
-  # Actually, Flow often references other UCs, but that's internal.
-  # Checking templates: We removed outgoing links.
-  # So rules should be empty or only 'from'?
-  # UC is 'Derived From' by others.
+
   { dir = "to", targets = ["ACT"], min = 0, desc = "Use cases involves actors", rel = "involves" },
   { dir = "to", targets = ["IF"], min = 0, desc = "Use cases requires interfaces", rel = "requires" },
   { dir = "to", targets = ["FR"], min = 0, desc = "Use cases are elaborated by requirements", rel = "elaborated_by" },
