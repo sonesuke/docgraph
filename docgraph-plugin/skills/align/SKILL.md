@@ -37,7 +37,7 @@ context (Vertical) and their peers (Horizontal).
   - **This Node**: Defines the "What" at its specific abstraction level.
   - **Children (Outbound)**: Define the "How" (realization, implementation, or breakdown).
 
-1. **Context Check**: Use `docgraph describe <ID>` (or `query`) and verify:
+1. **Context Check**: Use `docgraph describe <ID>` or `docgraph query` and verify:
    - Does the parent node explicitly justify the existence of this node?
    - Is there any gap in how the parent's intent is carried over?
 2. **Realization Check**: Verify child nodes:
@@ -49,7 +49,7 @@ context (Vertical) and their peers (Horizontal).
 - **Baseline Rule**: Use the dominant pattern among existing peer nodes. Do not invent new abstraction levels unless
   proposing an explicit refactor.
 
-1. **Peer Identification**: Use `docgraph list "<PREFIX>_*"` or `docgraph query`.
+1. **Peer Identification**: Use `docgraph query`.
    - Example: `docgraph query "MATCH (n:FR) WHERE n.id STARTS WITH 'FR_AUTH' RETURN n.id"`
 2. **Overlap Check**: Verify Mutually Exclusive and Collectively Exhaustive (MECE) status.
    - Does this node's responsibility overlap with peer nodes?

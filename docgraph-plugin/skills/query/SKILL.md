@@ -33,11 +33,10 @@ searches.**
   - `docgraph query "MATCH (fr:FR)-[]->(uc:UC) WHERE uc.id = 'UC_001' RETURN fr.id"` - Find requirements deriving from a
     use case.
 
-### 2. `docgraph list` & `describe` (Exploration)
+### 2. `docgraph describe` (Exploration)
 
-- **`list`**: Quick discovery by ID pattern. `docgraph list "FR_*"`
-- **`describe`**: Deep dive into a single node's content and immediate relations. `docgraph describe <ID>`
-  - _Benefit_: Use this to see direct inbound/outbound links and the local "Why/How" context.
+Deep dive into a single node's content and immediate relations. `docgraph describe <ID>`
+- _Benefit_: Use this to see direct inbound/outbound links and the local "Why/How" context.
 
 ### 3. `docgraph trace` (Lineage & Realization)
 
