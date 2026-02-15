@@ -154,9 +154,7 @@ Example constraints in `docgraph.toml`:
 [nodes.FR]
 desc = "Functional Requirement"
 template = "doc/templates/functional.md"
-rules = [
-  { dir = "to", targets = ["MOD"], min = 1, desc = "Must be realized", rel = "realized_by" },
-]
+rules = [{ dir = "to", targets = ["MOD"], min = 1, desc = "Must be realized", rel = "realized_by" }]
 ```
 
 ### Rule Syntax
